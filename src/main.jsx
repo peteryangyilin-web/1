@@ -1,11 +1,2271 @@
-import React, {useState, useEffect} from 'react';
-import {createRoot} from 'react-dom/client';
-import {ArrowUpRight,ArrowRight,ArrowLeft,ChevronLeft,ChevronRight,Plus,Check,Activity,Flame,Footprints,Moon,Zap,Play, X, Bell, Sparkles,Clock,Target, Dumbbell,Utensils,Heart,Settings,LayoutGrid,CalendarDays,ChartNoAxesCombined,LogOut} from 'lucide-react';
-import '@fontsource-variable/dm-sans';
-import '@fontsource-variable/manrope';
-import './style.css';
-const week=[['MON','19'],['TUE','20'],['WED','21'],['THU','22'],['FRI','23'],['SAT','24'],['SUN','25']];
-const plans=[{title:'Lower body',type:'STRENGTH',time:'55 min',sub:'Quads · Glutes · Hamstrings'},{title:'Zone 2 cardio',type:'ENDURANCE',time:'40 min',sub:'Build your aerobic foundation'},{title:'Push strength',type:'STRENGTH',time:'62 min',sub:'Chest · Shoulders · Triceps'},{title:'Active recovery',type:'RECOVERY',time:'25 min',sub:'Mobility · Stretch · Reset'},{title:'Pull strength',type:'STRENGTH',time:'58 min',sub:'Back · Biceps · Rear delts'},{title:'Long run',type:'ENDURANCE',time:'45 min',sub:'An easy pace. A clearer mind.'},{title:'Rest & recharge',type:'RECOVERY',time:'20 min',sub:'Breathe · Restore · Recover'}];
-function App(){const[profile,setProfile]=useState(()=>{try{return JSON.parse(localStorage.getItem('forma-profile'))||{name:'Alex Morgan',goal:'muscle',days:'5'}}catch{return {name:'Alex Morgan',goal:'muscle',days:'5'}}});const[day,setDay]=useState(2),[tab,setTab]=useState('Overview'),[modal,setModal]=useState(null),[started,setStarted]=useState(false),[done,setDone]=useState(false),[water,setWater]=useState(4),[notice,setNotice]=useState(false),[playing,setPlaying]=useState(false),[seconds,setSeconds]=useState(0),[meal,setMeal]=useState(false);const p=plans[day];useEffect(()=>{if(!playing)return;const id=setInterval(()=>setSeconds(x=>x+1),1000);return()=>clearInterval(id)},[playing]);const openWorkout=()=>{setStarted(true);setModal('workout')};return <div className="app"><aside className="sidebar"><a className="logo" href="#" aria-label="Forma home"><span className="logo-mark">f<span/></span>forma<span className="logo-dot">®</span></a><div className="workspace"><span className="workspace-icon">A</span><div>{profile.name}<small>Personal workspace</small></div><span className="pro">PRO</span></div><div className="nav-label">YOUR SPACE</div><nav>{[[LayoutGrid,'Overview'],[CalendarDays,'My plan'],[Dumbbell,'Training'],[Utensils,'Nutrition'],[ChartNoAxesCombined,'Progress']].map(([Icon,label])=><button className={tab===label?'nav-item active':'nav-item'} key={label} onClick={()=>setTab(label)}><Icon size={18}/>{label}{label==='My plan'&&<span className="nav-count">7</span>}</button>)}</nav><div className="coach-card"><div className="coach-orb"><Sparkles size={21}/></div><h3>A little guidance.<br/>A lot of potential.</h3><p>Your AI coach is always<br/>in your corner.</p><button onClick={()=>setModal('coach')}>Meet your coach <ArrowUpRight size={15}/></button></div><div className="sidebar-bottom"><button className="nav-item" onClick={()=>setModal('settings')}><Settings size={18}/> Settings</button><div className="profile"><div className="avatar">AM</div><div>{profile.name}<small>Be a little better.</small></div><button aria-label="View profile" onClick={()=>setModal('settings')}><ArrowUpRight size={17}/></button></div></div></aside><div className="main-wrap"><header><div className="breadcrumb">Your space <span>/</span><strong>{tab}</strong></div><div className="header-right"><span className="live-dot"/> All systems in balance <span className="header-divider"/><button className="notification" aria-label="Notifications" onClick={()=>setNotice(!notice)}><Bell size={19}/><i/></button><div className="avatar small">AM</div></div>{notice&&<div className="notification-panel"><strong>You’re right on track.</strong><p>Your plan adapted to last night’s great sleep. You’re ready for today’s session.</p><small>Today · 8:30 AM</small></div>}</header><main><section className="greeting"><div><div className="eyebrow">WEDNESDAY, MAY 21 <span>•</span> YOUR NEXT CHAPTER</div><h1>{tab==='Overview'?<>Good evening, {profile.name.split(' ')[0]}<span>.</span></>:tab==='My plan'?<>A plan that moves with you<span>.</span></>:tab==='Training'?<>Built one rep at a time<span>.</span></>:tab==='Nutrition'?<>Fuel your potential<span>.</span></>:<>Small steps. Real progress<span>.</span></>}</h1><p>{tab==='Overview'?"A little stronger. A little closer. Here’s your plan for today.":tab==='Nutrition'?"Train with purpose. Eat with intention. Your daily fuel, in balance.":'Your training, nutrition, and recovery. Working together, for you.'}</p></div><button className="date-control" onClick={()=>setModal('calendar')}><CalendarDays size={16}/> May 19 – 25 <ChevronRight size={14}/></button></section><section className="hero"><div className="hero-shade"/><div className="hero-content"><div className="hero-label"><span/> BUILT AROUND YOU</div><h2>Your body.<br/>Your pace.<br/><em>Your next level.</em></h2><p>One intelligent plan. Every part of you.<br/>Let’s make today count.</p><button className="lime-button" onClick={()=>{setTab('My plan');document.getElementById('plan').scrollIntoView({behavior:'smooth',block:'center'})}}>Explore your plan <ArrowUpRight size={17}/></button><div className="hero-foot"><span className="tiny-line"/> A LITTLE BETTER. EVERY DAY.</div></div><div className="hero-side"><div className="readiness"><div className="readiness-top"><Activity size={15}/><span>YOUR BODY IS READY</span><ArrowUpRight size={15}/></div><div className="readiness-score">92<span>%</span><div><span className="status-dot"/> Optimal readiness<small>Time to put it to work.</small></div></div><div className="mini-bars">{[30,45,36,52,48,64,54,67,60,78,68,80,71,90,84,98,88,100,91,100].map((h,i)=><i key={i} style={{height:h+'%',animationDelay:i*45+'ms'}}/>)}</div></div><div className="hero-caption"><span>THE ONLY COMPETITION<br/>IS WHO YOU WERE YESTERDAY.</span><div>01 <span>/ 03</span></div></div></div></section><section className="summary-line"><span><span className="status-dot"/> Your plan is in sync with you.</span><p>Adapted to your recovery, goals, and real life.</p><button onClick={()=>setModal('insights')}>See today’s insights <ArrowUpRight size={14}/></button></section><section className="plan-heading" id="plan"><div><h2>{tab==='Nutrition'?'Your daily balance':tab==='Progress'?'Consistency is your superpower':'Make room for progress.'}</h2><span>Small steps. Big things.</span></div><div className="week-navigation"><button aria-label="Previous day" onClick={()=>setDay((day+6)%7)}><ChevronLeft size={16}/></button><span>This week</span><button aria-label="Next day" onClick={()=>setDay((day+1)%7)}><ChevronRight size={16}/></button></div></section><div className="week-strip">{week.map(([name,date],i)=><button key={name} className={'week-day '+(i===day?'selected':'')} onClick={()=>setDay(i)}><span>{name}</span><strong>{date}</strong><span className={'day-indicator '+(i<2?'completed':i===3||i===6?'rest':'')}>{i<2?<Check size={11}/>:<i/>}</span>{i===2&&<small>TODAY</small>}</button>)}</div><div className="dashboard-grid"><section className="workout-card"><div className="card-top"><span className="eyebrow"><span className="status-dot"/> TODAY’S FOCUS</span><span className="tag">{p.type}</span></div><div className="workout-main"><div><h2>{p.title}<span>.</span></h2><p>{p.sub}</p><div className="workout-metrics"><span><Clock size={15}/>{p.time}</span><span><Flame size={15}/> {day===2?'420':day===3?'120':'360'} kcal</span></div></div><div className="workout-art"><Dumbbell size={79} strokeWidth={1}/><span className="art-circle"/></div></div><div className="workout-bottom"><div className="exercise-stack"><span>01</span><span>02</span><span>03</span><p>{day===3||day===6?'4 movements':'6 exercises'}<small>Built for your goals</small></p></div><button className="lime-button" onClick={openWorkout}>{done?'Session complete':started?'Resume session':'Start session'}{done?<Check size={16}/>:<ArrowUpRight size={16}/>}</button></div></section><section className="nutrition-card"><div className="card-top"><h3>Fuel your day</h3><button aria-label="Log food" onClick={()=>setModal('nutrition')}><Plus size={18}/></button></div><div className="nutrition-main"><div className="calorie-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="51"/><circle className="ring-progress" cx="60" cy="60" r="51" strokeDasharray={`${meal?265:220} 321`}/></svg><div><Flame size={16}/><strong>{meal?'2,190':'1,840'}</strong><span>of 2,600 kcal</span></div></div><div className="macro-list">{[['Protein',meal?149:124,160,'protein'],['Carbs',meal?260:218,310,'carbs'],['Fats',meal?66:58,85,'fats']].map(([n,val,max,c])=><div className="macro" key={n}><div><span><i className={c}/>{n}</span><strong>{val}<small> / {max} g</small></strong></div><div className={'macro-track '+c}><i style={{width:val/max*100+'%'}}/></div></div>)}</div></div><div className="nutrition-footer"><Utensils size={14}/>{meal?'Meal logged. You’re fueling your progress.':'Good fuel. Great things ahead.'}<button onClick={()=>setModal('nutrition')}>Log food <Plus size={13}/></button></div></section></div><div className="metrics-grid"><Metric icon={Footprints} label="Daily movement" value="8,432" unit="steps" detail="of 10,000 steps" kind="steps"><div className="step-bars">{[25,42,33,60,45,70,52,82,64,88,60,98,70,86,100,82,65,90,70,56,40,60,35,25].map((h,i)=><i key={i} style={{height:h+'%'}}/>)}</div></Metric><Metric icon={Moon} label="Last night’s sleep" value="7" unit="h" extra={<> 42<span>m</span></>} detail="Rested. Recharged. Ready." kind="sleep"><div className="sleep-chart">{[1,1,2,2,3,3,1,1,2,3,3,2,2,1,1,3,3,2,2,3,1,1,2,2,3,3,2,1,1,2,3,2].map((v,i)=><i key={i} style={{height:v*7+5,background:['','#4e665b','#83968a','#b9c5b6'][v]}}/>)}</div></Metric><Metric icon={Flame} label="Showing up" value="12" unit="days" detail="Your longest streak is 18 days." kind="streak"><div className="streak-days">{'MTWTFSS'.split('').map((d,i)=><div key={i}><span>{d}</span><i className={i<3?'on':''}>{i<3?<Check size={11}/>:null}</i></div>)}</div></Metric><Metric icon={Target} label="Your bigger picture" value="68" unit="%" detail="Stronger, one day at a time." kind="goal"><div className="goal-track"><span/></div><div className="goal-caption">BUILD LEAN MUSCLE <ArrowUpRight size={12}/></div></Metric></div><section className="coach-banner"><div className="coach-orb"><Sparkles size={21}/></div><div><h3>Progress isn’t always more. Sometimes, it’s smarter.</h3><p>Your recovery is up 12% this week. A good time to lean into your next session.</p></div><button onClick={()=>setModal('coach')}>Ask your coach <ArrowUpRight size={15}/></button></section><footer><span className="footer-logo">forma<span>®</span></span><p>Built around you. Built for the long run.</p><span><span className="status-dot"/> ALL IN GOOD FORM</span></footer></main></div>{modal&&<div className="modal-backdrop" onClick={()=>setModal(null)}><section className="modal" role="dialog" aria-modal="true" aria-label={modal} onClick={e=>e.stopPropagation()}><button className="close" aria-label="Close dialog" onClick={()=>setModal(null)}><X size={21}/></button>{modal==='workout'?<><div className="eyebrow">YOUR TIME. YOUR PROGRESS.</div><h2>{done?'Made yourself proud.':p.title+'.'}</h2><p>{p.sub} · {p.time}</p><div className="timer">{String(Math.floor(seconds/60)).padStart(2,'0')}<span>:</span>{String(seconds%60).padStart(2,'0')}</div><div className="exercise-list">{['Warm-up & mobility','Barbell bench press','Incline dumbbell press','Seated shoulder press','Lateral raises','Triceps rope pushdown'].map((e,i)=><label key={e}><input type="checkbox"/><span>{e}</span><small>{i===0?'5 min':'3 × 10–12'}</small></label>)}</div><div className="modal-actions"><button className="secondary-button" onClick={()=>setPlaying(!playing)}>{playing?'Pause timer':'Start timer'} <Play size={14}/></button><button className="lime-button" onClick={()=>{setDone(true);setPlaying(false);setModal(null)}}>Finish session <Check size={16}/></button></div></>:modal==='nutrition'?<><div className="eyebrow">FUEL YOUR POTENTIAL</div><h2>A little nourishment.</h2><p>Add a balanced meal to today’s nutrition.</p><form onSubmit={e=>{e.preventDefault();setMeal(true);setModal(null)}}><label className="field">Meal name<input required placeholder="e.g. Grilled chicken & quinoa bowl"/></label><div className="food-presets"><span>Quick add</span><button type="button" onClick={()=>{setMeal(true);setModal(null)}}>Chicken & quinoa bowl <small>350 kcal · 25 g protein</small><Plus size={18}/></button></div><button className="lime-button" type="submit">Log meal · 350 kcal <Plus size={16}/></button></form></>:modal==='coach'?<><div className="coach-orb"><Sparkles/></div><h2>In your corner.</h2><p>Based on your week, here’s your next best move.</p><div className="insight-box"><h3>Lean into your strength.</h3><p>Your sleep and recovery are in a great place. Keep today’s push session at a controlled pace, leaving 1–2 reps in reserve. Aim for 36 g more protein before the day ends.</p></div><div className="water-control"><span>Stay hydrated <small>{water} of 8 glasses today</small></span><button aria-label="Add glass of water" onClick={()=>setWater(Math.min(8,water+1))}><Plus size={18}/></button></div><button className="lime-button" onClick={()=>{setModal(null);setTab('My plan')}}>Back to my plan <ArrowRight size={16}/></button><small className="modal-note">Training guidance based on your plan. Not medical advice.</small></>:modal==='calendar'?<><div className="eyebrow">YOUR WEEK, IN BALANCE</div><h2>Make time for you.</h2><p>May 19–25 · A plan with purpose.</p><div className="calendar-list">{plans.map((x,i)=><button key={i} onClick={()=>{setDay(i);setModal(null)}}><span>{week[i].join(' ')}</span><strong>{x.title}</strong><small>{x.time}</small><ArrowUpRight size={14}/></button>)}</div></>:modal==='settings'?<><div className="eyebrow">YOUR PERSONAL SPACE</div><h2>Good to be you.</h2><form onSubmit={e=>{e.preventDefault();const data=new FormData(e.currentTarget);const next={name:data.get('name'),goal:data.get('goal'),days:data.get('days')};setProfile(next);localStorage.setItem('forma-profile',JSON.stringify(next));setModal(null)}}><label className="field">Name<input name="name" defaultValue={profile.name} required/></label><label className="field">Training goal<select name="goal" defaultValue={profile.goal}><option value="muscle">Build lean muscle</option><option>Improve endurance</option><option>Feel healthier</option></select></label><label className="field">Weekly training days<select name="days" defaultValue={profile.days}><option>3</option><option>4</option><option>5</option><option>6</option></select></label><button className="lime-button">Save preferences <Check size={16}/></button></form></>:<><div className="eyebrow">TODAY’S INSIGHTS</div><h2>All signs point forward.</h2><p>Your plan evolves with your body.</p>{[['92% readiness','Your recovery is optimal for strength training.'],['12% better recovery','Consistent sleep is paying off this week.'],['Protein within reach','Add 36 g more to meet your daily target.']].map(([h,t])=><div className="insight-box" key={h}><h3>{h}</h3><p>{t}</p></div>)}<button className="lime-button" onClick={openWorkout}>Make today count <ArrowUpRight size={16}/></button></>}</section></div>}</div>}
-function Metric({icon:Icon,label,value,unit,extra,detail,children,kind}){return <section className={'metric-card '+kind}><div className="metric-label"><Icon size={16}/>{label}<ArrowUpRight size={14}/></div><div className="metric-value">{value}<span>{unit}</span>{extra}</div><p>{detail}</p>{children}</section>}
-createRoot(document.getElementById('root')).render(<App/>);
+import React, { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Check,
+  Activity,
+  Flame,
+  Footprints,
+  Moon,
+  Play,
+  Pause,
+  X,
+  Bell,
+  Sparkles,
+  Clock,
+  Target,
+  Dumbbell,
+  Utensils,
+  Settings,
+  LayoutGrid,
+  CalendarDays,
+  ChartNoAxesCombined,
+  Cookie,
+  Download,
+  Trash2,
+  Pencil,
+  Droplets,
+  CheckCheck,
+  ArrowDown,
+  TrendingUp,
+  SlidersHorizontal,
+  Info,
+} from "lucide-react";
+import "@fontsource-variable/dm-sans";
+import "@fontsource-variable/manrope";
+import {
+  DEFAULT_PROFILE,
+  dateKey,
+  parseDate,
+  weekDates,
+  emptyDay,
+  totalNutrition,
+  getPlan,
+  createSession,
+  elapsedSeconds,
+  completedSets,
+  streak,
+  formatDuration,
+  weightProgress,
+  coachInsights,
+} from "./model";
+import "./style.css";
+import SnackSimulation from "./components/SnackSimulation";
+const TABS = [
+  [LayoutGrid, "Overview"],
+  [CalendarDays, "My plan"],
+  [Dumbbell, "Training"],
+  [Utensils, "Nutrition"],
+  [ChartNoAxesCombined, "Progress"],
+  [Cookie, "Snack break"],
+];
+const PRESETS = [
+  {
+    name: "Chicken & quinoa bowl",
+    calories: 450,
+    protein: 38,
+    carbs: 46,
+    fats: 13,
+  },
+  {
+    name: "Greek yogurt & berries",
+    calories: 210,
+    protein: 20,
+    carbs: 25,
+    fats: 4,
+  },
+  { name: "Oatmeal & banana", calories: 320, protein: 10, carbs: 56, fats: 7 },
+];
+const shortDate = (key) =>
+  parseDate(key).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+const niceNumber = (n) =>
+  Number(n).toLocaleString("en-US", { maximumFractionDigits: 1 });
+function loadStore() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("forma-v2"));
+    if (
+      saved &&
+      saved.version === 2 &&
+      saved.records &&
+      typeof saved.records === "object" &&
+      !Array.isArray(saved.records)
+    )
+      return {
+        version: 2,
+        profile: { ...DEFAULT_PROFILE, ...saved.profile },
+        records: saved.records,
+        simulation: saved.simulation,
+      };
+    const old = JSON.parse(localStorage.getItem("forma-profile"));
+    return {
+      version: 2,
+      profile: {
+        ...DEFAULT_PROFILE,
+        ...(old
+          ? {
+              name: old.name,
+              days: Number(old.days) || 4,
+              goal: ["muscle", "endurance", "wellbeing"].includes(old.goal)
+                ? old.goal
+                : "muscle",
+            }
+          : {}),
+      },
+      records: {},
+    };
+  } catch {
+    return { version: 2, profile: DEFAULT_PROFILE, records: {} };
+  }
+}
+function App() {
+  const [store, setStore] = useState(loadStore),
+    [selected, setSelected] = useState(() => dateKey(new Date())),
+    [tab, setTab] = useState("Overview"),
+    [modal, setModal] = useState(null),
+    [notice, setNotice] = useState(false),
+    [toast, setToast] = useState(""),
+    [saveError, setSaveError] = useState(false),
+    [clock, setClock] = useState(Date.now());
+  const today = dateKey(new Date()),
+    profile = store.profile,
+    dates = weekDates(selected),
+    record = { ...emptyDay(), ...store.records[selected] },
+    totals = totalNutrition(record.meals),
+    plan = getPlan(selected, profile, record),
+    session = record.session,
+    complete = !!session?.completedAt,
+    isFuture = selected > today;
+  const weekComplete = dates.filter(
+      (d) => store.records[d]?.session?.completedAt,
+    ).length,
+    weekTarget = Number(profile.days),
+    progress = Math.min(100, Math.round((weekComplete / weekTarget) * 100));
+  const allWeights = Object.entries(store.records)
+    .filter(([d, r]) => r.weight != null && d <= selected)
+    .sort((a, b) => a[0].localeCompare(b[0]));
+  const currentWeight = allWeights.at(-1)?.[1].weight,
+    goalProgress = weightProgress(profile, currentWeight);
+  useEffect(() => {
+    try {
+      localStorage.setItem("forma-v2", JSON.stringify(store));
+      setSaveError(false);
+    } catch {
+      setSaveError(true);
+    }
+  }, [store]);
+  useEffect(() => {
+    const id = setInterval(() => setClock(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(""), 3500);
+    return () => clearTimeout(id);
+  }, [toast]);
+  useEffect(() => {
+    if (!modal) return;
+    const previous = document.activeElement;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") setModal(null);
+      if (e.key === "Tab") {
+        const nodes = [
+          ...document.querySelectorAll(
+            ".modal button:not(:disabled),.modal input,.modal select,.modal textarea",
+          ),
+        ].filter((x) => x.offsetParent !== null);
+        if (!nodes.length) return;
+        if (e.shiftKey && document.activeElement === nodes[0]) {
+          e.preventDefault();
+          nodes.at(-1).focus();
+        } else if (!e.shiftKey && document.activeElement === nodes.at(-1)) {
+          e.preventDefault();
+          nodes[0].focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    const id = setTimeout(
+      () => document.querySelector(".modal .close")?.focus(),
+      20,
+    );
+    return () => {
+      clearTimeout(id);
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = original;
+      previous?.focus?.();
+    };
+  }, [modal?.type]);
+  const updateDay = (change, key = selected) =>
+    setStore((s) => {
+      const old = { ...emptyDay(), ...s.records[key] };
+      return {
+        ...s,
+        records: {
+          ...s.records,
+          [key]: {
+            ...old,
+            ...(typeof change === "function" ? change(old) : change),
+          },
+        },
+      };
+    });
+  const notify = (text) => setToast(text);
+  const navigate = (label) => {
+    setTab(label);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const openSession = () => {
+    if (isFuture) {
+      notify(
+        "Future sessions can be planned. Training logs are available on the day.",
+      );
+      return;
+    }
+    if (!session) updateDay({ session: createSession(plan) });
+    setModal({ type: "workout" });
+  };
+  const toggleTimer = () =>
+    updateDay((r) => {
+      const s = r.session;
+      return {
+        session: {
+          ...s,
+          elapsed: elapsedSeconds(s),
+          runningSince: s.runningSince ? null : Date.now(),
+        },
+      };
+    });
+  const setWorkoutSet = (ei, si, field, value) =>
+    updateDay((r) => ({
+      session: {
+        ...r.session,
+        sets: r.session.sets.map((sets, i) =>
+          i === ei
+            ? sets.map((v, j) => (j === si ? { ...v, [field]: value } : v))
+            : sets,
+        ),
+      },
+    }));
+  const finishWorkout = () => {
+    if (!completedSets(session)) {
+      notify("Check off at least one completed set to save this session.");
+      return;
+    }
+    updateDay({
+      session: {
+        ...session,
+        elapsed: elapsedSeconds(session),
+        runningSince: null,
+        completedAt: new Date().toISOString(),
+      },
+    });
+    setModal(null);
+    notify("Session saved. One more step forward.");
+  };
+  const addMeal = (meal) => {
+    updateDay((r) => ({
+      meals: [
+        ...r.meals,
+        {
+          ...meal,
+          id: crypto.randomUUID(),
+          loggedAt: new Date().toISOString(),
+        },
+      ],
+    }));
+    setModal(null);
+    notify("Meal added to your daily totals.");
+  };
+  const exportData = () => {
+    const rows = [
+      [
+        "Date",
+        "Workout",
+        "Completed sets",
+        "Workout seconds",
+        "Calories",
+        "Protein g",
+        "Carbs g",
+        "Fats g",
+        "Steps",
+        "Sleep hours",
+        "Weight kg",
+        "Water glasses",
+      ],
+      ...Object.entries(store.records)
+        .sort()
+        .map(([d, r]) => {
+          const t = totalNutrition(r.meals);
+          return [
+            d,
+            r.session?.completedAt ? r.session.plan.title : "",
+            completedSets(r.session),
+            elapsedSeconds(r.session),
+            t.calories,
+            t.protein,
+            t.carbs,
+            t.fats,
+            r.steps ?? "",
+            r.sleep ?? "",
+            r.weight ?? "",
+            r.water || 0,
+          ];
+        }),
+    ];
+    const csv = rows
+      .map((row) =>
+        row
+          .map(
+            (v) =>
+              '"' +
+              (typeof v === "string" && /^[=+@-]/.test(v)
+                ? "'" + v
+                : String(v)
+              ).replaceAll('"', '""') +
+              '"',
+          )
+          .join(","),
+      )
+      .join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(
+      new Blob([csv], { type: "text/csv;charset=utf-8;" }),
+    );
+    a.download = "go-progress.csv";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    notify("Your progress has been exported.");
+  };
+  const initials = profile.name
+    .split(" ")
+    .filter(Boolean)
+    .map((s) => s[0])
+    .slice(0, 2)
+    .join("");
+  const insights = coachInsights(record, profile, totals);
+  const daysOptions = Array.from({ length: 7 }, (_, i) => {
+    const d = parseDate(today);
+    d.setDate(d.getDate() - 6 + i);
+    return dateKey(d);
+  });
+  return (
+    <div className="app">
+      <aside className="sidebar">
+        <a
+          className="logo"
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("Overview");
+          }}
+        >
+          <span className="go-symbol">
+            G<span>O</span>
+          </span>
+          <span className="registered">®</span>
+        </a>
+        <div className="workspace">
+          <div className="avatar">{initials}</div>
+          <div>
+            <strong>{profile.name}</strong>
+            <small>Personal workspace</small>
+          </div>
+          <span className="pro-tag">PERSONAL</span>
+        </div>
+        <span className="nav-label">YOUR SPACE</span>
+        <nav>
+          {TABS.map(([Icon, label]) => (
+            <button
+              key={label}
+              className={"nav-item " + (tab === label ? "active" : "")}
+              onClick={() => navigate(label)}
+              aria-current={tab === label ? "page" : undefined}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+              {label === "My plan" && <small>{weekTarget}</small>}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-coach">
+          <div className="coach-icon">
+            <Sparkles size={21} />
+          </div>
+          <h3>
+            A little guidance.
+            <br />A lot of potential.
+          </h3>
+          <p>
+            Practical suggestions,
+            <br />
+            built from your own data.
+          </p>
+          <button onClick={() => setModal({ type: "coach" })}>
+            Your plan coach <ArrowUpRight size={15} />
+          </button>
+        </div>
+        <div className="sidebar-bottom">
+          <button
+            className="nav-item"
+            onClick={() => setModal({ type: "settings" })}
+          >
+            <Settings size={18} />
+            <span>Settings & goals</span>
+          </button>
+          <button
+            className="profile-button"
+            onClick={() => setModal({ type: "settings" })}
+          >
+            <div className="avatar">{initials}</div>
+            <div>
+              <strong>{profile.name}</strong>
+              <small>Be a little better.</small>
+            </div>
+            <ArrowUpRight size={16} />
+          </button>
+        </div>
+      </aside>
+      <div className="main-wrap">
+        <header>
+          <div className="breadcrumb">
+            Your space <ChevronRight size={12} />
+            <strong>{tab}</strong>
+          </div>
+          <div className="header-actions">
+            <span className={"saved-state " + (saveError ? "error" : "")}>
+              <i />
+              {saveError ? "Storage unavailable" : "Saved on this device"}
+            </span>
+            <button
+              className="icon-button"
+              aria-label="Notifications"
+              onClick={() => setNotice(!notice)}
+            >
+              <Bell size={18} />
+              {weekComplete > 0 && <i className="notification-dot" />}
+            </button>
+            <button
+              className="avatar"
+              aria-label="Profile settings"
+              onClick={() => setModal({ type: "settings" })}
+            >
+              {initials}
+            </button>
+          </div>
+          {notice && (
+            <div className="notification-panel">
+              <strong>Your space, up to date.</strong>
+              <p>
+                {weekComplete
+                  ? `${weekComplete} session${weekComplete > 1 ? "s" : ""} completed this week. Keep building your rhythm.`
+                  : "Your plan is ready. Log a session or your daily metrics to start seeing progress."}
+              </p>
+              <small>
+                Data is stored in this browser. Export a copy from Progress.
+              </small>
+            </div>
+          )}
+        </header>
+        <main>
+          {saveError && (
+            <div className="storage-warning">
+              Changes cannot be saved in this browser. Export your data before
+              leaving. <button onClick={exportData}>Export now</button>
+            </div>
+          )}
+          <section className="greeting">
+            <div>
+              <div className="eyebrow">
+                {parseDate(selected)
+                  .toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })
+                  .toUpperCase()}{" "}
+                <span>•</span> A LITTLE BETTER, EVERY DAY
+              </div>
+              <h1>
+                {tab === "Overview" ? (
+                  <>
+                    Good{" "}
+                    {new Date().getHours() < 12
+                      ? "morning"
+                      : new Date().getHours() < 18
+                        ? "afternoon"
+                        : "evening"}
+                    , {profile.name.split(" ")[0]}
+                    <em>.</em>
+                  </>
+                ) : tab === "My plan" ? (
+                  <>
+                    A plan that moves with you<em>.</em>
+                  </>
+                ) : tab === "Training" ? (
+                  <>
+                    One rep closer<em>.</em>
+                  </>
+                ) : tab === "Nutrition" ? (
+                  <>
+                    Good fuel. Better days<em>.</em>
+                  </>
+                ) : tab === "Snack break" ? (
+                  <>
+                    A little break goes a long way<em>.</em>
+                  </>
+                ) : (
+                  <>
+                    Let your progress speak<em>.</em>
+                  </>
+                )}
+              </h1>
+              <p>
+                {tab === "Overview"
+                  ? "Your training, nutrition, and recovery. All coming together."
+                  : tab === "My plan"
+                    ? "Make space for the things that make you stronger."
+                    : tab === "Training"
+                      ? "Your sessions, your sets, your own kind of stronger."
+                      : tab === "Nutrition"
+                        ? "Every meal counts. Build a balanced day, one plate at a time."
+                        : tab === "Snack break"
+                          ? "Your own little space to pause, play, and enjoy."
+                          : "A clear view of the work you’ve put in."}
+              </p>
+            </div>
+            <button
+              className="secondary-button date-button"
+              onClick={() => setModal({ type: "date" })}
+            >
+              <CalendarDays size={15} />
+              {shortDate(selected)}
+              <ChevronRight size={14} />
+            </button>
+          </section>
+          {tab === "Snack break" && (
+            <SnackSimulation
+              value={store.simulation}
+              onChange={(simulation) => setStore((s) => ({ ...s, simulation }))}
+              onLog={(snack) => {
+                setSelected(today);
+                setModal({ type: "meal", prefill: snack });
+              }}
+            />
+          )}
+          {tab === "Overview" && (
+            <section className="hero">
+              <div className="hero-copy">
+                <span className="eyebrow">
+                  <span className="green-dot" /> BUILT AROUND YOU
+                </span>
+                <h2>
+                  Your data.
+                  <br />A <em>stronger</em> you.
+                </h2>
+                <p>
+                  Small choices. Lasting change.
+                  <br />
+                  Your next chapter starts with today.
+                </p>
+                <button
+                  className="primary-button"
+                  onClick={() => navigate("My plan")}
+                >
+                  Explore your plan <ArrowUpRight size={17} />
+                </button>
+                <div className="hero-caption">
+                  <span /> REAL EFFORT. REAL PROGRESS.
+                </div>
+              </div>
+              <div className="hero-visual">
+                <div className="hero-orbit orbit-one" />
+                <div className="hero-orbit orbit-two" />
+                <div className="floating-stat">
+                  <span className="coach-icon">
+                    <Activity size={18} />
+                  </span>
+                  <div>
+                    Weekly consistency
+                    <strong>
+                      {progress}
+                      <small>%</small>
+                      <span>
+                        {weekComplete} / {weekTarget} sessions
+                      </span>
+                    </strong>
+                  </div>
+                  <ArrowUpRight size={17} />
+                </div>
+                <div className="calendar-preview">
+                  <div className="preview-heading">
+                    <div>
+                      <span>YOUR WEEK, IN BALANCE</span>
+                      <strong>Make time for you.</strong>
+                    </div>
+                    <CalendarDays size={19} />
+                  </div>
+                  <div className="preview-week">
+                    {dates.map((d) => (
+                      <button
+                        key={d}
+                        onClick={() => {
+                          setSelected(d);
+                          navigate("My plan");
+                        }}
+                        className={d === selected ? "selected" : ""}
+                      >
+                        <span>
+                          {parseDate(d).toLocaleDateString("en-US", {
+                            weekday: "narrow",
+                          })}
+                        </span>
+                        <strong>{parseDate(d).getDate()}</strong>
+                        {store.records[d]?.session?.completedAt ? (
+                          <Check size={11} />
+                        ) : (
+                          <i />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="preview-session">
+                    <div className="preview-dumbbell">
+                      <Dumbbell size={21} />
+                    </div>
+                    <div>
+                      <strong>{plan.title}</strong>
+                      <span>
+                        {plan.duration} min · {plan.type}
+                      </span>
+                    </div>
+                    <button
+                      className="icon-button"
+                      aria-label="Open training"
+                      onClick={() => navigate("Training")}
+                    >
+                      <ArrowUpRight size={18} />
+                    </button>
+                  </div>
+                </div>
+                <div className="hero-note">
+                  <span className="green-dot" /> YOUR PACE. YOUR POTENTIAL.
+                </div>
+              </div>
+            </section>
+          )}
+          {(tab === "Overview" ||
+            tab === "My plan" ||
+            tab === "Training" ||
+            tab === "Nutrition") && (
+            <>
+              <section className="section-heading">
+                <div>
+                  <h2>
+                    {tab === "Nutrition"
+                      ? "A balanced day starts here."
+                      : tab === "Training"
+                        ? "Your training, with intention."
+                        : "Make room for progress."}
+                  </h2>
+                  <span>
+                    {selected === today ? "Today’s plan" : shortDate(selected)}
+                  </span>
+                </div>
+                <div className="week-navigation">
+                  <button
+                    className="icon-button"
+                    aria-label="Previous week"
+                    onClick={() =>
+                      setSelected(
+                        weekDates(selected, -1)[
+                          (parseDate(selected).getDay() + 6) % 7
+                        ],
+                      )
+                    }
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span>
+                    {shortDate(dates[0])} – {shortDate(dates[6])}
+                  </span>
+                  <button
+                    className="icon-button"
+                    aria-label="Next week"
+                    onClick={() =>
+                      setSelected(
+                        weekDates(selected, 1)[
+                          (parseDate(selected).getDay() + 6) % 7
+                        ],
+                      )
+                    }
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                  <button
+                    className="today-button"
+                    onClick={() => setSelected(today)}
+                  >
+                    Today
+                  </button>
+                </div>
+              </section>
+              <div className="week-strip">
+                {dates.map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setSelected(d)}
+                    className={"week-day " + (d === selected ? "selected" : "")}
+                    aria-pressed={d === selected}
+                    aria-label={parseDate(d).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  >
+                    <span>
+                      {parseDate(d).toLocaleDateString("en-US", {
+                        weekday: "short",
+                      })}
+                    </span>
+                    <strong>{parseDate(d).getDate()}</strong>
+                    <i
+                      className={
+                        store.records[d]?.session?.completedAt ? "day-done" : ""
+                      }
+                    >
+                      {store.records[d]?.session?.completedAt ? (
+                        <Check size={11} />
+                      ) : (
+                        <span />
+                      )}
+                    </i>
+                    {d === today && <small>TODAY</small>}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          {(tab === "Overview" || tab === "My plan" || tab === "Training") && (
+            <div
+              className={
+                "dashboard-grid " +
+                (tab === "Training" ? "training-layout" : "")
+              }
+            >
+              <section className="workout-card">
+                <div className="card-top">
+                  <span className="eyebrow">
+                    <span className="green-dot" />
+                    {complete ? "SESSION COMPLETE" : "YOUR NEXT MOVE"}
+                  </span>
+                  <button
+                    className="tag"
+                    onClick={() => setModal({ type: "plan" })}
+                    disabled={!!session}
+                  >
+                    <Pencil size={10} />
+                    {plan.type.toUpperCase()}
+                  </button>
+                </div>
+                <div className="workout-main">
+                  <div>
+                    <h2>
+                      {plan.title}
+                      <em>.</em>
+                    </h2>
+                    <p>{plan.focus}</p>
+                    <div className="workout-metrics">
+                      <span>
+                        <Clock size={14} />
+                        {plan.duration} min
+                      </span>
+                      <span>
+                        <Dumbbell size={14} />
+                        {plan.exercises.length} exercises
+                      </span>
+                    </div>
+                  </div>
+                  <div className="workout-art">
+                    <Dumbbell size={78} strokeWidth={1} />
+                    <i />
+                  </div>
+                </div>
+                <div className="workout-bottom">
+                  <div className="exercise-stack">
+                    <span>01</span>
+                    <span>02</span>
+                    <span>03</span>
+                    <div>
+                      <strong>
+                        {complete
+                          ? `${completedSets(session)} sets completed`
+                          : "Make it your own"}
+                        <small>
+                          {complete
+                            ? `${formatDuration(elapsedSeconds(session))} training time`
+                            : "A plan. A little purpose."}
+                        </small>
+                      </strong>
+                    </div>
+                  </div>
+                  <button className="lime-button" onClick={openSession}>
+                    {complete
+                      ? "View session"
+                      : session
+                        ? "Resume session"
+                        : isFuture
+                          ? "Planned session"
+                          : "Start session"}
+                    {complete ? (
+                      <Check size={15} />
+                    ) : (
+                      <ArrowUpRight size={15} />
+                    )}
+                  </button>
+                </div>
+              </section>
+              {tab === "Training" ? (
+                <section className="panel session-outline">
+                  <div className="card-top">
+                    <h3>Your session breakdown</h3>
+                    <span className="subtle">{plan.duration} min</span>
+                  </div>
+                  {plan.exercises.map((e, i) => (
+                    <div className="outline-row" key={i}>
+                      <span>{String(i + 1).padStart(2, "0")}</span>
+                      <strong>{e.name}</strong>
+                      <small>
+                        {e.sets} × {e.reps}
+                      </small>
+                    </div>
+                  ))}
+                </section>
+              ) : (
+                <NutritionCard
+                  totals={totals}
+                  profile={profile}
+                  onAdd={() => setModal({ type: "meal" })}
+                  mealCount={record.meals.length}
+                  isFuture={isFuture}
+                />
+              )}
+            </div>
+          )}
+          {tab === "Nutrition" && (
+            <>
+              <div className="nutrition-page-grid">
+                <NutritionCard
+                  totals={totals}
+                  profile={profile}
+                  onAdd={() => setModal({ type: "meal" })}
+                  mealCount={record.meals.length}
+                  isFuture={isFuture}
+                />
+                <WaterCard
+                  record={record}
+                  profile={profile}
+                  onChange={(delta) =>
+                    updateDay((r) => ({
+                      water: Math.max(0, Math.min(30, (r.water || 0) + delta)),
+                    }))
+                  }
+                  disabled={isFuture}
+                />
+              </div>
+              <section className="panel meal-panel">
+                <div className="card-top">
+                  <div>
+                    <h3>Your food journal</h3>
+                    <p className="subtle">
+                      {record.meals.length} meals logged · {shortDate(selected)}
+                    </p>
+                  </div>
+                  <button
+                    className="primary-button"
+                    disabled={isFuture}
+                    onClick={() => setModal({ type: "meal" })}
+                  >
+                    <Plus size={15} /> Add meal
+                  </button>
+                </div>
+                {!record.meals.length ? (
+                  <Empty
+                    icon={Utensils}
+                    title="A fresh plate."
+                    text="Log your first meal to see calories and macros come together."
+                  />
+                ) : (
+                  <div className="meal-table">
+                    <div className="meal-table-head">
+                      <span>MEAL</span>
+                      <span>CALORIES</span>
+                      <span>PROTEIN</span>
+                      <span>CARBS</span>
+                      <span>FATS</span>
+                      <span />
+                    </div>
+                    {record.meals.map((m) => (
+                      <div className="meal-row" key={m.id}>
+                        <div>
+                          <span className="food-icon">
+                            <Utensils size={17} />
+                          </span>
+                          <strong>
+                            {m.name}
+                            <small>{m.category || "Meal"}</small>
+                          </strong>
+                        </div>
+                        <span>
+                          {niceNumber(m.calories)}
+                          <small> kcal</small>
+                        </span>
+                        <span>
+                          {niceNumber(m.protein)}
+                          <small> g</small>
+                        </span>
+                        <span>
+                          {niceNumber(m.carbs)}
+                          <small> g</small>
+                        </span>
+                        <span>
+                          {niceNumber(m.fats)}
+                          <small> g</small>
+                        </span>
+                        <div className="row-actions">
+                          <button
+                            className="icon-button"
+                            aria-label={`Edit ${m.name}`}
+                            onClick={() => setModal({ type: "meal", meal: m })}
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            className="icon-button danger"
+                            aria-label={`Delete ${m.name}`}
+                            onClick={() => {
+                              updateDay((r) => ({
+                                meals: r.meals.filter((x) => x.id !== m.id),
+                              }));
+                              notify("Meal removed. Totals updated.");
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </>
+          )}
+          {(tab === "Overview" || tab === "My plan") && (
+            <>
+              <div className="metrics-grid">
+                <Metric
+                  icon={Footprints}
+                  label="Daily movement"
+                  value={record.steps == null ? "—" : niceNumber(record.steps)}
+                  unit="steps"
+                  detail={`of ${niceNumber(profile.steps)} daily steps`}
+                  onClick={() => setModal({ type: "metrics" })}
+                >
+                  <MiniBars
+                    dates={dates}
+                    records={store.records}
+                    field="steps"
+                    target={profile.steps}
+                  />
+                </Metric>
+                <Metric
+                  icon={Moon}
+                  label="Last night’s sleep"
+                  value={record.sleep == null ? "—" : niceNumber(record.sleep)}
+                  unit="hours"
+                  detail={
+                    record.sleep == null
+                      ? "Add sleep to see your recovery"
+                      : `${Math.round((record.sleep / profile.sleep) * 100)}% of your ${profile.sleep}h target`
+                  }
+                  onClick={() => setModal({ type: "metrics" })}
+                >
+                  <div className="segment-track">
+                    {Array.from({ length: 16 }, (_, i) => (
+                      <i
+                        key={i}
+                        className={
+                          i < ((record.sleep || 0) / profile.sleep) * 16
+                            ? "filled"
+                            : ""
+                        }
+                      />
+                    ))}
+                  </div>
+                </Metric>
+                <Metric
+                  icon={Flame}
+                  label="Showing up"
+                  value={streak(store.records, today)}
+                  unit="days"
+                  detail="Consecutive days with a saved session"
+                  onClick={() => navigate("Progress")}
+                >
+                  <div className="streak-days">
+                    {dates.map((d) => (
+                      <div key={d}>
+                        <span>
+                          {parseDate(d).toLocaleDateString("en-US", {
+                            weekday: "narrow",
+                          })}
+                        </span>
+                        <i
+                          className={
+                            store.records[d]?.session?.completedAt ? "on" : ""
+                          }
+                        >
+                          {store.records[d]?.session?.completedAt ? (
+                            <Check size={10} />
+                          ) : null}
+                        </i>
+                      </div>
+                    ))}
+                  </div>
+                </Metric>
+                <Metric
+                  icon={Target}
+                  label="Weekly goal"
+                  value={weekComplete}
+                  unit={`/ ${weekTarget}`}
+                  detail={`${progress}% of this week’s session target`}
+                  onClick={() => navigate("Progress")}
+                >
+                  <div className="progress-track">
+                    <i style={{ width: progress + "%" }} />
+                  </div>
+                  <span className="mini-caption">
+                    ONE SESSION AT A TIME <ArrowUpRight size={11} />
+                  </span>
+                </Metric>
+              </div>
+              <div className="coach-banner">
+                <div className="coach-icon">
+                  <Sparkles size={21} />
+                </div>
+                <div>
+                  <h3>{insights[0].title}.</h3>
+                  <p>{insights[0].text}</p>
+                </div>
+                <button onClick={() => setModal({ type: "coach" })}>
+                  See your insights <ArrowUpRight size={15} />
+                </button>
+              </div>
+            </>
+          )}
+          {tab === "My plan" && (
+            <section className="panel weekly-plan">
+              <div className="card-top">
+                <div>
+                  <h3>Every day has a purpose.</h3>
+                  <p className="subtle">
+                    Your schedule follows your goal and weekly training
+                    frequency.
+                  </p>
+                </div>
+                <button
+                  className="text-button"
+                  onClick={() => setModal({ type: "settings" })}
+                >
+                  Adjust goals <SlidersHorizontal size={14} />
+                </button>
+              </div>
+              {dates.map((d) => {
+                const r = store.records[d],
+                  p = getPlan(d, profile, r);
+                return (
+                  <button
+                    className={
+                      "weekly-plan-row " + (d === selected ? "selected" : "")
+                    }
+                    key={d}
+                    onClick={() => {
+                      setSelected(d);
+                      navigate("Training");
+                    }}
+                  >
+                    <span className="plan-date">
+                      {parseDate(d).toLocaleDateString("en-US", {
+                        weekday: "short",
+                      })}
+                      <strong>{parseDate(d).getDate()}</strong>
+                    </span>
+                    <span className={"plan-type-icon " + p.type.toLowerCase()}>
+                      {p.type === "Recovery" ? (
+                        <Moon size={20} />
+                      ) : p.type === "Endurance" ? (
+                        <Activity size={20} />
+                      ) : (
+                        <Dumbbell size={20} />
+                      )}
+                    </span>
+                    <div>
+                      <strong>{p.title}</strong>
+                      <small>{p.focus}</small>
+                    </div>
+                    <span className="plan-duration">{p.duration} min</span>
+                    <span
+                      className={
+                        "plan-status " + (r?.session?.completedAt ? "done" : "")
+                      }
+                    >
+                      {r?.session?.completedAt
+                        ? "Completed"
+                        : d === today
+                          ? "Today"
+                          : p.type}
+                    </span>
+                    <ArrowUpRight size={16} />
+                  </button>
+                );
+              })}
+            </section>
+          )}
+          {tab === "Training" && (
+            <section className="panel">
+              <div className="card-top">
+                <div>
+                  <h3>Your training history</h3>
+                  <p className="subtle">
+                    Finished sessions. Effort you can come back to.
+                  </p>
+                </div>
+                <button className="text-button" onClick={exportData}>
+                  Export <Download size={14} />
+                </button>
+              </div>
+              <SessionHistory
+                records={store.records}
+                onView={(d) => {
+                  setSelected(d);
+                  setModal({ type: "workout" });
+                }}
+              />
+            </section>
+          )}
+          {tab === "Progress" && (
+            <>
+              <section className="progress-top">
+                <div>
+                  <span className="eyebrow">YOUR EFFORT, MADE VISIBLE</span>
+                  <h2>Consistency compounds.</h2>
+                  <p>Your own data. A clearer picture of what’s working.</p>
+                </div>
+                <button className="secondary-button" onClick={exportData}>
+                  <Download size={15} />
+                  Export data
+                </button>
+              </section>
+              <div className="progress-stats">
+                <Metric
+                  icon={Dumbbell}
+                  label="Sessions completed"
+                  value={
+                    Object.values(store.records).filter(
+                      (r) => r.session?.completedAt,
+                    ).length
+                  }
+                  unit="sessions"
+                  detail="All-time training sessions"
+                />
+                <Metric
+                  icon={Flame}
+                  label="Current streak"
+                  value={streak(store.records, today)}
+                  unit="days"
+                  detail="A little momentum, every day"
+                />
+                <Metric
+                  icon={Target}
+                  label="Latest weight"
+                  value={
+                    currentWeight == null ? "—" : niceNumber(currentWeight)
+                  }
+                  unit="kg"
+                  detail={
+                    currentWeight == null
+                      ? "Log a weigh-in to get started"
+                      : `Goal: ${profile.targetWeight} kg · ${goalProgress}% of the way`
+                  }
+                  onClick={() => setModal({ type: "metrics" })}
+                />
+              </div>
+              <div className="progress-charts">
+                <ProgressChart
+                  title="Daily movement"
+                  description="Last 7 days · steps"
+                  dates={daysOptions}
+                  records={store.records}
+                  field="steps"
+                  target={profile.steps}
+                  unit="steps"
+                />
+                <ProgressChart
+                  title="Sleep, in perspective"
+                  description="Last 7 days · hours"
+                  dates={daysOptions}
+                  records={store.records}
+                  field="sleep"
+                  target={profile.sleep}
+                  unit="h"
+                />
+              </div>
+              <section className="panel weight-panel">
+                <div className="card-top">
+                  <div>
+                    <h3>Your weight journey</h3>
+                    <p className="subtle">
+                      From {profile.startWeight} kg toward{" "}
+                      {profile.targetWeight} kg. At your own pace.
+                    </p>
+                  </div>
+                  <button
+                    className="secondary-button"
+                    onClick={() => setModal({ type: "metrics" })}
+                  >
+                    <Plus size={14} />
+                    Log metrics
+                  </button>
+                </div>
+                <div className="weight-progress">
+                  <strong>
+                    {currentWeight ?? "—"}
+                    <small> kg</small>
+                  </strong>
+                  <div>
+                    <div className="progress-track">
+                      <i style={{ width: goalProgress + "%" }} />
+                    </div>
+                    <span>{goalProgress}% toward your target</span>
+                  </div>
+                  <Target size={24} />
+                </div>
+                {allWeights.length > 0 && (
+                  <div className="weight-log">
+                    {allWeights.slice(-7).map(([d, r]) => (
+                      <span key={d}>
+                        {shortDate(d)}
+                        <strong>{r.weight} kg</strong>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </section>
+              <section className="panel">
+                <div className="card-top">
+                  <h3>Work you can be proud of.</h3>
+                  <span className="subtle">Completed sessions</span>
+                </div>
+                <SessionHistory
+                  records={store.records}
+                  onView={(d) => {
+                    setSelected(d);
+                    setModal({ type: "workout" });
+                  }}
+                />
+              </section>
+            </>
+          )}
+          <footer>
+            <span className="footer-logo">
+              GO<sup>®</sup>
+            </span>
+            <p>Built around you. Built for the long run.</p>
+            <span>
+              <span className="green-dot" /> ALL IN GOOD FORM
+            </span>
+          </footer>
+        </main>
+      </div>
+      {toast && (
+        <div className="toast" role="status">
+          <Check size={16} />
+          {toast}
+        </div>
+      )}
+      {modal && (
+        <div
+          className="modal-backdrop"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModal(null);
+          }}
+        >
+          <section
+            className={
+              "modal " + (modal.type === "workout" ? "workout-modal" : "")
+            }
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
+            <button
+              className="close icon-button"
+              aria-label="Close dialog"
+              onClick={() => setModal(null)}
+            >
+              <X size={21} />
+            </button>
+            {modal.type === "meal" ? (
+              <MealForm
+                meal={modal.meal || modal.prefill}
+                editing={!!modal.meal}
+                onSubmit={(m) => {
+                  if (modal.meal) {
+                    updateDay((r) => ({
+                      meals: r.meals.map((v) =>
+                        v.id === modal.meal.id ? { ...v, ...m } : v,
+                      ),
+                    }));
+                    setModal(null);
+                    notify("Meal updated. Your totals are in sync.");
+                  } else addMeal(m);
+                }}
+                onPreset={addMeal}
+              />
+            ) : modal.type === "metrics" ? (
+              <MetricsForm
+                record={record}
+                selected={selected}
+                disabled={isFuture}
+                onSubmit={(v) => {
+                  updateDay(v);
+                  setModal(null);
+                  notify("Daily metrics saved.");
+                }}
+              />
+            ) : modal.type === "settings" ? (
+              <SettingsForm
+                profile={profile}
+                onSubmit={(v) => {
+                  setStore((s) => ({ ...s, profile: v }));
+                  setModal(null);
+                  notify("Preferences saved. Your schedule has been updated.");
+                }}
+              />
+            ) : modal.type === "plan" ? (
+              <PlanForm
+                plan={plan}
+                disabled={!!session}
+                onSubmit={(p) => {
+                  updateDay({ customPlan: p });
+                  setModal(null);
+                  notify(
+                    "Your plan is updated for " + shortDate(selected) + ".",
+                  );
+                }}
+              />
+            ) : modal.type === "workout" && session ? (
+              <>
+                <span className="eyebrow">
+                  {complete ? "SESSION SAVED" : "YOUR TIME. YOUR PROGRESS."}
+                </span>
+                <h2 id="modal-title">
+                  {session.plan.title}
+                  <em>.</em>
+                </h2>
+                <p>
+                  {shortDate(selected)} · {session.plan.focus}
+                </p>
+                <div className="session-timer">
+                  <div>
+                    <strong>
+                      {formatDuration(elapsedSeconds(session, clock))}
+                    </strong>
+                    <span>
+                      {complete
+                        ? "TOTAL TRAINING TIME"
+                        : session.runningSince
+                          ? "SESSION IN PROGRESS"
+                          : "READY WHEN YOU ARE"}
+                    </span>
+                  </div>
+                  {!complete && (
+                    <button className="secondary-button" onClick={toggleTimer}>
+                      {session.runningSince ? (
+                        <Pause size={15} />
+                      ) : (
+                        <Play size={15} />
+                      )}{" "}
+                      {session.runningSince ? "Pause" : "Start timer"}
+                    </button>
+                  )}
+                </div>
+                <div className="session-progress">
+                  <span>
+                    {completedSets(session)} of {session.sets.flat().length}{" "}
+                    sets complete
+                  </span>
+                  <div className="progress-track">
+                    <i
+                      style={{
+                        width:
+                          (completedSets(session) /
+                            session.sets.flat().length) *
+                            100 +
+                          "%",
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="exercise-list">
+                  {session.plan.exercises.map((e, ei) => (
+                    <section key={ei}>
+                      <h3>
+                        <span>{String(ei + 1).padStart(2, "0")}</span>
+                        {e.name}
+                      </h3>
+                      <div className="set-header">
+                        <span>SET</span>
+                        <span>WEIGHT · KG</span>
+                        <span>REPS</span>
+                        <span>DONE</span>
+                      </div>
+                      {session.sets[ei].map((s, si) => (
+                        <div
+                          className={"set-row " + (s.done ? "checked" : "")}
+                          key={si}
+                        >
+                          <span>{si + 1}</span>
+                          <input
+                            aria-label={`${e.name} set ${si + 1} weight`}
+                            type="number"
+                            min="0"
+                            max="1000"
+                            step="0.5"
+                            value={s.weight}
+                            disabled={complete}
+                            onChange={(ev) => {
+                              const v = ev.target.valueAsNumber;
+                              if (Number.isFinite(v) && v >= 0 && v <= 1000)
+                                setWorkoutSet(ei, si, "weight", v);
+                            }}
+                          />
+                          <input
+                            aria-label={`${e.name} set ${si + 1} reps`}
+                            type="number"
+                            min="1"
+                            max="500"
+                            value={s.reps}
+                            disabled={complete}
+                            onChange={(ev) => {
+                              const v = ev.target.valueAsNumber;
+                              if (Number.isInteger(v) && v > 0 && v <= 500)
+                                setWorkoutSet(ei, si, "reps", v);
+                            }}
+                          />
+                          <button
+                            className={"set-check " + (s.done ? "done" : "")}
+                            aria-label={`${e.name} set ${si + 1} complete`}
+                            aria-pressed={s.done}
+                            disabled={complete}
+                            onClick={() =>
+                              setWorkoutSet(ei, si, "done", !s.done)
+                            }
+                          >
+                            <Check size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </section>
+                  ))}
+                </div>
+                <div className="modal-actions">
+                  {complete ? (
+                    <>
+                      <button
+                        className="secondary-button"
+                        onClick={() => {
+                          updateDay({
+                            session: { ...session, completedAt: null },
+                          });
+                          notify(
+                            "Session reopened. Update your sets, then finish to save.",
+                          );
+                        }}
+                      >
+                        Edit session <Pencil size={14} />
+                      </button>
+                      <button
+                        className="primary-button"
+                        onClick={() => setModal(null)}
+                      >
+                        All in good form <CheckCheck size={16} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className="secondary-button"
+                        onClick={() => setModal(null)}
+                      >
+                        Save & close
+                      </button>
+                      <button
+                        className="primary-button"
+                        onClick={finishWorkout}
+                      >
+                        Finish session <Check size={16} />
+                      </button>
+                    </>
+                  )}
+                </div>
+                <p className="form-hint">
+                  Your sets and timer are saved automatically on this device.
+                </p>
+              </>
+            ) : modal.type === "coach" || modal.type === "insights" ? (
+              <>
+                <span className="coach-icon">
+                  <Sparkles size={23} />
+                </span>
+                <h2 id="modal-title">In your corner.</h2>
+                <p>
+                  Suggestions from your logged data for {shortDate(selected)}.
+                </p>
+                <span className="rule-label">
+                  <Info size={13} />
+                  Rule-based plan coach · not an AI service
+                </span>
+                {insights.map((i) => (
+                  <div className="insight-box" key={i.title}>
+                    <h3>{i.title}</h3>
+                    <p>{i.text}</p>
+                  </div>
+                ))}
+                <WaterCard
+                  record={record}
+                  profile={profile}
+                  onChange={(delta) =>
+                    updateDay((r) => ({
+                      water: Math.max(0, Math.min(30, (r.water || 0) + delta)),
+                    }))
+                  }
+                  disabled={isFuture}
+                />
+                <small className="form-hint">
+                  General fitness guidance. Adjust activity to your ability and
+                  follow your clinician’s advice where relevant.
+                </small>
+              </>
+            ) : modal.type === "date" ? (
+              <>
+                <span className="eyebrow">YOUR TIME, YOUR PLAN</span>
+                <h2 id="modal-title">Pick your day.</h2>
+                <p>Review your history or plan a little further ahead.</p>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setSelected(new FormData(e.currentTarget).get("date"));
+                    setModal(null);
+                  }}
+                >
+                  <label className="field">
+                    Date
+                    <input
+                      type="date"
+                      name="date"
+                      required
+                      defaultValue={selected}
+                      min="2000-01-01"
+                      max="2100-12-31"
+                    />
+                  </label>
+                  <button className="primary-button">
+                    View day <ArrowRight size={16} />
+                  </button>
+                </form>
+              </>
+            ) : null}
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
+function Metric({ icon: Icon, label, value, unit, detail, children, onClick }) {
+  return (
+    <section className={"metric-card " + (onClick ? "clickable" : "")}>
+      <div className="metric-label">
+        <Icon size={16} />
+        <span>{label}</span>
+        {onClick && (
+          <button
+            className="icon-button"
+            aria-label={`Edit or view ${label}`}
+            onClick={onClick}
+          >
+            <ArrowUpRight size={15} />
+          </button>
+        )}
+      </div>
+      <div className="metric-value">
+        {value}
+        <small>{unit}</small>
+      </div>
+      <p>{detail}</p>
+      {children}
+    </section>
+  );
+}
+function MiniBars({ dates, records, field, target }) {
+  return (
+    <div className="mini-bars" aria-label="This week’s logged values">
+      {dates.map((d) => (
+        <div
+          key={d}
+          title={`${shortDate(d)}: ${records[d]?.[field] ?? "Not logged"}`}
+        >
+          <i
+            style={{
+              height:
+                Math.max(
+                  4,
+                  Math.min(100, ((records[d]?.[field] || 0) / target) * 100),
+                ) + "%",
+              opacity: records[d]?.[field] != null ? 1 : 0.2,
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+function NutritionCard({ totals, profile, onAdd, mealCount, isFuture }) {
+  const fill = Math.min(1, totals.calories / profile.calories);
+  return (
+    <section className="nutrition-card panel">
+      <div className="card-top">
+        <h3>Fuel your day</h3>
+        <button
+          className="icon-button"
+          aria-label="Log food"
+          disabled={isFuture}
+          onClick={onAdd}
+        >
+          <Plus size={18} />
+        </button>
+      </div>
+      <div className="nutrition-main">
+        <div className="calorie-ring">
+          <svg
+            viewBox="0 0 120 120"
+            aria-label={`${Math.round(fill * 100)} percent of calorie target`}
+          >
+            <circle cx="60" cy="60" r="51" />
+            <circle
+              className="ring-progress"
+              cx="60"
+              cy="60"
+              r="51"
+              strokeDasharray={`${fill * 321} 321`}
+            />
+          </svg>
+          <div>
+            <Flame size={16} />
+            <strong>{niceNumber(totals.calories)}</strong>
+            <span>of {niceNumber(profile.calories)} kcal</span>
+          </div>
+        </div>
+        <div className="macro-list">
+          {[
+            ["Protein", "protein"],
+            ["Carbs", "carbs"],
+            ["Fats", "fats"],
+          ].map(([label, k]) => (
+            <div className={"macro " + k} key={k}>
+              <div>
+                <span>
+                  <i />
+                  {label}
+                </span>
+                <strong>
+                  {niceNumber(totals[k])}
+                  <small> / {profile[k]} g</small>
+                </strong>
+              </div>
+              <div className="macro-track">
+                <i
+                  style={{
+                    width: Math.min(100, (totals[k] / profile[k]) * 100) + "%",
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="nutrition-footer">
+        <Utensils size={13} />
+        {mealCount
+          ? `${mealCount} meal${mealCount === 1 ? "" : "s"} logged`
+          : "A fresh day. Make it balanced."}
+        <button disabled={isFuture} onClick={onAdd}>
+          Log food <Plus size={13} />
+        </button>
+      </div>
+    </section>
+  );
+}
+function WaterCard({ record, profile, onChange, disabled }) {
+  return (
+    <section className="water-card panel">
+      <div className="card-top">
+        <h3>
+          <Droplets size={17} />A little hydration
+        </h3>
+        <span className="subtle">250 ml / glass</span>
+      </div>
+      <div className="water-value">
+        {record.water || 0}
+        <span> / {profile.water} glasses</span>
+      </div>
+      <div className="water-glasses">
+        {Array.from({ length: profile.water }, (_, i) => (
+          <Droplets
+            key={i}
+            size={23}
+            fill={i < (record.water || 0) ? "currentColor" : "none"}
+            className={i < (record.water || 0) ? "filled" : ""}
+          />
+        ))}
+      </div>
+      <div className="water-bottom">
+        <span>{((record.water || 0) * 0.25).toFixed(2)} L logged</span>
+        <div>
+          <button
+            className="icon-button"
+            aria-label="Remove glass of water"
+            disabled={disabled || !record.water}
+            onClick={() => onChange(-1)}
+          >
+            −
+          </button>
+          <button
+            className="secondary-button"
+            aria-label="Add glass of water"
+            disabled={disabled || record.water >= 30}
+            onClick={() => onChange(1)}
+          >
+            <Plus size={14} />
+            Add water
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+function Empty({ icon: Icon, title, text }) {
+  return (
+    <div className="empty-state">
+      <span>
+        <Icon size={23} />
+      </span>
+      <h4>{title}</h4>
+      <p>{text}</p>
+    </div>
+  );
+}
+function SessionHistory({ records, onView }) {
+  const rows = Object.entries(records)
+    .filter(([, r]) => r.session?.completedAt)
+    .sort((a, b) => b[0].localeCompare(a[0]));
+  return !rows.length ? (
+    <Empty
+      icon={Dumbbell}
+      title="Your first chapter is waiting."
+      text="Complete a session and your training history will appear here."
+    />
+  ) : (
+    <div className="session-history">
+      {rows.map(([d, r]) => (
+        <button key={d} onClick={() => onView(d)}>
+          <span className="history-icon">
+            <Check size={18} />
+          </span>
+          <div>
+            <strong>{r.session.plan.title}</strong>
+            <small>
+              {shortDate(d)} · {completedSets(r.session)} sets completed
+            </small>
+          </div>
+          <span>{formatDuration(elapsedSeconds(r.session))}</span>
+          <ArrowUpRight size={17} />
+        </button>
+      ))}
+    </div>
+  );
+}
+function ProgressChart({
+  title,
+  description,
+  dates,
+  records,
+  field,
+  target,
+  unit,
+}) {
+  const values = dates.map((d) => records[d]?.[field]),
+    max = Math.max(target, ...values.filter((v) => v != null)),
+    logged = values.filter((v) => v != null),
+    average = logged.length
+      ? logged.reduce((a, b) => a + b, 0) / logged.length
+      : null;
+  return (
+    <section className="panel chart-card">
+      <div className="card-top">
+        <div>
+          <h3>{title}</h3>
+          <p className="subtle">{description}</p>
+        </div>
+        <span className="chart-average">
+          {average == null ? "—" : niceNumber(average)}
+          <small>{unit} average</small>
+        </span>
+      </div>
+      <div className="chart-area">
+        <div className="chart-grid">
+          <span>{niceNumber(max)}</span>
+          <span>{niceNumber(max / 2)}</span>
+          <span>0</span>
+        </div>
+        <div className="chart-bars">
+          {dates.map((d, i) => (
+            <div key={d} className="chart-column">
+              <div className="chart-bar-space">
+                <div
+                  className={
+                    "chart-bar " + (values[i] == null ? "missing" : "")
+                  }
+                  style={{
+                    height:
+                      values[i] == null
+                        ? "3px"
+                        : Math.max(2, (values[i] / max) * 100) + "%",
+                  }}
+                  tabIndex={0}
+                  aria-label={`${shortDate(d)}: ${values[i] == null ? "not logged" : values[i] + " " + unit}`}
+                >
+                  <span>
+                    {values[i] == null
+                      ? "Not logged"
+                      : niceNumber(values[i]) + " " + unit}
+                  </span>
+                </div>
+              </div>
+              <span>
+                {parseDate(d).toLocaleDateString("en-US", { weekday: "short" })}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <p className="chart-note">
+        {logged.length
+          ? `${logged.length} of 7 days logged. Averages use recorded days only.`
+          : "No entries yet. Log your daily metrics to start your chart."}
+      </p>
+    </section>
+  );
+}
+function Field({
+  label,
+  name,
+  type = "number",
+  value,
+  min,
+  max,
+  step = "1",
+  required = true,
+  placeholder,
+}) {
+  return (
+    <label className="field">
+      {label}
+      <input
+        name={name}
+        type={type}
+        defaultValue={value ?? ""}
+        min={min}
+        max={max}
+        step={type === "number" ? step : undefined}
+        required={required}
+        pattern={type === "text" ? ".*\\S.*" : undefined}
+        maxLength={type === "text" ? 120 : undefined}
+        placeholder={placeholder}
+      />
+    </label>
+  );
+}
+function MealForm({ meal, onSubmit, onPreset, editing = !!meal }) {
+  return (
+    <>
+      <span className="eyebrow">FUEL YOUR POTENTIAL</span>
+      <h2 id="modal-title">
+        {editing ? "Refine your plate." : "A little nourishment."}
+      </h2>
+      <p>Enter the nutrition values for your whole serving.</p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const f = new FormData(e.currentTarget);
+          onSubmit({
+            name: f.get("name").trim(),
+            category: f.get("category"),
+            ...Object.fromEntries(
+              ["calories", "protein", "carbs", "fats"].map((k) => [
+                k,
+                Number(f.get(k)),
+              ]),
+            ),
+          });
+        }}
+      >
+        <Field
+          label="Meal name"
+          name="name"
+          type="text"
+          value={meal?.name}
+          placeholder="e.g. Chicken & quinoa bowl"
+        />
+        <label className="field">
+          Meal type
+          <select name="category" defaultValue={meal?.category || "Lunch"}>
+            {["Breakfast", "Lunch", "Dinner", "Snack"].map((x) => (
+              <option key={x}>{x}</option>
+            ))}
+          </select>
+        </label>
+        <div className="form-grid">
+          <Field
+            label="Calories · kcal"
+            name="calories"
+            min="0"
+            max="10000"
+            value={meal?.calories}
+          />
+          <Field
+            label="Protein · g"
+            name="protein"
+            min="0"
+            max="1000"
+            step="0.1"
+            value={meal?.protein}
+          />
+          <Field
+            label="Carbs · g"
+            name="carbs"
+            min="0"
+            max="1000"
+            step="0.1"
+            value={meal?.carbs}
+          />
+          <Field
+            label="Fats · g"
+            name="fats"
+            min="0"
+            max="1000"
+            step="0.1"
+            value={meal?.fats}
+          />
+        </div>
+        <button className="primary-button full-width">
+          {editing ? "Save meal" : "Log meal"} <Check size={16} />
+        </button>
+      </form>
+      {!editing && !meal && (
+        <div className="quick-add">
+          <span className="eyebrow">QUICK ADD · ESTIMATED SERVINGS</span>
+          {PRESETS.map((p) => (
+            <button
+              key={p.name}
+              onClick={() => onPreset({ ...p, category: "Meal" })}
+            >
+              <div>
+                <strong>{p.name}</strong>
+                <small>
+                  {p.calories} kcal · {p.protein} g protein
+                </small>
+              </div>
+              <Plus size={17} />
+            </button>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+function MetricsForm({ record, selected, disabled, onSubmit }) {
+  return (
+    <>
+      <span className="eyebrow">THE LITTLE THINGS ADD UP</span>
+      <h2 id="modal-title">Check in with you.</h2>
+      <p>
+        Your metrics for {shortDate(selected)}. Leave unrecorded values blank.
+      </p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const f = new FormData(e.currentTarget);
+          onSubmit(
+            Object.fromEntries(
+              ["steps", "sleep", "weight"].map((k) => [
+                k,
+                f.get(k) === "" ? null : Number(f.get(k)),
+              ]),
+            ),
+          );
+        }}
+      >
+        <Field
+          label="Steps"
+          name="steps"
+          value={record.steps}
+          min="0"
+          max="200000"
+          required={false}
+          placeholder="e.g. 8432"
+        />
+        <Field
+          label="Sleep · hours"
+          name="sleep"
+          value={record.sleep}
+          min="0"
+          max="24"
+          step="0.1"
+          required={false}
+          placeholder="e.g. 7.5"
+        />
+        <Field
+          label="Weight · kg"
+          name="weight"
+          value={record.weight}
+          min="20"
+          max="500"
+          step="0.1"
+          required={false}
+          placeholder="e.g. 74.5"
+        />
+        <p className="form-hint">
+          Manual entries. Wearable devices are not connected.
+        </p>
+        <button className="primary-button full-width" disabled={disabled}>
+          {disabled ? "Future entries aren’t available" : "Save daily metrics"}
+          <Check size={16} />
+        </button>
+      </form>
+    </>
+  );
+}
+function SettingsForm({ profile, onSubmit }) {
+  return (
+    <>
+      <span className="eyebrow">BUILT AROUND YOUR LIFE</span>
+      <h2 id="modal-title">Your goals. Your way.</h2>
+      <p>These preferences shape your plan and daily targets.</p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const f = new FormData(e.currentTarget);
+          onSubmit({
+            ...profile,
+            name: f.get("name").trim(),
+            goal: f.get("goal"),
+            ...Object.fromEntries(
+              [
+                "days",
+                "calories",
+                "protein",
+                "carbs",
+                "fats",
+                "steps",
+                "sleep",
+                "water",
+                "startWeight",
+                "targetWeight",
+              ].map((k) => [k, Number(f.get(k))]),
+            ),
+          });
+        }}
+      >
+        <Field label="Your name" name="name" type="text" value={profile.name} />
+        <div className="form-grid">
+          <label className="field">
+            Training goal
+            <select name="goal" defaultValue={profile.goal}>
+              <option value="muscle">Build lean muscle</option>
+              <option value="endurance">Improve endurance</option>
+              <option value="wellbeing">Feel healthier</option>
+            </select>
+          </label>
+          <label className="field">
+            Sessions per week
+            <select name="days" defaultValue={profile.days}>
+              {[3, 4, 5, 6].map((d) => (
+                <option key={d}>{d}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <h3 className="form-section-title">Daily targets</h3>
+        <div className="form-grid">
+          {[
+            ["Calories · kcal", "calories", 500, 10000, 1],
+            ["Protein · g", "protein", 1, 500, 1],
+            ["Carbs · g", "carbs", 1, 1000, 1],
+            ["Fats · g", "fats", 1, 500, 1],
+            ["Steps", "steps", 100, 100000, 1],
+            ["Sleep · hours", "sleep", 1, 16, 0.5],
+            ["Water · glasses", "water", 1, 20, 1],
+          ].map(([label, k, min, max, step]) => (
+            <Field
+              key={k}
+              label={label}
+              name={k}
+              value={profile[k]}
+              min={min}
+              max={max}
+              step={step}
+            />
+          ))}
+        </div>
+        <h3 className="form-section-title">Your weight journey</h3>
+        <div className="form-grid">
+          <Field
+            label="Starting weight · kg"
+            name="startWeight"
+            value={profile.startWeight}
+            min="20"
+            max="500"
+            step="0.1"
+          />
+          <Field
+            label="Target weight · kg"
+            name="targetWeight"
+            value={profile.targetWeight}
+            min="20"
+            max="500"
+            step="0.1"
+          />
+        </div>
+        <p className="form-hint">
+          Targets are personal preferences, not prescribed recommendations.
+          Existing logged sessions keep their original plan.
+        </p>
+        <button className="primary-button full-width">
+          Save preferences <Check size={16} />
+        </button>
+      </form>
+    </>
+  );
+}
+function PlanForm({ plan, onSubmit, disabled }) {
+  return (
+    <>
+      <span className="eyebrow">MAKE IT YOUR OWN</span>
+      <h2 id="modal-title">A plan with purpose.</h2>
+      <p>
+        Customize the selected day. Started sessions keep their original plan.
+      </p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const f = new FormData(e.currentTarget),
+            names = String(f.get("exercises"))
+              .split("\n")
+              .map((x) => x.trim())
+              .filter(Boolean);
+          if (!names.length) {
+            e.currentTarget.elements.exercises.setCustomValidity(
+              "Add at least one exercise.",
+            );
+            e.currentTarget.reportValidity();
+            return;
+          }
+          onSubmit({
+            title: f.get("title").trim(),
+            type: f.get("type"),
+            duration: Number(f.get("duration")),
+            focus: f.get("focus"),
+            exercises: names.slice(0, 15).map((name) => ({
+              name,
+              sets: Number(f.get("sets")),
+              reps: Number(f.get("reps")),
+            })),
+          });
+        }}
+      >
+        <Field
+          label="Session name"
+          name="title"
+          type="text"
+          value={plan.title}
+        />
+        <Field label="Focus" name="focus" type="text" value={plan.focus} />
+        <div className="form-grid">
+          <label className="field">
+            Session type
+            <select name="type" defaultValue={plan.type}>
+              {["Strength", "Endurance", "Recovery"].map((t) => (
+                <option key={t}>{t}</option>
+              ))}
+            </select>
+          </label>
+          <Field
+            label="Duration · minutes"
+            name="duration"
+            value={plan.duration}
+            min="5"
+            max="240"
+          />
+        </div>
+        <label className="field">
+          Exercises · one per line
+          <textarea
+            required
+            name="exercises"
+            rows="5"
+            defaultValue={plan.exercises.map((x) => x.name).join("\n")}
+            onChange={(e) => e.target.setCustomValidity("")}
+          />
+        </label>
+        <div className="form-grid">
+          <Field
+            label="Sets per exercise"
+            name="sets"
+            value="3"
+            min="1"
+            max="10"
+          />
+          <Field
+            label="Reps per set"
+            name="reps"
+            value="10"
+            min="1"
+            max="100"
+          />
+        </div>
+        <button className="primary-button full-width" disabled={disabled}>
+          Save day’s plan <Check size={16} />
+        </button>
+      </form>
+    </>
+  );
+}
+createRoot(document.getElementById("root")).render(<App />);
