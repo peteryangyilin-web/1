@@ -23,49 +23,53 @@ let activeBrowser;
   await p.goto(process.env.BASE_URL || "http://localhost:5173");
   await p.evaluate(() => localStorage.clear());
   await p.reload();
-  await p.getByRole("heading", { name: /Good/ }).waitFor();
+  await p.getByRole("heading", { name: "Let’s make it yours." }).waitFor();
+  assert.equal(await p.locator(".hero").count(), 0);
   assert.equal(
     await p.getByRole("button", { name: "My plan", exact: true }).count(),
     0,
   );
-  await p
-    .getByRole("button", { name: "Explore training", exact: true })
-    .click();
-  assert.equal(
-    await p.locator('nav button[aria-current="page"]').textContent(),
-    "Training",
-  );
-  await p.getByRole("button", { name: "Overview", exact: true }).click();
-  await p.locator(".preview-week button").first().click();
-  assert.equal(
-    await p.locator('nav button[aria-current="page"]').textContent(),
-    "Training",
-  );
-  await p.getByRole("button", { name: "Today", exact: true }).click();
-  await p.getByRole("button", { name: "Overview", exact: true }).click();
-
   assert.equal(
     await p
-      .locator("body")
-      .evaluate((e) => getComputedStyle(e).backgroundColor),
-    "rgba(0, 0, 0, 0)",
+      .locator(".go-symbol > span")
+      .evaluate((e) => getComputedStyle(e).color),
+    "rgb(133, 133, 133)",
   );
-  console.log("profile");
-  await p
-    .getByRole("button", { name: "Profile settings", exact: true })
-    .click();
+  await p.getByRole("radio", { name: /Lose fat/ }).check();
   await p.getByLabel("Your name", { exact: true }).fill("Jordan Lee");
+  await p.getByLabel("Age · years").fill("28");
+  await p.getByLabel("Height · cm").fill("175");
   await p.getByLabel("Sessions per week").selectOption("3");
-  await p.getByRole("button", { name: "Save preferences" }).click();
+  await p
+    .getByRole("button", { name: "Save your profile", exact: true })
+    .click();
   await p.reload();
-  await p.getByRole("heading", { name: /Jordan/ }).waitFor();
+  assert.equal(
+    await p.getByLabel("Your name", { exact: true }).inputValue(),
+    "Jordan Lee",
+  );
+  assert.equal(await p.getByLabel("Age · years").inputValue(), "28");
+  assert.equal(await p.getByLabel("Height · cm").inputValue(), "175");
+  assert.equal(
+    await p.getByRole("radio", { name: /Lose fat/ }).isChecked(),
+    true,
+  );
+  await p.getByRole("button", { name: "Go to training", exact: true }).click();
+  assert.equal(
+    await p.locator('nav [aria-current="page"]').textContent(),
+    "Training",
+  );
+  await p.getByRole("button", { name: "Progress", exact: true }).click();
   console.log("metrics");
-  await p.getByRole("button", { name: "Edit or view Daily movement" }).click();
+  await p.getByRole("button", { name: "Log metrics", exact: true }).click();
   await p.getByLabel("Steps", { exact: true }).fill("8432");
   await p.getByLabel("Sleep · hours").fill("7.5");
   await p.getByLabel("Weight · kg").fill("73.5");
   await p.getByRole("button", { name: "Save daily metrics" }).click();
-  assert.match(await p.locator(".metrics-grid").textContent(), /8,432/);
+  assert.equal(
+    await p.locator('.chart-bar[aria-label$="8432 steps"]').count(),
+    1,
+  );
   console.log("food");
   await p.getByRole("button", { name: "Nutrition", exact: true }).click();
   await p.getByRole("button", { name: "Add meal", exact: true }).click();
@@ -127,6 +131,7 @@ let activeBrowser;
     .click();
   await p.getByRole("button", { name: "Finish session", exact: true }).click();
   await p.reload();
+  await p.getByRole("button", { name: "Training", exact: true }).click();
   await p.getByRole("button", { name: "View session", exact: true }).waitFor();
   await p.getByRole("button", { name: "View session", exact: true }).click();
   assert.equal(await p.getByLabel("Squat set 1 weight").inputValue(), "40");

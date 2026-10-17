@@ -1,7 +1,7 @@
 .exercise-demo {
-  border: 1px solid #d8e8f0;
+  border: 1px solid #e5e5e5;
   border-radius: 8px;
-  background: #f8fcfe;
+  background: #fbfbfb;
   overflow: hidden;
   margin: 10px 0 17px;
 }
@@ -17,7 +17,7 @@
   width: 150px;
   border-radius: 7px;
   overflow: hidden;
-  background: #f0f6f9;
+  background: #f5f5f5;
   aspect-ratio: 300/220;
 }
 .demo-visual > img,
@@ -36,7 +36,7 @@
   gap: 4px;
   font-size: 5px;
   letter-spacing: 0.6px;
-  color: #7494a6;
+  color: #8e8e8e;
   pointer-events: none;
 }
 .demo-play {
@@ -49,12 +49,12 @@
   height: 25px;
   border-radius: 50%;
   background: #ffffffeb;
-  border: 1px solid #c9dfea;
-  color: #5a7888;
-  box-shadow: 0 2px 8px #26607f0c;
+  border: 1px solid #dbdbdb;
+  color: #737373;
+  box-shadow: 0 2px 8px #5656560c;
 }
 .demo-play:hover {
-  background: #d9ebf4;
+  background: #e8e8e8;
 }
 .demo-summary {
   min-width: 0;
@@ -62,7 +62,7 @@
 }
 .demo-eyebrow {
   font-size: 5px;
-  color: #96a8b2;
+  color: #a5a5a5;
   letter-spacing: 0.8px;
   display: block;
   margin-bottom: 8px;
@@ -70,7 +70,7 @@
 .demo-summary > strong {
   font-size: 11px;
   font-weight: 500;
-  color: #326783;
+  color: #5e5e5e;
   display: block;
   line-height: 1.6;
 }
@@ -85,7 +85,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #7e929c;
+  color: #8e8e8e;
   line-height: 1.6;
 }
 .demo-phases i {
@@ -96,8 +96,8 @@
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: #e0eef6;
-  color: #7693a3;
+  background: #ececec;
+  color: #8e8e8e;
   flex-shrink: 0;
 }
 .demo-details {
@@ -106,21 +106,21 @@
   align-items: center;
   gap: 5px;
   font-size: 8px;
-  color: #4080a3;
+  color: #757575;
   margin-top: 11px;
 }
 .demo-details:hover {
-  color: #165272;
+  color: #484848;
 }
 .demo-instructions {
-  border-top: 1px solid #dceaf2;
+  border-top: 1px solid #e8e8e8;
   padding: 15px 17px;
   background: #fff;
 }
 .demo-instructions h4 {
   font-size: 10px;
   font-weight: 500;
-  color: #537384;
+  color: #6d6d6d;
   margin: 0 0 12px;
 }
 .demo-instructions ol {
@@ -133,17 +133,17 @@
 .demo-instructions li {
   font-size: 10px;
   line-height: 1.8;
-  color: #728793;
+  color: #838383;
   padding-left: 4px;
 }
 .demo-instructions li::marker {
-  color: #7bacc7;
+  color: #a4a4a4;
   font-size: 8px;
 }
 .demo-instructions p {
   font-size: 8px;
   line-height: 1.8;
-  color: #98a8b1;
+  color: #a5a5a5;
   margin: 14px 0 0;
 }
 .exercise-demo.compact {
@@ -204,7 +204,7 @@
 }
 .compact .demo-instructions {
   margin-top: 12px;
-  border: 1px solid #d7e7f0;
+  border: 1px solid #e4e4e4;
   border-radius: 6px;
   padding: 13px;
 }
@@ -212,7 +212,7 @@
   font-size: 9px;
 }
 .cat-outline-row {
-  border-bottom: 1px solid #e4eef3;
+  border-bottom: 1px solid #ececec;
   padding: 14px 0;
 }
 .cat-outline-row:last-child {
@@ -226,17 +226,17 @@
 }
 .cat-outline-header > span {
   font-size: 8px;
-  color: #96a8b2;
+  color: #a5a5a5;
 }
 .cat-outline-header > strong {
   font-size: 10px;
   font-weight: 500;
-  color: #4c6877;
+  color: #636363;
 }
 .cat-outline-header > small {
   margin-left: auto;
   font-size: 8px;
-  color: #90a4ae;
+  color: #a0a0a0;
   white-space: nowrap;
 }
 .cat-outline-header .demo-sets {
@@ -251,9 +251,9 @@
   gap: 8px;
   font-size: 9px;
   line-height: 1.8;
-  color: #8b9fa9;
-  background: #f1f7fa;
-  border: 1px dashed #cbe0eb;
+  color: #9b9b9b;
+  background: #f6f6f6;
+  border: 1px dashed #dcdcdc;
   border-radius: 6px;
   padding: 12px;
   margin: 10px 0;
@@ -264,7 +264,7 @@
 .session-outline .demo-intro {
   font-size: 8px;
   line-height: 1.8;
-  color: #95a8b2;
+  color: #a5a5a5;
   margin: 8px 0 3px;
 }
 .exercise-list .exercise-demo {

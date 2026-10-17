@@ -9,7 +9,6 @@ import {
   Check,
   Activity,
   Flame,
-  Footprints,
   Moon,
   Play,
   Pause,
@@ -55,6 +54,7 @@ import {
 import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
+import OverviewProfile from "./components/OverviewProfile";
 const TABS = [
   [LayoutGrid, "Overview"],
   [Dumbbell, "Training"],
@@ -142,10 +142,8 @@ function App() {
     complete = !!session?.completedAt,
     isFuture = selected > today;
   const weekComplete = dates.filter(
-      (d) => store.records[d]?.session?.completedAt,
-    ).length,
-    weekTarget = Number(profile.days),
-    progress = Math.min(100, Math.round((weekComplete / weekTarget) * 100));
+    (d) => store.records[d]?.session?.completedAt,
+  ).length;
   const allWeights = Object.entries(store.records)
     .filter(([d, r]) => r.weight != null && d <= selected)
     .sort((a, b) => a[0].localeCompare(b[0]));
@@ -483,26 +481,21 @@ function App() {
           <section className="greeting">
             <div>
               <div className="eyebrow">
-                {parseDate(selected)
-                  .toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                  })
-                  .toUpperCase()}{" "}
+                {tab === "Overview"
+                  ? "YOUR PERSONAL SPACE"
+                  : parseDate(selected)
+                      .toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                      })
+                      .toUpperCase()}{" "}
                 <span>•</span> A LITTLE BETTER, EVERY DAY
               </div>
               <h1>
                 {tab === "Overview" ? (
                   <>
-                    Good{" "}
-                    {new Date().getHours() < 12
-                      ? "morning"
-                      : new Date().getHours() < 18
-                        ? "afternoon"
-                        : "evening"}
-                    , {profile.name.split(" ")[0]}
-                    <em>.</em>
+                    Let’s make it yours<em>.</em>
                   </>
                 ) : tab === "Training" ? (
                   <>
@@ -524,7 +517,7 @@ function App() {
               </h1>
               <p>
                 {tab === "Overview"
-                  ? "Your training, nutrition, and recovery. All coming together."
+                  ? "Choose your goal. Tell us a little about yourself. Build your own starting point."
                   : tab === "Training"
                     ? "Your sessions, your sets, your own kind of stronger."
                     : tab === "Nutrition"
@@ -534,14 +527,16 @@ function App() {
                         : "A clear view of the work you’ve put in."}
               </p>
             </div>
-            <button
-              className="secondary-button date-button"
-              onClick={() => setModal({ type: "date" })}
-            >
-              <CalendarDays size={15} />
-              {shortDate(selected)}
-              <ChevronRight size={14} />
-            </button>
+            {tab !== "Overview" && (
+              <button
+                className="secondary-button date-button"
+                onClick={() => setModal({ type: "date" })}
+              >
+                <CalendarDays size={15} />
+                {shortDate(selected)}
+                <ChevronRight size={14} />
+              </button>
+            )}
           </section>
           {tab === "Snack break" && (
             <SnackSimulation
@@ -554,109 +549,18 @@ function App() {
             />
           )}
           {tab === "Overview" && (
-            <section className="hero">
-              <div className="hero-copy">
-                <span className="eyebrow">
-                  <span className="green-dot" /> BUILT AROUND YOU
-                </span>
-                <h2>
-                  Your data.
-                  <br />A <em>stronger</em> you.
-                </h2>
-                <p>
-                  Small choices. Lasting change.
-                  <br />
-                  Your next chapter starts with today.
-                </p>
-                <button
-                  className="primary-button"
-                  onClick={() => navigate("Training")}
-                >
-                  Explore training <ArrowUpRight size={17} />
-                </button>
-                <div className="hero-caption">
-                  <span /> REAL EFFORT. REAL PROGRESS.
-                </div>
-              </div>
-              <div className="hero-visual">
-                <div className="hero-orbit orbit-one" />
-                <div className="hero-orbit orbit-two" />
-                <div className="floating-stat">
-                  <span className="coach-icon">
-                    <Activity size={18} />
-                  </span>
-                  <div>
-                    Weekly consistency
-                    <strong>
-                      {progress}
-                      <small>%</small>
-                      <span>
-                        {weekComplete} / {weekTarget} sessions
-                      </span>
-                    </strong>
-                  </div>
-                  <ArrowUpRight size={17} />
-                </div>
-                <div className="calendar-preview">
-                  <div className="preview-heading">
-                    <div>
-                      <span>YOUR WEEK, IN BALANCE</span>
-                      <strong>Make time for you.</strong>
-                    </div>
-                    <CalendarDays size={19} />
-                  </div>
-                  <div className="preview-week">
-                    {dates.map((d) => (
-                      <button
-                        key={d}
-                        onClick={() => {
-                          setSelected(d);
-                          navigate("Training");
-                        }}
-                        className={d === selected ? "selected" : ""}
-                      >
-                        <span>
-                          {parseDate(d).toLocaleDateString("en-US", {
-                            weekday: "narrow",
-                          })}
-                        </span>
-                        <strong>{parseDate(d).getDate()}</strong>
-                        {store.records[d]?.session?.completedAt ? (
-                          <Check size={11} />
-                        ) : (
-                          <i />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="preview-session">
-                    <div className="preview-dumbbell">
-                      <Dumbbell size={21} />
-                    </div>
-                    <div>
-                      <strong>{plan.title}</strong>
-                      <span>
-                        {plan.duration} min · {plan.type}
-                      </span>
-                    </div>
-                    <button
-                      className="icon-button"
-                      aria-label="Open training"
-                      onClick={() => navigate("Training")}
-                    >
-                      <ArrowUpRight size={18} />
-                    </button>
-                  </div>
-                </div>
-                <div className="hero-note">
-                  <span className="green-dot" /> YOUR PACE. YOUR POTENTIAL.
-                </div>
-              </div>
-            </section>
+            <OverviewProfile
+              profile={profile}
+              onSave={(next) => {
+                setStore((s) => ({ ...s, profile: next }));
+                notify(
+                  "Your profile is saved. Your training and targets are updated.",
+                );
+              }}
+              onTraining={() => navigate("Training")}
+            />
           )}
-          {(tab === "Overview" ||
-            tab === "Training" ||
-            tab === "Nutrition") && (
+          {(tab === "Training" || tab === "Nutrition") && (
             <>
               <section className="section-heading">
                 <div>
@@ -745,7 +649,7 @@ function App() {
               </div>
             </>
           )}
-          {(tab === "Overview" || tab === "Training") && (
+          {tab === "Training" && (
             <div
               className={
                 "dashboard-grid " +
@@ -966,108 +870,6 @@ function App() {
                   </div>
                 )}
               </section>
-            </>
-          )}
-          {tab === "Overview" && (
-            <>
-              <div className="metrics-grid">
-                <Metric
-                  icon={Footprints}
-                  label="Daily movement"
-                  value={record.steps == null ? "—" : niceNumber(record.steps)}
-                  unit="steps"
-                  detail={`of ${niceNumber(profile.steps)} daily steps`}
-                  onClick={() => setModal({ type: "metrics" })}
-                >
-                  <MiniBars
-                    dates={dates}
-                    records={store.records}
-                    field="steps"
-                    target={profile.steps}
-                  />
-                </Metric>
-                <Metric
-                  icon={Moon}
-                  label="Last night’s sleep"
-                  value={record.sleep == null ? "—" : niceNumber(record.sleep)}
-                  unit="hours"
-                  detail={
-                    record.sleep == null
-                      ? "Add sleep to see your recovery"
-                      : `${Math.round((record.sleep / profile.sleep) * 100)}% of your ${profile.sleep}h target`
-                  }
-                  onClick={() => setModal({ type: "metrics" })}
-                >
-                  <div className="segment-track">
-                    {Array.from({ length: 16 }, (_, i) => (
-                      <i
-                        key={i}
-                        className={
-                          i < ((record.sleep || 0) / profile.sleep) * 16
-                            ? "filled"
-                            : ""
-                        }
-                      />
-                    ))}
-                  </div>
-                </Metric>
-                <Metric
-                  icon={Flame}
-                  label="Showing up"
-                  value={streak(store.records, today)}
-                  unit="days"
-                  detail="Consecutive days with a saved session"
-                  onClick={() => navigate("Progress")}
-                >
-                  <div className="streak-days">
-                    {dates.map((d) => (
-                      <div key={d}>
-                        <span>
-                          {parseDate(d).toLocaleDateString("en-US", {
-                            weekday: "narrow",
-                          })}
-                        </span>
-                        <i
-                          className={
-                            store.records[d]?.session?.completedAt ? "on" : ""
-                          }
-                        >
-                          {store.records[d]?.session?.completedAt ? (
-                            <Check size={10} />
-                          ) : null}
-                        </i>
-                      </div>
-                    ))}
-                  </div>
-                </Metric>
-                <Metric
-                  icon={Target}
-                  label="Weekly goal"
-                  value={weekComplete}
-                  unit={`/ ${weekTarget}`}
-                  detail={`${progress}% of this week’s session target`}
-                  onClick={() => navigate("Progress")}
-                >
-                  <div className="progress-track">
-                    <i style={{ width: progress + "%" }} />
-                  </div>
-                  <span className="mini-caption">
-                    ONE SESSION AT A TIME <ArrowUpRight size={11} />
-                  </span>
-                </Metric>
-              </div>
-              <div className="coach-banner">
-                <div className="coach-icon">
-                  <Sparkles size={21} />
-                </div>
-                <div>
-                  <h3>{insights[0].title}.</h3>
-                  <p>{insights[0].text}</p>
-                </div>
-                <button onClick={() => setModal({ type: "coach" })}>
-                  See your insights <ArrowUpRight size={15} />
-                </button>
-              </div>
             </>
           )}
           {tab === "Training" && (
@@ -1557,29 +1359,6 @@ function Metric({ icon: Icon, label, value, unit, detail, children, onClick }) {
     </section>
   );
 }
-function MiniBars({ dates, records, field, target }) {
-  return (
-    <div className="mini-bars" aria-label="This week’s logged values">
-      {dates.map((d) => (
-        <div
-          key={d}
-          title={`${shortDate(d)}: ${records[d]?.[field] ?? "Not logged"}`}
-        >
-          <i
-            style={{
-              height:
-                Math.max(
-                  4,
-                  Math.min(100, ((records[d]?.[field] || 0) / target) * 100),
-                ) + "%",
-              opacity: records[d]?.[field] != null ? 1 : 0.2,
-            }}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
 function NutritionCard({ totals, profile, onAdd, mealCount, isFuture }) {
   const fill = Math.min(1, totals.calories / profile.calories);
   return (
@@ -2043,6 +1822,7 @@ function SettingsForm({ profile, onSubmit }) {
             Training goal
             <select name="goal" defaultValue={profile.goal}>
               <option value="muscle">Build lean muscle</option>
+              <option value="fatloss">Lose fat</option>
               <option value="endurance">Improve endurance</option>
               <option value="wellbeing">Feel healthier</option>
             </select>

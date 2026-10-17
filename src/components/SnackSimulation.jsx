@@ -232,7 +232,7 @@ export default function SnackSimulation({ value, onChange, onLog }) {
               >
                 <span
                   className="snack-thumb"
-                  style={{ background: s.color + "66" }}
+                  style={{ background: "#f2f2f2" }}
                 >
                   <FoodArt id={s.id} bites={0} total={s.bites} miniature />
                 </span>
@@ -264,8 +264,8 @@ export default function SnackSimulation({ value, onChange, onLog }) {
         <section
           className={"snack-stage " + (finished ? "finished" : "")}
           style={{
-            "--snack-color": snack.color,
-            "--snack-accent": snack.accent,
+            "--snack-color": "#e5e5e5",
+            "--snack-accent": "#707070",
           }}
         >
           <div className="stage-top">

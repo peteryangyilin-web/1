@@ -1,10 +1,10 @@
 # GO — Every move matters
 
-A responsive, light-theme fitness app built with React and Vite. White surfaces, clear data typography, and sky-blue accents put your records first. All fonts and snack illustrations are bundled locally.
+A responsive, black-and-white fitness app built with React and Vite. White surfaces, clear data typography, and monochrome accents put your records first. All fonts and snack illustrations are bundled locally.
 
 ## What works
 
-- **Overview:** live totals from your own records, weekly completion, step and sleep summaries, and current-day insights.
+- **Overview:** choose a fitness goal (muscle, fat loss, endurance, or wellbeing), enter personal information and starting/target weight, set training frequency, and edit daily nutrition, movement, hydration, and sleep targets. The profile saves locally and updates the training schedule. Optional age and height are stored as profile information. The logo uses a gray O.
 - **Cat coach:** all 22 built-in exercises include a bundled, looping cat demonstration GIF and static poster, pause/play controls, two movement phases, and expandable form cues. Animations only play near the viewport and default to still images with reduced-motion settings. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
 - **Training:** real calendar dates, past/future week navigation, goal- and frequency-based schedules, custom daily plans, day-specific exercises, editable weight/repetition values for every set, completed-set tracking, a pause/resume session timer that survives refresh, saved session history, and editing completed sessions. Future days support planning, not logging a finished workout.
 - **Nutrition:** create, edit, and delete meals with calories, protein, carbs, and fats; estimated quick-add servings; automatic daily totals; editable targets; and water tracking.

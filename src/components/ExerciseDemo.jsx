@@ -229,11 +229,11 @@ export function CatAnimation({ demo, paused = false }) {
     </g>
   );
   const dumbbell = (
-    <g fill="#4d5b62">
-      <rect x="-15" y="-3" width="30" height="6" rx="2" fill="#7d8f98" />
+    <g fill="#595959">
+      <rect x="-15" y="-3" width="30" height="6" rx="2" fill="#8c8c8c" />
       <rect x="-17" y="-9" width="7" height="18" rx="2.5" />
       <rect x="10" y="-9" width="7" height="18" rx="2.5" />
-      <path d="M-14-6V5M13-6V5" stroke="#9caab1" strokeWidth="1.5" />
+      <path d="M-14-6V5M13-6V5" stroke="#a8a8a8" strokeWidth="1.5" />
     </g>
   );
   return (
@@ -245,13 +245,13 @@ export function CatAnimation({ demo, paused = false }) {
       role="img"
       aria-label={`Animated cat demonstration of ${demo.title}`}
     >
-      <rect width="300" height="220" rx="12" fill="#f0f6f9" />
-      <path d="M20 194H280" stroke="#d2dde3" strokeWidth="1" />
-      <ellipse cx="152" cy="197" rx="91" ry="5" fill="#d9e7ef" />
+      <rect width="300" height="220" rx="12" fill="#f5f5f5" />
+      <path d="M20 194H280" stroke="#dbdbdb" strokeWidth="1" />
+      <ellipse cx="152" cy="197" rx="91" ry="5" fill="#e5e5e5" />
       {demo.mat && (
         <path
           d="M42 190H273"
-          stroke="#aacadc"
+          stroke="#c4c4c4"
           strokeWidth="10"
           strokeLinecap="round"
         />
@@ -260,46 +260,46 @@ export function CatAnimation({ demo, paused = false }) {
         <g strokeLinecap="round">
           {demo.bench === "flat" ? (
             <>
-              <path d="M57 154H190" stroke="#647680" strokeWidth="10" />
+              <path d="M57 154H190" stroke="#737373" strokeWidth="10" />
               <path
                 d="M77 158V191M177 158V191"
-                stroke="#97a6ae"
+                stroke="#a3a3a3"
                 strokeWidth="5"
               />
             </>
           ) : demo.bench === "incline" ? (
             <>
-              <path d="M81 101L182 151H201" stroke="#647680" strokeWidth="10" />
+              <path d="M81 101L182 151H201" stroke="#737373" strokeWidth="10" />
               <path
                 d="M126 132V191M184 154V191"
-                stroke="#97a6ae"
+                stroke="#a3a3a3"
                 strokeWidth="5"
               />
             </>
           ) : demo.bench === "support" ? (
             <>
-              <path d="M65 167H140" stroke="#647680" strokeWidth="8" />
+              <path d="M65 167H140" stroke="#737373" strokeWidth="8" />
               <path
                 d="M78 171V191M130 171V191"
-                stroke="#97a6ae"
+                stroke="#a3a3a3"
                 strokeWidth="4"
               />
             </>
           ) : demo.bench === "row" ? (
             <>
-              <path d="M120 151H170" stroke="#647680" strokeWidth="8" />
+              <path d="M120 151H170" stroke="#737373" strokeWidth="8" />
               <path
                 d="M137 155V191M223 173L237 190"
-                stroke="#97a6ae"
+                stroke="#a3a3a3"
                 strokeWidth="4"
               />
             </>
           ) : (
             <>
-              <path d="M123 151H178" stroke="#647680" strokeWidth="9" />
+              <path d="M123 151H178" stroke="#737373" strokeWidth="9" />
               <path
                 d="M133 156V192M167 156V192"
-                stroke="#97a6ae"
+                stroke="#a3a3a3"
                 strokeWidth="4"
               />
             </>
@@ -307,12 +307,12 @@ export function CatAnimation({ demo, paused = false }) {
         </g>
       )}
       {["pulldown", "rope"].includes(demo.equipment) && (
-        <g stroke="#a8b4bb" fill="none">
+        <g stroke="#b2b2b2" fill="none">
           <path d="M251 192V11H150" strokeWidth="4" strokeLinecap="round" />
-          <circle cx="150" cy="12" r="5" fill="#d5e5ed" />
+          <circle cx="150" cy="12" r="5" fill="#e2e2e2" />
           {motionPath(
             (p) => line([150, 13], [wristCenter(p)[0], wristCenter(p)[1] - 9]),
-            { stroke: "#859ba7", strokeWidth: 2 },
+            { stroke: "#979797", strokeWidth: 2 },
           )}
         </g>
       )}
@@ -320,7 +320,7 @@ export function CatAnimation({ demo, paused = false }) {
         <g fill="none">
           <path
             d="M270 193V35"
-            stroke="#a8b4bb"
+            stroke="#b2b2b2"
             strokeWidth="4"
             strokeLinecap="round"
           />
@@ -328,8 +328,8 @@ export function CatAnimation({ demo, paused = false }) {
             cx="268"
             cy={demo.equipment === "cable" ? 133 : 76}
             r="6"
-            fill="#cbdfe9"
-            stroke="#9fafb7"
+            fill="#dbdbdb"
+            stroke="#acacac"
           />
           {motionPath(
             (p) =>
@@ -337,7 +337,7 @@ export function CatAnimation({ demo, paused = false }) {
                 [268, demo.equipment === "cable" ? 133 : 76],
                 wristCenter(p),
               ),
-            { stroke: "#8da3af", strokeWidth: 2 },
+            { stroke: "#9f9f9f", strokeWidth: 2 },
           )}
         </g>
       )}
@@ -392,7 +392,7 @@ export function CatAnimation({ demo, paused = false }) {
           {motionPath(
             (p) =>
               `M${p.leftWrist[0] - 29},${p.leftWrist[1]} L${p.rightWrist[0] + 29},${p.rightWrist[1]}`,
-            { stroke: "#7d8f99", strokeWidth: 4, strokeLinecap: "round" },
+            { stroke: "#8c8c8c", strokeWidth: 4, strokeLinecap: "round" },
           )}
           {["left", "right"].map((side) =>
             movable(
@@ -404,9 +404,9 @@ export function CatAnimation({ demo, paused = false }) {
                   width="10"
                   height="30"
                   rx="3"
-                  fill="#4c5d67"
+                  fill="#5a5a5a"
                 />
-                <path d="M0-11V11" stroke="#8498a2" strokeWidth="2" />
+                <path d="M0-11V11" stroke="#949494" strokeWidth="2" />
               </g>,
             ),
           )}
@@ -418,7 +418,7 @@ export function CatAnimation({ demo, paused = false }) {
             `M${p.leftWrist[0] - 10},${p.leftWrist[1] + 3} L${p.leftWrist[0]},${p.leftWrist[1]} L${p.rightWrist[0]},${p.rightWrist[1]} L${p.rightWrist[0] + 10},${p.rightWrist[1] + 3}`,
           {
             fill: "none",
-            stroke: "#566e7b",
+            stroke: "#6a6a6a",
             strokeWidth: 4,
             strokeLinecap: "round",
           },
@@ -429,7 +429,7 @@ export function CatAnimation({ demo, paused = false }) {
             `M${p.leftWrist.join(",")} L${wristCenter(p)[0]},${wristCenter(p)[1] - 9} L${p.rightWrist.join(",")}`,
           {
             fill: "none",
-            stroke: "#536d7b",
+            stroke: "#686868",
             strokeWidth: 4,
             strokeLinecap: "round",
           },

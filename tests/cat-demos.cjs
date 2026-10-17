@@ -21,7 +21,10 @@ let browser;
   await page
     .getByRole("button", { name: "Profile settings", exact: true })
     .click();
-  await page.getByLabel("Sessions per week").selectOption("6");
+  await page
+    .getByRole("dialog")
+    .getByLabel("Sessions per week")
+    .selectOption("6");
   await page.getByRole("button", { name: "Save preferences" }).click();
   await page.getByRole("button", { name: "Training", exact: true }).click();
   const chooseDate = async (date) => {

@@ -1,6 +1,10 @@
 export const DEFAULT_PROFILE = {
   name: "Alex Morgan",
   goal: "muscle",
+  age: null,
+  height: null,
+  experience: "intermediate",
+  activity: "moderate",
   days: 4,
   calories: 2400,
   protein: 150,
@@ -133,7 +137,7 @@ export function getPlan(key, profile, record) {
   const sequence =
     profile.goal === "endurance"
       ? ["cardio", "lower", "cardio", "full", "cardio", "pull"]
-      : profile.goal === "wellbeing"
+      : profile.goal === "wellbeing" || profile.goal === "fatloss"
         ? ["full", "cardio", "lower", "cardio", "push", "pull"]
         : ["push", "lower", "pull", "full", "cardio", "lower"];
   return templates[slot < 0 ? "recovery" : sequence[slot]];
