@@ -1,6 +1,6 @@
 # GO — Every move matters
 
-A responsive, light-theme fitness app built with React and Vite. White surfaces, clear data typography, and quiet green accents put your records first. All fonts and snack illustrations are bundled locally.
+A responsive, light-theme fitness app built with React and Vite. White surfaces, clear data typography, and sky-blue accents put your records first. All fonts and snack illustrations are bundled locally.
 
 ## What works
 
