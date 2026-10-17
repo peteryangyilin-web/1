@@ -1,7 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
-import { getExerciseDemo, EXERCISE_DEMOS } from "../src/exerciseDemos.js";
+import {
+  getExerciseDemo,
+  EXERCISE_DEMOS,
+  sampleDemoFrames,
+} from "../src/exerciseDemos.js";
 import { getPlan, weekDates, DEFAULT_PROFILE } from "../src/model.js";
 
 test("every built-in recommended exercise resolves to a real bundled animation and poster", () => {
@@ -44,4 +48,24 @@ test("exercise loops have finite joint positions and actually change pose", () =
         }
       }
   }
+});
+
+test("textured rig samples preserve loop endpoints and resolve optional shoulder joints", () => {
+  for (const demo of Object.values(EXERCISE_DEMOS)) {
+    const samples = sampleDemoFrames(demo);
+    assert.ok(samples.length >= 20);
+    assert.deepEqual(samples[0].head, demo.frames[0].head);
+    assert.deepEqual(samples.at(-1).head, demo.frames.at(-1).head);
+    for (const p of samples)
+      for (const v of Object.values(p))
+        assert.ok(
+          Array.isArray(v) ? v.every(Number.isFinite) : Number.isFinite(v),
+          demo.id + " produces invalid rig geometry",
+        );
+  }
+  const press = sampleDemoFrames(EXERCISE_DEMOS.shoulder);
+  assert.ok(
+    press.some((p) => p.leftWrist[1] < 30),
+    "overhead press reaches its extended pose",
+  );
 });

@@ -1,6 +1,6 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState, useMemo } from "react";
 import { Pause, Play, ChevronDown, ChevronUp, Cat } from "lucide-react";
-import { getExerciseDemo } from "../exerciseDemos";
+import { getExerciseDemo, sampleDemoFrames } from "../exerciseDemos";
 import "./exerciseDemo.css";
 
 export default function ExerciseDemo({ name, compact = false }) {
@@ -122,7 +122,7 @@ export default function ExerciseDemo({ name, compact = false }) {
 
 export function CatAnimation({ demo, paused = false }) {
   const ref = useRef(null),
-    frames = demo.frames;
+    frames = useMemo(() => sampleDemoFrames(demo), [demo]);
   useEffect(() => {
     const svg = ref.current;
     if (!svg) return;
@@ -135,9 +135,7 @@ export function CatAnimation({ demo, paused = false }) {
       values={values(fn)}
       dur={`${demo.duration}s`}
       repeatCount="indefinite"
-      calcMode="spline"
-      keyTimes="0;0.42;0.58;1"
-      keySplines="0.4 0 0.3 1;0 0 1 1;0.4 0 0.3 1"
+      calcMode="linear"
     />
   );
   const shoulder = (p, side) =>
@@ -146,15 +144,6 @@ export function CatAnimation({ demo, paused = false }) {
       p.shoulder[1] + 2,
     ];
   const line = (a, b) => `M${a.join(",")} L${b.join(",")}`;
-  const limb = (p, side, type) => {
-    const a =
-        type === "arm"
-          ? shoulder(p, side)
-          : [p.hip[0] + (side === "left" ? -8 : 8), p.hip[1]],
-      b = p[side + (type === "arm" ? "Elbow" : "Knee")],
-      c = p[side + (type === "arm" ? "Wrist" : "Ankle")];
-    return `M${a.join(",")} L${b.join(",")} L${c.join(",")}`;
-  };
   const motionPath = (fn, props = {}) => (
     <path d={fn(frames[0])} {...props}>
       {animation("d", fn)}
@@ -173,11 +162,70 @@ export function CatAnimation({ demo, paused = false }) {
         values={values((p) => translate(p, key))}
         dur={`${demo.duration}s`}
         repeatCount="indefinite"
-        calcMode="spline"
-        keyTimes="0;0.42;0.58;1"
-        keySplines="0.4 0 0.3 1;0 0 1 1;0.4 0 0.3 1"
+        calcMode="linear"
       />
       {content}
+    </g>
+  );
+  const bone = (from, to, part, width, extra = 14) => {
+    const length = (p) =>
+      Math.hypot(to(p)[0] - from(p)[0], to(p)[1] - from(p)[1]);
+    const angle = (p) =>
+      (Math.atan2(to(p)[1] - from(p)[1], to(p)[0] - from(p)[0]) * 180) /
+        Math.PI -
+      90;
+    const rotations = frames.map(angle);
+    for (let i = 1; i < rotations.length; i++) {
+      while (rotations[i] - rotations[i - 1] > 180) rotations[i] -= 360;
+      while (rotations[i] - rotations[i - 1] < -180) rotations[i] += 360;
+    }
+    return (
+      <g transform={`translate(${from(frames[0]).join(" ")})`}>
+        <animateTransform
+          attributeName="transform"
+          type="translate"
+          values={values((p) => from(p).join(" "))}
+          dur={`${demo.duration}s`}
+          repeatCount="indefinite"
+        />
+        <g transform={`rotate(${angle(frames[0])})`}>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values={rotations.join(";")}
+            dur={`${demo.duration}s`}
+            repeatCount="indefinite"
+          />
+          <FurSprite
+            part={part}
+            x={-width / 2}
+            y={-extra / 2}
+            width={width}
+            height={length(frames[0]) + extra}
+          >
+            {animation("height", (p) => length(p) + extra)}
+          </FurSprite>
+        </g>
+      </g>
+    );
+  };
+  const furryLimb = (side, type) => (
+    <g key={side + type}>
+      {bone(
+        (p) =>
+          type === "arm"
+            ? shoulder(p, side)
+            : [p.hip[0] + (side === "left" ? -8 : 8), p.hip[1]],
+        (p) => p[side + (type === "arm" ? "Elbow" : "Knee")],
+        "upper",
+        type === "arm" ? 31 : 36,
+      )}
+      {bone(
+        (p) => p[side + (type === "arm" ? "Elbow" : "Knee")],
+        (p) => p[side + (type === "arm" ? "Wrist" : "Ankle")],
+        "lower",
+        type === "arm" ? 28 : 32,
+      )}
     </g>
   );
   const dumbbell = (
@@ -293,93 +341,40 @@ export function CatAnimation({ demo, paused = false }) {
           )}
         </g>
       )}
-      {motionPath(
-        (p) =>
-          `M${p.hip.join(",")} Q${p.hip[0] + 37},${p.hip[1] + 22} ${p.hip[0] + 43},${p.hip[1] - 3}`,
-        {
-          fill: "none",
-          stroke: "#756957",
-          strokeWidth: 7,
-          strokeLinecap: "round",
-        },
+      {movable(
+        "hip",
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values={frames
+              .map(
+                (_, i) => Math.sin((i / (frames.length - 1)) * Math.PI * 2) * 9,
+              )
+              .join(";")}
+            dur={`${demo.duration}s`}
+            repeatCount="indefinite"
+          />
+          <FurSprite part="tail" x="5" y="-52" width="61" height="72" />
+        </g>,
       )}
-      {motionPath((p) => limb(p, "right", "leg"), {
-        fill: "none",
-        stroke: "#c5beb0",
-        strokeWidth: 11,
-        strokeLinejoin: "round",
-        strokeLinecap: "round",
-      })}
-      {motionPath((p) => limb(p, "right", "arm"), {
-        fill: "none",
-        stroke: "#c5beb0",
-        strokeWidth: 8,
-        strokeLinejoin: "round",
-        strokeLinecap: "round",
-      })}
-      {motionPath((p) => line(p.shoulder, p.hip), {
-        fill: "none",
-        stroke: "#9d8b72",
-        strokeWidth: 26,
-        strokeLinecap: "round",
-      })}
-      {motionPath((p) => line(p.shoulder, [p.hip[0], p.hip[1] - 8]), {
-        fill: "none",
-        stroke: "#a9c284",
-        strokeWidth: 24,
-        strokeLinecap: "round",
-      })}
-      {motionPath(
-        (p) =>
-          line(
-            [p.shoulder[0], p.shoulder[1] - 3],
-            [p.shoulder[0], p.shoulder[1] + 15],
-          ),
-        {
-          fill: "none",
-          stroke: "#f6f3eb",
-          strokeWidth: 12,
-          strokeLinecap: "round",
-        },
+      {furryLimb("right", "leg")}
+      {furryLimb("right", "arm")}
+      {bone(
+        (p) => p.shoulder,
+        (p) => p.hip,
+        "torso",
+        68,
+        38,
       )}
-      {motionPath((p) => line(p.shoulder, [p.head[0], p.head[1] + 12]), {
-        stroke: "#f0ede4",
-        strokeWidth: 12,
-        strokeLinecap: "round",
-      })}
-      {motionPath((p) => limb(p, "left", "leg"), {
-        fill: "none",
-        stroke: "#efede5",
-        strokeWidth: 11,
-        strokeLinejoin: "round",
-        strokeLinecap: "round",
-      })}
-      {motionPath((p) => limb(p, "left", "arm"), {
-        fill: "none",
-        stroke: "#b6a48a",
-        strokeWidth: 8,
-        strokeLinejoin: "round",
-        strokeLinecap: "round",
-      })}
-      {["left", "right"].map((side) => (
-        <React.Fragment key={side}>
-          {motionPath(
-            (p) => {
-              const a = p[side + "Ankle"];
-              return demo.toeContact
-                ? `M${a[0] - 3},${a[1]} L${a[0] + 7},193 L${a[0] + 13},193`
-                : `M${a[0] - 5},${a[1] + 3} L${a[0] + 9},${a[1] + 3}`;
-            },
-            {
-              fill: "none",
-              stroke: "#e8e5dc",
-              strokeWidth: 7,
-              strokeLinecap: "round",
-              strokeLinejoin: "round",
-            },
-          )}
-        </React.Fragment>
-      ))}
+      {furryLimb("left", "leg")}
+      {furryLimb("left", "arm")}
+      {["leftAnkle", "rightAnkle"].map((key) =>
+        movable(
+          key,
+          <FurSprite part="paw" x="-14" y="-10" width="28" height="23" />,
+        ),
+      )}
       {demo.equipment === "dumbbells" && (
         <>
           {movable("leftWrist", dumbbell)}
@@ -442,13 +437,7 @@ export function CatAnimation({ demo, paused = false }) {
       {["leftWrist", "rightWrist"].map((key) =>
         movable(
           key,
-          <ellipse
-            rx="5"
-            ry="4.5"
-            fill="#f6f3eb"
-            stroke="#c9c3b5"
-            strokeWidth=".6"
-          />,
+          <FurSprite part="paw" x="-11" y="-9" width="22" height="18" />,
         ),
       )}
       {movable(
@@ -457,20 +446,45 @@ export function CatAnimation({ demo, paused = false }) {
           <animateTransform
             attributeName="transform"
             type="rotate"
-            values={values((p) => p.rotation || 0)}
+            values={values(
+              (p) =>
+                (p.rotation || 0) +
+                Math.sin((p.head[1] - demo.frames[0].head[1]) * 0.04) * 3,
+            )}
             dur={`${demo.duration}s`}
             repeatCount="indefinite"
           />
-          <image
-            href="/cat-coach/portrait.png"
-            x="-32"
-            y="-29"
-            width="64"
-            height="58"
-            preserveAspectRatio="xMidYMid meet"
-          />
+          <FurSprite part="head" x="-35" y="-36" width="70" height="70" />
         </g>,
       )}
+    </svg>
+  );
+}
+
+const RIG_CELLS = {
+  head: [0, 0],
+  torso: [1, 0],
+  upper: [0, 1],
+  lower: [1, 1],
+  paw: [0, 2],
+  tail: [1, 2],
+};
+function FurSprite({ part, children, ...props }) {
+  const [col, row] = RIG_CELLS[part];
+  return (
+    <svg
+      {...props}
+      viewBox={`${col} ${row} 1 1`}
+      preserveAspectRatio="none"
+      overflow="hidden"
+    >
+      {children}
+      <image
+        href="/cat-coach/character-rig.png"
+        width="2"
+        height="3"
+        preserveAspectRatio="none"
+      />
     </svg>
   );
 }

@@ -21,7 +21,7 @@ try {
   await page.goto(process.env.BASE_URL || "http://localhost:5173");
   await page.evaluate(async () => {
     const portrait = new Image();
-    portrait.src = "/cat-coach/portrait.png";
+    portrait.src = "/cat-coach/character-rig.png";
     await portrait.decode();
   });
   for (const [id, demo] of Object.entries(EXERCISE_DEMOS)) {
@@ -33,7 +33,7 @@ try {
       const { renderDemo } = await import("/scripts/demoCapture.jsx");
       renderDemo(id);
     }, id);
-    const svg = page.locator(".capture-host svg");
+    const svg = page.locator(".capture-host > svg");
     await svg.waitFor();
     await page.waitForTimeout(35);
     const count = Math.ceil(demo.duration * 10);

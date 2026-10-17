@@ -693,3 +693,38 @@ export function getExerciseDemo(name) {
   const match = mappings.find(([pattern]) => pattern.test(String(name)));
   return match ? EXERCISE_DEMOS[match[1]] : null;
 }
+
+// Dense joint samples keep textured limb rotations attached to animated paws.
+export function sampleDemoFrames(demo, fps = 12) {
+  const count = Math.ceil(demo.duration * fps);
+  const keys = [...new Set(demo.frames.flatMap((p) => Object.keys(p)))];
+  const value = (p, key) =>
+    p[key] ??
+    (key === "leftShoulder"
+      ? [p.shoulder[0] - 12, p.shoulder[1] + 2]
+      : key === "rightShoulder"
+        ? [p.shoulder[0] + 12, p.shoulder[1] + 2]
+        : 0);
+  const ease = (t) => t * t * (3 - 2 * t);
+  return Array.from({ length: count + 1 }, (_, i) => {
+    const t = i / count;
+    const [a, b, u] =
+      t < 0.42
+        ? [demo.frames[0], demo.frames[1], ease(t / 0.42)]
+        : t < 0.58
+          ? [demo.frames[1], demo.frames[2], (t - 0.42) / 0.16]
+          : [demo.frames[2], demo.frames[3], ease((t - 0.58) / 0.42)];
+    return Object.fromEntries(
+      keys.map((key) => {
+        const x = value(a, key),
+          y = value(b, key);
+        return [
+          key,
+          Array.isArray(x)
+            ? x.map((v, j) => v + (y[j] - v) * u)
+            : x + (y - x) * u,
+        ];
+      }),
+    );
+  });
+}
