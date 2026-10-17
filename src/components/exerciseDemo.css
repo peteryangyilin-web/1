@@ -1,0 +1,473 @@
+.exercise-demo {
+  border: 1px solid #e6eddb;
+  border-radius: 8px;
+  background: #fcfdf9;
+  overflow: hidden;
+  margin: 10px 0 17px;
+}
+.exercise-demo-preview {
+  display: flex;
+  gap: 17px;
+  align-items: center;
+  padding: 13px;
+}
+.demo-visual {
+  position: relative;
+  flex-shrink: 0;
+  width: 150px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #f6f8f1;
+  aspect-ratio: 300/220;
+}
+.demo-visual > img,
+.cat-animation {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cat-coach-label {
+  position: absolute;
+  left: 8px;
+  top: 7px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 5px;
+  letter-spacing: 0.6px;
+  color: #8eaa70;
+  pointer-events: none;
+}
+.demo-play {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #ffffffeb;
+  border: 1px solid #dce6cd;
+  color: #738c56;
+  box-shadow: 0 2px 8px #5874310c;
+}
+.demo-play:hover {
+  background: #e9f1dc;
+}
+.demo-summary {
+  min-width: 0;
+  flex: 1;
+}
+.demo-eyebrow {
+  font-size: 5px;
+  color: #a3b494;
+  letter-spacing: 0.8px;
+  display: block;
+  margin-bottom: 8px;
+}
+.demo-summary > strong {
+  font-size: 11px;
+  font-weight: 500;
+  color: #59783d;
+  display: block;
+  line-height: 1.6;
+}
+.demo-phases {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 10px;
+}
+.demo-phases > span {
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8d9f7b;
+  line-height: 1.6;
+}
+.demo-phases i {
+  font-style: normal;
+  font-size: 6px;
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #edf3e3;
+  color: #91a772;
+  flex-shrink: 0;
+}
+.demo-details {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 8px;
+  color: #73964d;
+  margin-top: 11px;
+}
+.demo-details:hover {
+  color: #3e6820;
+}
+.demo-instructions {
+  border-top: 1px solid #e8efdf;
+  padding: 15px 17px;
+  background: #fff;
+}
+.demo-instructions h4 {
+  font-size: 10px;
+  font-weight: 500;
+  color: #6a884f;
+  margin: 0 0 12px;
+}
+.demo-instructions ol {
+  padding-left: 19px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.demo-instructions li {
+  font-size: 10px;
+  line-height: 1.8;
+  color: #82966f;
+  padding-left: 4px;
+}
+.demo-instructions li::marker {
+  color: #a4bc86;
+  font-size: 8px;
+}
+.demo-instructions p {
+  font-size: 8px;
+  line-height: 1.8;
+  color: #a4b396;
+  margin: 14px 0 0;
+}
+.exercise-demo.compact {
+  margin: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+}
+.compact .exercise-demo-preview {
+  padding: 0;
+  gap: 12px;
+}
+.compact .demo-visual {
+  width: 112px;
+}
+.compact .demo-eyebrow {
+  font-size: 4px;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+}
+.compact .demo-summary > strong {
+  font-size: 10px;
+}
+.compact .demo-phases {
+  gap: 4px;
+  margin-top: 6px;
+}
+.compact .demo-phases > span {
+  font-size: 7px;
+  gap: 5px;
+}
+.compact .demo-phases i {
+  height: 11px;
+  width: 11px;
+  font-size: 5px;
+}
+.compact .demo-details {
+  font-size: 7px;
+  margin-top: 7px;
+}
+.compact .cat-coach-label {
+  font-size: 4px;
+  left: 6px;
+  top: 5px;
+  gap: 3px;
+}
+.compact .cat-coach-label svg {
+  width: 8px;
+}
+.compact .demo-play {
+  height: 21px;
+  width: 21px;
+  right: 4px;
+  bottom: 4px;
+}
+.compact .demo-play svg {
+  width: 10px;
+}
+.compact .demo-instructions {
+  margin-top: 12px;
+  border: 1px solid #e5edda;
+  border-radius: 6px;
+  padding: 13px;
+}
+.compact .demo-instructions li {
+  font-size: 9px;
+}
+.cat-outline-row {
+  border-bottom: 1px solid #edf1e6;
+  padding: 14px 0;
+}
+.cat-outline-row:last-child {
+  border-bottom: 0;
+}
+.cat-outline-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.cat-outline-header > span {
+  font-size: 8px;
+  color: #a5b593;
+}
+.cat-outline-header > strong {
+  font-size: 10px;
+  font-weight: 500;
+  color: #607b48;
+}
+.cat-outline-header > small {
+  margin-left: auto;
+  font-size: 8px;
+  color: #a0b18d;
+  white-space: nowrap;
+}
+.cat-outline-header .demo-sets {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.custom-demo-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  line-height: 1.8;
+  color: #9aac88;
+  background: #f7f9f2;
+  border: 1px dashed #dde7cf;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 10px 0;
+}
+.custom-demo-note > svg {
+  flex-shrink: 0;
+}
+.session-outline .demo-intro {
+  font-size: 8px;
+  line-height: 1.8;
+  color: #a3b493;
+  margin: 8px 0 3px;
+}
+.exercise-list .exercise-demo {
+  margin-top: 13px;
+}
+.cat-training-layout {
+  grid-template-columns: 1fr 1.15fr;
+}
+.cat-training-layout > .workout-card {
+  position: sticky;
+  top: 20px;
+}
+@media (min-width: 1550px) {
+  .compact .demo-visual {
+    width: 135px;
+  }
+  .compact .demo-summary > strong {
+    font-size: 11px;
+  }
+  .compact .demo-phases > span {
+    font-size: 8px;
+  }
+}
+@media (max-width: 1150px) {
+  .cat-training-layout {
+    grid-template-columns: 1fr 1.1fr;
+  }
+  .compact .demo-visual {
+    width: 94px;
+  }
+  .compact .exercise-demo-preview {
+    gap: 10px;
+  }
+  .compact .demo-summary > strong {
+    font-size: 9px;
+  }
+  .compact .demo-eyebrow {
+    font-size: 3px;
+  }
+  .compact .demo-phases > span {
+    font-size: 6px;
+  }
+  .cat-outline-header > strong {
+    font-size: 9px;
+  }
+  .demo-visual {
+    width: 143px;
+  }
+  .demo-summary > strong {
+    font-size: 10px;
+  }
+}
+@media (max-width: 950px) {
+  .cat-training-layout {
+    grid-template-columns: 1fr;
+  }
+  .cat-training-layout > .workout-card {
+    position: static;
+  }
+  .compact .demo-visual {
+    width: 145px;
+  }
+  .compact .demo-summary > strong {
+    font-size: 11px;
+  }
+  .compact .demo-eyebrow {
+    font-size: 5px;
+    letter-spacing: 0.6px;
+  }
+  .compact .demo-phases > span {
+    font-size: 8px;
+  }
+  .compact .demo-details {
+    font-size: 8px;
+  }
+  .cat-outline-header > strong {
+    font-size: 11px;
+  }
+  .cat-outline-header > span,
+  .cat-outline-header > small {
+    font-size: 9px;
+  }
+  .cat-outline-row {
+    padding: 17px 0;
+  }
+  .session-outline .demo-intro {
+    font-size: 9px;
+  }
+}
+@media (max-width: 650px) {
+  .exercise-demo-preview {
+    gap: 12px;
+    padding: 10px;
+  }
+  .demo-visual {
+    width: 125px;
+  }
+  .demo-summary > strong {
+    font-size: 10px;
+  }
+  .demo-eyebrow {
+    font-size: 4px;
+    letter-spacing: 0.4px;
+  }
+  .demo-phases > span {
+    font-size: 8px;
+    line-height: 1.7;
+  }
+  .demo-phases {
+    margin-top: 7px;
+    gap: 5px;
+  }
+  .demo-details {
+    font-size: 8px;
+    margin-top: 9px;
+  }
+  .cat-coach-label {
+    font-size: 4px;
+    gap: 3px;
+    left: 6px;
+    top: 6px;
+  }
+  .cat-coach-label > svg {
+    width: 8px;
+  }
+  .demo-instructions {
+    padding: 14px;
+  }
+  .demo-instructions li {
+    font-size: 10px;
+  }
+  .demo-instructions p {
+    font-size: 8px;
+  }
+  .compact .demo-visual {
+    width: 130px;
+  }
+  .compact .exercise-demo-preview {
+    gap: 13px;
+  }
+  .compact .demo-eyebrow {
+    font-size: 4px;
+    letter-spacing: 0.3px;
+  }
+  .compact .demo-summary > strong {
+    font-size: 10px;
+  }
+  .compact .demo-phases > span {
+    font-size: 7px;
+  }
+  .compact .demo-details {
+    font-size: 8px;
+  }
+  .compact .demo-play {
+    width: 25px;
+    height: 25px;
+  }
+  .compact .demo-play svg {
+    width: 12px;
+  }
+  .cat-outline-header > strong {
+    font-size: 11px;
+  }
+  .cat-outline-header > span,
+  .cat-outline-header > small {
+    font-size: 8px;
+  }
+  .session-outline .demo-intro {
+    font-size: 8px;
+  }
+  .cat-outline-row {
+    padding: 15px 0;
+  }
+  .custom-demo-note {
+    font-size: 8px;
+    padding: 10px;
+  }
+  .exercise-list .demo-visual {
+    width: 115px;
+  }
+  .exercise-list .demo-eyebrow {
+    font-size: 3px;
+  }
+  .exercise-list .demo-phases > span {
+    font-size: 7px;
+  }
+  .exercise-list .demo-summary > strong {
+    font-size: 10px;
+  }
+}
+@media (max-width: 360px) {
+  .exercise-demo-preview {
+    gap: 9px;
+  }
+  .demo-visual,
+  .compact .demo-visual {
+    width: 100px;
+  }
+  .demo-phases > span,
+  .compact .demo-phases > span {
+    font-size: 6px;
+  }
+  .demo-eyebrow {
+    letter-spacing: 0;
+  }
+}

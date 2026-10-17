@@ -6,6 +6,7 @@ A responsive, light-theme fitness app built with React and Vite. White surfaces,
 
 - **Overview:** live totals from your own records, weekly completion, step and sleep summaries, and current-day insights.
 - **My plan:** real calendar dates, past/future week navigation, a schedule generated from your training goal and frequency, and custom daily plans.
+- **Cat coach:** all 22 built-in exercises include a bundled, looping cat demonstration GIF and static poster, pause/play controls, two movement phases, and expandable form cues. Animations only play near the viewport and default to still images with reduced-motion settings. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
 - **Training:** day-specific exercises, editable weight/repetition values for every set, completed-set tracking, a pause/resume session timer that survives refresh, saved session history, and editing completed sessions. Future days support planning, not logging a finished workout.
 - **Nutrition:** create, edit, and delete meals with calories, protein, carbs, and fats; estimated quick-add servings; automatic daily totals; editable targets; and water tracking.
 - **Progress:** recorded-day step/sleep charts, completed sessions, actual consecutive-day streaks, weight logs, directional weight-goal progress, and CSV summaries. Unlogged days remain empty and are excluded from averages.
@@ -52,3 +53,19 @@ Records, preferences, and simulation progress persist in **this browser's local 
 Steps, sleep, weight, and meals are manually entered. There is no wearable connection, account backend, or external AI service. The plan coach uses transparent rules based on logged values. Snack nutrition presets are labeled estimates and are editable before real logging. The simulation is a playful experience, not a claim to reduce hunger or replace food.
 
 Legacy Forma profile preferences are migrated automatically; internal legacy storage keys remain compatible.
+
+## Cat demonstration assets
+
+The GIFs and posters in `public/exercises` are local assets. They do not require an external image/video host. Their original animated SVG poses live in `src/exerciseDemos.js` and `src/components/ExerciseDemo.jsx`.
+
+To regenerate them with the dev server running (requires Chromium and Python with Pillow):
+
+```sh
+npm run generate:demos
+# Or regenerate one movement:
+npm run generate:demos -- squat
+```
+
+The capture helper in `scripts/demoCapture.jsx` is development tooling and is not an application route. Regeneration is not needed for a production build; the generated assets are checked in.
+
+With the development server running, `npm run test:cats` verifies every built-in GIF decodes, frames visibly animate, pause/play and form tips work, session demonstrations appear, mobile layout fits, and reduced-motion users initially get static posters. `npm test` also checks exercise-to-demo mappings and bundled asset coverage.

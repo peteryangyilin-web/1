@@ -55,6 +55,7 @@ import {
 } from "./model";
 import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
+import ExerciseDemo from "./components/ExerciseDemo";
 const TABS = [
   [LayoutGrid, "Overview"],
   [CalendarDays, "My plan"],
@@ -758,7 +759,9 @@ function App() {
             <div
               className={
                 "dashboard-grid " +
-                (tab === "Training" ? "training-layout" : "")
+                (tab === "Training"
+                  ? "training-layout cat-training-layout"
+                  : "")
               }
             >
               <section className="workout-card">
@@ -839,13 +842,20 @@ function App() {
                     <h3>Your session breakdown</h3>
                     <span className="subtle">{plan.duration} min</span>
                   </div>
+                  <p className="demo-intro">
+                    Meet your cat coach. Watch the movement, then open the form
+                    tips.
+                  </p>
                   {plan.exercises.map((e, i) => (
-                    <div className="outline-row" key={i}>
-                      <span>{String(i + 1).padStart(2, "0")}</span>
-                      <strong>{e.name}</strong>
-                      <small>
-                        {e.sets} × {e.reps}
-                      </small>
+                    <div className="cat-outline-row" key={e.name + i}>
+                      <div className="cat-outline-header">
+                        <span>{String(i + 1).padStart(2, "0")}</span>
+                        <strong>{e.name}</strong>
+                        <small>
+                          {e.sets} × {e.reps}
+                        </small>
+                      </div>
+                      <ExerciseDemo name={e.name} compact />
                     </div>
                   ))}
                 </section>
@@ -1431,6 +1441,7 @@ function App() {
                         <span>{String(ei + 1).padStart(2, "0")}</span>
                         {e.name}
                       </h3>
+                      <ExerciseDemo name={e.name} />
                       <div className="set-header">
                         <span>SET</span>
                         <span>WEIGHT · KG</span>
