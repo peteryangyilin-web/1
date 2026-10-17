@@ -1332,9 +1332,6 @@ h1 em,
 .session-outline .card-top {
   margin-bottom: 5px;
 }
-.weekly-plan {
-  margin-top: 22px;
-}
 .text-button {
   display: flex;
   gap: 8px;
@@ -1345,92 +1342,6 @@ h1 em,
 }
 .text-button:hover {
   color: #194f6c;
-}
-.weekly-plan > .card-top {
-  padding-bottom: 15px;
-}
-.weekly-plan-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  padding: 16px 9px;
-  border-bottom: 1px solid #e8edef;
-  text-align: left;
-  border-radius: 5px;
-}
-.weekly-plan-row:last-child {
-  border: 0;
-}
-.weekly-plan-row:hover,
-.weekly-plan-row.selected {
-  background: #f1f7fa;
-}
-.plan-date {
-  min-width: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 7px;
-  text-transform: uppercase;
-  color: #8f9fa8;
-  gap: 4px;
-}
-.plan-date strong {
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 500;
-  color: #4f6673;
-}
-.plan-type-icon {
-  height: 37px;
-  width: 37px;
-  background: #e6f0f6;
-  color: #6a8da0;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-.plan-type-icon.recovery {
-  background: #f3f1f7;
-  color: #a09aad;
-}
-.plan-type-icon.endurance {
-  background: #eef2f4;
-  color: #8e9fa8;
-}
-.weekly-plan-row > div strong {
-  font-size: 11px;
-  font-weight: 500;
-}
-.weekly-plan-row > div small {
-  display: block;
-  font-size: 8px;
-  color: #8f9fa7;
-  margin-top: 6px;
-}
-.plan-duration {
-  font-size: 9px;
-  color: #8497a1;
-  margin-left: auto;
-  white-space: nowrap;
-}
-.plan-status {
-  font-size: 7px;
-  min-width: 70px;
-  text-align: center;
-  color: #98a6ae;
-  padding: 5px 7px;
-  background: #f4f7f8;
-  border-radius: 4px;
-}
-.plan-status.done {
-  color: #31759a;
-  background: #dceef8;
-}
-.weekly-plan-row > svg {
-  color: #91a6b1;
 }
 .nutrition-page-grid {
   display: grid;
@@ -3001,60 +2912,6 @@ footer .green-dot {
   .panel .card-top h3 {
     font-size: 11px;
   }
-  .weekly-plan {
-    margin-top: 17px;
-    padding: 18px 12px;
-  }
-  .weekly-plan > .card-top {
-    padding: 0 5px 10px;
-    align-items: start;
-  }
-  .weekly-plan .subtle {
-    font-size: 8px;
-    max-width: 220px;
-  }
-  .weekly-plan .text-button {
-    font-size: 7px;
-    gap: 5px;
-    white-space: nowrap;
-    margin-top: 3px;
-  }
-  .weekly-plan-row {
-    gap: 10px;
-    padding: 15px 4px;
-  }
-  .plan-date {
-    min-width: 24px;
-    font-size: 6px;
-  }
-  .plan-date strong {
-    font-size: 15px;
-  }
-  .plan-type-icon {
-    height: 29px;
-    width: 29px;
-    border-radius: 6px;
-  }
-  .plan-type-icon > svg {
-    width: 16px;
-  }
-  .weekly-plan-row > div strong {
-    font-size: 10px;
-  }
-  .weekly-plan-row > div small {
-    font-size: 7px;
-    max-width: 120px;
-    line-height: 1.5;
-  }
-  .plan-duration {
-    font-size: 7px;
-  }
-  .plan-status {
-    display: none;
-  }
-  .weekly-plan-row > svg {
-    width: 13px;
-  }
   .training-layout .workout-card {
     min-height: 0;
   }
@@ -4451,8 +4308,6 @@ footer .green-dot {
 .chart-note,
 .chart-column > span,
 .chart-grid,
-.weekly-plan-row > div small,
-.plan-duration,
 .notification-panel small,
 .modal > p,
 .insight-box p {

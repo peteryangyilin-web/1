@@ -5,9 +5,8 @@ A responsive, light-theme fitness app built with React and Vite. White surfaces,
 ## What works
 
 - **Overview:** live totals from your own records, weekly completion, step and sleep summaries, and current-day insights.
-- **My plan:** real calendar dates, past/future week navigation, a schedule generated from your training goal and frequency, and custom daily plans.
 - **Cat coach:** all 22 built-in exercises include a bundled, looping cat demonstration GIF and static poster, pause/play controls, two movement phases, and expandable form cues. Animations only play near the viewport and default to still images with reduced-motion settings. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
-- **Training:** day-specific exercises, editable weight/repetition values for every set, completed-set tracking, a pause/resume session timer that survives refresh, saved session history, and editing completed sessions. Future days support planning, not logging a finished workout.
+- **Training:** real calendar dates, past/future week navigation, goal- and frequency-based schedules, custom daily plans, day-specific exercises, editable weight/repetition values for every set, completed-set tracking, a pause/resume session timer that survives refresh, saved session history, and editing completed sessions. Future days support planning, not logging a finished workout.
 - **Nutrition:** create, edit, and delete meals with calories, protein, carbs, and fats; estimated quick-add servings; automatic daily totals; editable targets; and water tracking.
 - **Progress:** recorded-day step/sleep charts, completed sessions, actual consecutive-day streaks, weight logs, directional weight-goal progress, and CSV summaries. Unlogged days remain empty and are excluded from averages.
 - **Snack break:** choose a cookie, crisps, chocolate, or a doughnut; unwrap it; take individual bites with visible bite marks and crumbs; optionally enable generated crunch/snap sounds; restart or select another snack. Keyboard activation works, and progress persists. Virtual snacks never create real meal entries. A separate action opens an editable real-serving form.
@@ -44,7 +43,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-The browser smoke test exercises profile and metrics persistence, nutrition create/edit/delete, hydration, cross-date isolation, custom plans, timer and set completion, history, CSV download, snack interactions, game persistence, virtual/real food separation, and all six views at mobile width. It uses `/usr/bin/chromium` when available; otherwise it uses Playwright's installed Chromium. Optional variables: `BASE_URL`, `CHROMIUM_PATH`, and `SCREENSHOT_DIR`. Screenshots default to `/tmp/go-browser-screenshots`.
+The browser smoke test exercises profile and metrics persistence, nutrition create/edit/delete, hydration, cross-date isolation, custom plans, timer and set completion, history, CSV download, snack interactions, game persistence, virtual/real food separation, and all five views at mobile width. It uses `/usr/bin/chromium` when available; otherwise it uses Playwright's installed Chromium. Optional variables: `BASE_URL`, `CHROMIUM_PATH`, and `SCREENSHOT_DIR`. Screenshots default to `/tmp/go-browser-screenshots`.
 
 ## Data and integrations
 

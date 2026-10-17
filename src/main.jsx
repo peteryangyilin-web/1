@@ -32,7 +32,6 @@ import {
   CheckCheck,
   ArrowDown,
   TrendingUp,
-  SlidersHorizontal,
   Info,
 } from "lucide-react";
 import "@fontsource-variable/dm-sans";
@@ -58,7 +57,6 @@ import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 const TABS = [
   [LayoutGrid, "Overview"],
-  [CalendarDays, "My plan"],
   [Dumbbell, "Training"],
   [Utensils, "Nutrition"],
   [ChartNoAxesCombined, "Progress"],
@@ -393,7 +391,6 @@ function App() {
             >
               <Icon size={18} />
               <span>{label}</span>
-              {label === "My plan" && <small>{weekTarget}</small>}
             </button>
           ))}
         </nav>
@@ -507,10 +504,6 @@ function App() {
                     , {profile.name.split(" ")[0]}
                     <em>.</em>
                   </>
-                ) : tab === "My plan" ? (
-                  <>
-                    A plan that moves with you<em>.</em>
-                  </>
                 ) : tab === "Training" ? (
                   <>
                     One rep closer<em>.</em>
@@ -532,15 +525,13 @@ function App() {
               <p>
                 {tab === "Overview"
                   ? "Your training, nutrition, and recovery. All coming together."
-                  : tab === "My plan"
-                    ? "Make space for the things that make you stronger."
-                    : tab === "Training"
-                      ? "Your sessions, your sets, your own kind of stronger."
-                      : tab === "Nutrition"
-                        ? "Every meal counts. Build a balanced day, one plate at a time."
-                        : tab === "Snack break"
-                          ? "Your own little space to pause, play, and enjoy."
-                          : "A clear view of the work you’ve put in."}
+                  : tab === "Training"
+                    ? "Your sessions, your sets, your own kind of stronger."
+                    : tab === "Nutrition"
+                      ? "Every meal counts. Build a balanced day, one plate at a time."
+                      : tab === "Snack break"
+                        ? "Your own little space to pause, play, and enjoy."
+                        : "A clear view of the work you’ve put in."}
               </p>
             </div>
             <button
@@ -579,9 +570,9 @@ function App() {
                 </p>
                 <button
                   className="primary-button"
-                  onClick={() => navigate("My plan")}
+                  onClick={() => navigate("Training")}
                 >
-                  Explore your plan <ArrowUpRight size={17} />
+                  Explore training <ArrowUpRight size={17} />
                 </button>
                 <div className="hero-caption">
                   <span /> REAL EFFORT. REAL PROGRESS.
@@ -620,7 +611,7 @@ function App() {
                         key={d}
                         onClick={() => {
                           setSelected(d);
-                          navigate("My plan");
+                          navigate("Training");
                         }}
                         className={d === selected ? "selected" : ""}
                       >
@@ -664,7 +655,6 @@ function App() {
             </section>
           )}
           {(tab === "Overview" ||
-            tab === "My plan" ||
             tab === "Training" ||
             tab === "Nutrition") && (
             <>
@@ -755,7 +745,7 @@ function App() {
               </div>
             </>
           )}
-          {(tab === "Overview" || tab === "My plan" || tab === "Training") && (
+          {(tab === "Overview" || tab === "Training") && (
             <div
               className={
                 "dashboard-grid " +
@@ -978,7 +968,7 @@ function App() {
               </section>
             </>
           )}
-          {(tab === "Overview" || tab === "My plan") && (
+          {tab === "Overview" && (
             <>
               <div className="metrics-grid">
                 <Metric
@@ -1079,74 +1069,6 @@ function App() {
                 </button>
               </div>
             </>
-          )}
-          {tab === "My plan" && (
-            <section className="panel weekly-plan">
-              <div className="card-top">
-                <div>
-                  <h3>Every day has a purpose.</h3>
-                  <p className="subtle">
-                    Your schedule follows your goal and weekly training
-                    frequency.
-                  </p>
-                </div>
-                <button
-                  className="text-button"
-                  onClick={() => setModal({ type: "settings" })}
-                >
-                  Adjust goals <SlidersHorizontal size={14} />
-                </button>
-              </div>
-              {dates.map((d) => {
-                const r = store.records[d],
-                  p = getPlan(d, profile, r);
-                return (
-                  <button
-                    className={
-                      "weekly-plan-row " + (d === selected ? "selected" : "")
-                    }
-                    key={d}
-                    onClick={() => {
-                      setSelected(d);
-                      navigate("Training");
-                    }}
-                  >
-                    <span className="plan-date">
-                      {parseDate(d).toLocaleDateString("en-US", {
-                        weekday: "short",
-                      })}
-                      <strong>{parseDate(d).getDate()}</strong>
-                    </span>
-                    <span className={"plan-type-icon " + p.type.toLowerCase()}>
-                      {p.type === "Recovery" ? (
-                        <Moon size={20} />
-                      ) : p.type === "Endurance" ? (
-                        <Activity size={20} />
-                      ) : (
-                        <Dumbbell size={20} />
-                      )}
-                    </span>
-                    <div>
-                      <strong>{p.title}</strong>
-                      <small>{p.focus}</small>
-                    </div>
-                    <span className="plan-duration">{p.duration} min</span>
-                    <span
-                      className={
-                        "plan-status " + (r?.session?.completedAt ? "done" : "")
-                      }
-                    >
-                      {r?.session?.completedAt
-                        ? "Completed"
-                        : d === today
-                          ? "Today"
-                          : p.type}
-                    </span>
-                    <ArrowUpRight size={16} />
-                  </button>
-                );
-              })}
-            </section>
           )}
           {tab === "Training" && (
             <section className="panel">

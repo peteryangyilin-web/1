@@ -13,7 +13,10 @@ let activeBrowser;
     args: ["--no-sandbox"],
   });
   activeBrowser = b;
-  const p = await b.newPage({ viewport: { width: 1440, height: 1100 } });
+  const p = await b.newPage({
+    viewport: { width: 1440, height: 1100 },
+    reducedMotion: "reduce",
+  });
   p.setDefaultTimeout(7000);
   const errors = [];
   p.on("pageerror", (e) => errors.push(e.message));
@@ -21,6 +24,26 @@ let activeBrowser;
   await p.evaluate(() => localStorage.clear());
   await p.reload();
   await p.getByRole("heading", { name: /Good/ }).waitFor();
+  assert.equal(
+    await p.getByRole("button", { name: "My plan", exact: true }).count(),
+    0,
+  );
+  await p
+    .getByRole("button", { name: "Explore training", exact: true })
+    .click();
+  assert.equal(
+    await p.locator('nav button[aria-current="page"]').textContent(),
+    "Training",
+  );
+  await p.getByRole("button", { name: "Overview", exact: true }).click();
+  await p.locator(".preview-week button").first().click();
+  assert.equal(
+    await p.locator('nav button[aria-current="page"]').textContent(),
+    "Training",
+  );
+  await p.getByRole("button", { name: "Today", exact: true }).click();
+  await p.getByRole("button", { name: "Overview", exact: true }).click();
+
   assert.equal(
     await p
       .locator("body")
@@ -178,7 +201,6 @@ let activeBrowser;
   await p.setViewportSize({ width: 390, height: 844 });
   for (const tab of [
     "Overview",
-    "My plan",
     "Training",
     "Nutrition",
     "Progress",
@@ -203,7 +225,7 @@ let activeBrowser;
   });
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: profile persistence, metrics, meal add/edit/delete, water persistence, date isolation, plan editing, timer, completion validation, set recovery, history, goal calculation, CSV export, all 6 mobile views; snack selection, sound toggle, unwrap, bite completion, game persistence, keyboard control, and no virtual calorie logging; no browser errors.",
+    "PASS: profile persistence, metrics, meal add/edit/delete, water persistence, date isolation, plan editing, timer, completion validation, set recovery, history, goal calculation, CSV export, all 5 mobile views; snack selection, sound toggle, unwrap, bite completion, game persistence, keyboard control, and no virtual calorie logging; no browser errors.",
   );
   await b.close();
 })().catch(async (e) => {
