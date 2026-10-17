@@ -56,6 +56,8 @@ Legacy Forma profile preferences are migrated automatically; internal legacy sto
 
 ## Cat demonstration assets
 
+The cat coach is styled after the supplied brown-and-white long-haired tabby reference: a round face, dark forehead stripes, olive eyes, white muzzle, pink nose, and white paws. Its generated transparent portrait is stored at `public/cat-coach/portrait.png` and is shared by the SVG source renderer.
+
 The GIFs and posters in `public/exercises` are local assets. They do not require an external image/video host. Their original animated SVG poses live in `src/exerciseDemos.js` and `src/components/ExerciseDemo.jsx`.
 
 To regenerate them with the dev server running (requires Chromium and Python with Pillow):

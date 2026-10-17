@@ -19,6 +19,11 @@ try {
     deviceScaleFactor: 1,
   });
   await page.goto(process.env.BASE_URL || "http://localhost:5173");
+  await page.evaluate(async () => {
+    const portrait = new Image();
+    portrait.src = "/cat-coach/portrait.png";
+    await portrait.decode();
+  });
   for (const [id, demo] of Object.entries(EXERCISE_DEMOS)) {
     if (process.argv.length > 2 && !process.argv.slice(2).includes(id))
       continue;

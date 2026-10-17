@@ -298,28 +298,28 @@ export function CatAnimation({ demo, paused = false }) {
           `M${p.hip.join(",")} Q${p.hip[0] + 37},${p.hip[1] + 22} ${p.hip[0] + 43},${p.hip[1] - 3}`,
         {
           fill: "none",
-          stroke: "#cc9464",
+          stroke: "#756957",
           strokeWidth: 7,
           strokeLinecap: "round",
         },
       )}
       {motionPath((p) => limb(p, "right", "leg"), {
         fill: "none",
-        stroke: "#c8986d",
+        stroke: "#c5beb0",
         strokeWidth: 11,
         strokeLinejoin: "round",
         strokeLinecap: "round",
       })}
       {motionPath((p) => limb(p, "right", "arm"), {
         fill: "none",
-        stroke: "#c8986d",
+        stroke: "#c5beb0",
         strokeWidth: 8,
         strokeLinejoin: "round",
         strokeLinecap: "round",
       })}
       {motionPath((p) => line(p.shoulder, p.hip), {
         fill: "none",
-        stroke: "#e2b285",
+        stroke: "#9d8b72",
         strokeWidth: 26,
         strokeLinecap: "round",
       })}
@@ -329,21 +329,34 @@ export function CatAnimation({ demo, paused = false }) {
         strokeWidth: 24,
         strokeLinecap: "round",
       })}
+      {motionPath(
+        (p) =>
+          line(
+            [p.shoulder[0], p.shoulder[1] - 3],
+            [p.shoulder[0], p.shoulder[1] + 15],
+          ),
+        {
+          fill: "none",
+          stroke: "#f6f3eb",
+          strokeWidth: 12,
+          strokeLinecap: "round",
+        },
+      )}
       {motionPath((p) => line(p.shoulder, [p.head[0], p.head[1] + 12]), {
-        stroke: "#e4b68a",
+        stroke: "#f0ede4",
         strokeWidth: 12,
         strokeLinecap: "round",
       })}
       {motionPath((p) => limb(p, "left", "leg"), {
         fill: "none",
-        stroke: "#e1b184",
+        stroke: "#efede5",
         strokeWidth: 11,
         strokeLinejoin: "round",
         strokeLinecap: "round",
       })}
       {motionPath((p) => limb(p, "left", "arm"), {
         fill: "none",
-        stroke: "#e6bb91",
+        stroke: "#b6a48a",
         strokeWidth: 8,
         strokeLinejoin: "round",
         strokeLinecap: "round",
@@ -359,7 +372,7 @@ export function CatAnimation({ demo, paused = false }) {
             },
             {
               fill: "none",
-              stroke: "#8a9f6b",
+              stroke: "#e8e5dc",
               strokeWidth: 7,
               strokeLinecap: "round",
               strokeLinejoin: "round",
@@ -432,8 +445,8 @@ export function CatAnimation({ demo, paused = false }) {
           <ellipse
             rx="5"
             ry="4.5"
-            fill="#f0c9a2"
-            stroke="#cca17b"
+            fill="#f6f3eb"
+            stroke="#c9c3b5"
             strokeWidth=".6"
           />,
         ),
@@ -448,43 +461,13 @@ export function CatAnimation({ demo, paused = false }) {
             dur={`${demo.duration}s`}
             repeatCount="indefinite"
           />
-          <path
-            d="M-17-9L-18-27L-5-17M17-9L18-27L5-17"
-            fill="#e4b68b"
-            stroke="#c58e63"
-            strokeWidth="1.1"
-            strokeLinejoin="round"
-          />
-          <path d="M-14-15L-15-23L-9-17M14-15L15-23L9-17" fill="#deb0a5" />
-          <ellipse
-            rx="20"
-            ry="18"
-            fill="#ecc39c"
-            stroke="#d5a479"
-            strokeWidth="1"
-          />
-          <path
-            d="M-7-16L-5-11M0-17V-11M7-16L5-11"
-            stroke="#c69162"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <ellipse cx="-7" cy="-2" rx="2" ry="2.8" fill="#4e513e" />
-          <ellipse cx="7" cy="-2" rx="2" ry="2.8" fill="#4e513e" />
-          <ellipse cy="7" rx="9" ry="6" fill="#f8dfbf" />
-          <path d="M-3 4Q0 2 3 4L0 7Z" fill="#ba8b7b" />
-          <path
-            d="M0 7V9M0 9Q-3 12-5 9M0 9Q3 12 5 9"
-            fill="none"
-            stroke="#7a7258"
-            strokeWidth="1"
-            strokeLinecap="round"
-          />
-          <path
-            d="M-14 4L-25 1M-14 8L-25 9M14 4L25 1M14 8L25 9"
-            stroke="#a18c6a"
-            strokeWidth=".9"
-            strokeLinecap="round"
+          <image
+            href="/cat-coach/portrait.png"
+            x="-32"
+            y="-29"
+            width="64"
+            height="58"
+            preserveAspectRatio="xMidYMid meet"
           />
         </g>,
       )}
