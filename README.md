@@ -72,3 +72,7 @@ npm run generate:demos -- squat
 The capture helper in `scripts/demoCapture.jsx` is development tooling and is not an application route. Regeneration is not needed for a production build; the generated assets are checked in.
 
 With the development server running, `npm run test:cats` verifies every built-in GIF decodes, frames visibly animate, pause/play and form tips work, session demonstrations appear, mobile layout fits, and reduced-motion users initially get static posters. `npm test` also checks exercise-to-demo mappings and bundled asset coverage.
+
+## Navigation drawer
+
+The navigation stays hidden until the pointer reaches the left edge. Opening it slides the main screen and its GO logo right together. The header menu button provides the same navigation on touch screens and keyboards; Escape or clicking outside closes it. The bottom profile remains in the drawer; the workspace heading and coach promotion have been removed.

@@ -18,6 +18,11 @@ let activeBrowser;
     reducedMotion: "reduce",
   });
   p.setDefaultTimeout(7000);
+  const navTo = async (label) => {
+    if (await p.locator('#go-navigation').getAttribute('aria-hidden') === 'true')
+      await p.getByRole('button', { name: 'Open navigation', exact: true }).click();
+    await p.locator('#go-navigation').getByRole('button', { name: label, exact: true }).click();
+  };
   const errors = [];
   p.on("pageerror", (e) => errors.push(e.message));
   await p.goto(process.env.BASE_URL || "http://localhost:5173");
@@ -59,7 +64,7 @@ let activeBrowser;
     await p.locator('nav [aria-current="page"]').textContent(),
     "Training",
   );
-  await p.getByRole("button", { name: "Progress", exact: true }).click();
+  await navTo("Progress");
   console.log("metrics");
   await p.getByRole("button", { name: "Log metrics", exact: true }).click();
   await p.getByLabel("Steps", { exact: true }).fill("8432");
@@ -71,7 +76,7 @@ let activeBrowser;
     1,
   );
   console.log("food");
-  await p.getByRole("button", { name: "Nutrition", exact: true }).click();
+  await navTo("Nutrition");
   await p.getByRole("button", { name: "Add meal", exact: true }).click();
   await p.getByLabel("Meal name").fill("Salmon lunch");
   await p.getByLabel("Calories · kcal", { exact: true }).fill("500");
@@ -93,7 +98,7 @@ let activeBrowser;
   assert.match(await p.locator(".calorie-ring").textContent(), /520/);
   await p.getByRole("button", { name: "Add glass of water" }).click();
   await p.reload();
-  await p.getByRole("button", { name: "Nutrition", exact: true }).click();
+  await navTo("Nutrition");
   assert.match(await p.locator(".water-value").textContent(), /1/);
   assert.match(await p.locator(".calorie-ring").textContent(), /520/);
   const today = await p
@@ -106,7 +111,7 @@ let activeBrowser;
     await p.getByRole("button", { name: "Today", exact: true }).click();
     assert.match(await p.locator(".calorie-ring").textContent(), /520/);
   }
-  await p.getByRole("button", { name: "Training", exact: true }).click();
+  await navTo("Training");
   await p.locator(".workout-card .tag").click();
   await p.getByLabel("Session name").fill("Test strength");
   await p.getByLabel("Exercises · one per line").fill("Squat\nRow");
@@ -131,7 +136,7 @@ let activeBrowser;
     .click();
   await p.getByRole("button", { name: "Finish session", exact: true }).click();
   await p.reload();
-  await p.getByRole("button", { name: "Training", exact: true }).click();
+  await navTo("Training");
   await p.getByRole("button", { name: "View session", exact: true }).waitFor();
   await p.getByRole("button", { name: "View session", exact: true }).click();
   assert.equal(await p.getByLabel("Squat set 1 weight").inputValue(), "40");
@@ -142,7 +147,7 @@ let activeBrowser;
     "true",
   );
   await p.keyboard.press("Escape");
-  await p.getByRole("button", { name: "Progress", exact: true }).click();
+  await navTo("Progress");
   assert.match(await p.locator(".weight-progress").textContent(), /50%/);
   assert.equal(await p.locator(".session-history button").count(), 1);
   const [download] = await Promise.all([
@@ -150,7 +155,7 @@ let activeBrowser;
     p.getByRole("button", { name: "Export data", exact: true }).click(),
   ]);
   assert.equal(download.suggestedFilename(), "go-progress.csv");
-  await p.getByRole("button", { name: "Snack break", exact: true }).click();
+  await navTo("Snack break");
   await p.getByRole("button", { name: /A satisfying crunch/ }).click();
   await p.getByRole("button", { name: "Enable snack sounds" }).click();
   assert.equal(
@@ -171,7 +176,7 @@ let activeBrowser;
     .getByRole("heading", { name: "A little moment, well spent." })
     .waitFor();
   await p.reload();
-  await p.getByRole("button", { name: "Snack break", exact: true }).click();
+  await navTo("Snack break");
   assert.match(await p.locator(".break-summary strong").textContent(), /1/);
   await p.getByRole("button", { name: /A little dark chocolate/ }).click();
   await p
@@ -194,9 +199,9 @@ let activeBrowser;
     path: path.join(screenshots, "go-snack-break.png"),
     fullPage: true,
   });
-  await p.getByRole("button", { name: "Nutrition", exact: true }).click();
+  await navTo("Nutrition");
   assert.match(await p.locator(".calorie-ring").textContent(), /520/);
-  await p.getByRole("button", { name: "Overview", exact: true }).click();
+  await navTo("Overview");
   await p.evaluate(() => window.scrollTo(0, 0));
   await p.waitForTimeout(180);
   await p.screenshot({
@@ -211,7 +216,7 @@ let activeBrowser;
     "Progress",
     "Snack break",
   ]) {
-    await p.getByRole("button", { name: tab, exact: true }).click();
+    await navTo(tab);
     await p.waitForTimeout(150);
     assert.equal(
       await p.evaluate(
@@ -221,7 +226,7 @@ let activeBrowser;
       `${tab} overflows mobile`,
     );
   }
-  await p.getByRole("button", { name: "Overview", exact: true }).click();
+  await navTo("Overview");
   await p.evaluate(() => window.scrollTo(0, 0));
   await p.waitForTimeout(180);
   await p.screenshot({

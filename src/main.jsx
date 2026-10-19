@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowUpRight,
@@ -32,6 +32,7 @@ import {
   ArrowDown,
   TrendingUp,
   Info,
+  Menu,
 } from "lucide-react";
 import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/manrope";
@@ -56,6 +57,7 @@ import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 import OverviewProfile from "./components/OverviewProfile";
 import Entrance from "./components/Entrance";
+import "./components/navigation.css";
 const TABS = [
   [LayoutGrid, "Overview"],
   [Dumbbell, "Training"],
@@ -132,7 +134,51 @@ function App() {
     [notice, setNotice] = useState(false),
     [toast, setToast] = useState(""),
     [saveError, setSaveError] = useState(false),
-    [clock, setClock] = useState(Date.now());
+    [clock, setClock] = useState(Date.now()),
+    [drawerOpen, setDrawerOpen] = useState(false);
+  const drawerRef = useRef(null),
+    navToggleRef = useRef(null),
+    drawerTimer = useRef(null);
+  const openDrawer = () => {
+    clearTimeout(drawerTimer.current);
+    setDrawerOpen(true);
+  };
+  const closeDrawer = (restoreFocus = false) => {
+    clearTimeout(drawerTimer.current);
+    setDrawerOpen(false);
+    if (restoreFocus) navToggleRef.current?.focus();
+  };
+  const leaveDrawer = (e) => {
+    if (
+      e.pointerType !== "mouse" ||
+      drawerRef.current?.contains(document.activeElement)
+    )
+      return;
+    clearTimeout(drawerTimer.current);
+    drawerTimer.current = setTimeout(() => setDrawerOpen(false), 180);
+  };
+  useEffect(() => () => clearTimeout(drawerTimer.current), []);
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        closeDrawer(true);
+      }
+    };
+    const onOutside = (e) => {
+      if (
+        !drawerRef.current?.contains(e.target) &&
+        !navToggleRef.current?.contains(e.target)
+      )
+        closeDrawer();
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onOutside);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onOutside);
+    };
+  }, [drawerOpen]);
   const today = dateKey(new Date()),
     profile = store.profile,
     dates = weekDates(selected),
@@ -218,6 +264,7 @@ function App() {
     });
   const notify = (text) => setToast(text);
   const navigate = (label) => {
+    closeDrawer(drawerRef.current?.contains(document.activeElement));
     setTab(label);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -356,30 +403,42 @@ function App() {
     return dateKey(d);
   });
   return (
-    <div className="app">
-      <aside className="sidebar">
-        <a
-          className="logo"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("Overview");
-          }}
-        >
-          <span className="go-symbol">
-            G<span>O</span>
-          </span>
-          <span className="registered">®</span>
-        </a>
-        <div className="workspace">
-          <div className="avatar">{initials}</div>
-          <div>
-            <strong>{profile.name}</strong>
-            <small>Personal workspace</small>
-          </div>
-          <span className="pro-tag">PERSONAL</span>
+    <div className={"app " + (drawerOpen ? "navigation-open" : "")}>
+      <div
+        className="navigation-edge"
+        aria-hidden="true"
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") openDrawer();
+        }}
+      />
+      <aside
+        id="go-navigation"
+        ref={drawerRef}
+        className="sidebar"
+        aria-label="Main navigation"
+        aria-hidden={!drawerOpen}
+        inert={!drawerOpen}
+        onPointerEnter={openDrawer}
+        onPointerLeave={leaveDrawer}
+        onBlur={(e) => {
+          if (
+            e.relatedTarget &&
+            !e.currentTarget.contains(e.relatedTarget) &&
+            e.relatedTarget !== navToggleRef.current
+          )
+            closeDrawer();
+        }}
+      >
+        <div className="drawer-heading">
+          <span>YOUR SPACE</span>
+          <button
+            className="icon-button"
+            aria-label="Close menu"
+            onClick={() => closeDrawer(true)}
+          >
+            <ChevronLeft size={17} />
+          </button>
         </div>
-        <span className="nav-label">YOUR SPACE</span>
         <nav>
           {TABS.map(([Icon, label]) => (
             <button
@@ -393,34 +452,23 @@ function App() {
             </button>
           ))}
         </nav>
-        <div className="sidebar-coach">
-          <div className="coach-icon">
-            <Sparkles size={21} />
-          </div>
-          <h3>
-            A little guidance.
-            <br />A lot of potential.
-          </h3>
-          <p>
-            Practical suggestions,
-            <br />
-            built from your own data.
-          </p>
-          <button onClick={() => setModal({ type: "coach" })}>
-            Your plan coach <ArrowUpRight size={15} />
-          </button>
-        </div>
         <div className="sidebar-bottom">
           <button
             className="nav-item"
-            onClick={() => setModal({ type: "settings" })}
+            onClick={() => {
+              closeDrawer(true);
+              setModal({ type: "settings" });
+            }}
           >
             <Settings size={18} />
             <span>Settings & goals</span>
           </button>
           <button
             className="profile-button"
-            onClick={() => setModal({ type: "settings" })}
+            onClick={() => {
+              closeDrawer(true);
+              setModal({ type: "settings" });
+            }}
           >
             <div className="avatar">{initials}</div>
             <div>
@@ -433,9 +481,44 @@ function App() {
       </aside>
       <div className="main-wrap">
         <header>
-          <div className="breadcrumb">
-            Your space <ChevronRight size={12} />
-            <strong>{tab}</strong>
+          <div className="header-navigation">
+            <button
+              ref={navToggleRef}
+              className="icon-button nav-toggle"
+              aria-label={drawerOpen ? "Close navigation" : "Open navigation"}
+              aria-expanded={drawerOpen}
+              aria-controls="go-navigation"
+              onClick={(e) => {
+                if (drawerOpen) closeDrawer();
+                else {
+                  openDrawer();
+                  if (e.detail === 0)
+                    requestAnimationFrame(() =>
+                      drawerRef.current?.querySelector("nav button")?.focus(),
+                    );
+                }
+              }}
+            >
+              <Menu size={18} />
+            </button>
+            <a
+              className="logo main-logo"
+              href="#"
+              aria-label="GO home"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("Overview");
+              }}
+            >
+              <span className="go-symbol">
+                G<span>O</span>
+              </span>
+              <span className="registered">®</span>
+            </a>
+            <div className="breadcrumb">
+              Your space <ChevronRight size={12} />
+              <strong>{tab}</strong>
+            </div>
           </div>
           <div className="header-actions">
             <span className={"saved-state " + (saveError ? "error" : "")}>

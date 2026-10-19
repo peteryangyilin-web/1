@@ -26,6 +26,7 @@ let browser;
     .getByLabel("Sessions per week")
     .selectOption("6");
   await page.getByRole("button", { name: "Save preferences" }).click();
+  await page.getByRole("button", { name: "Open navigation", exact: true }).click();
   await page.getByRole("button", { name: "Training", exact: true }).click();
   const chooseDate = async (date) => {
     await page.locator(".date-button").click();
@@ -99,6 +100,7 @@ let browser;
   const context = await browser.newContext({ reducedMotion: "reduce" });
   const reduced = await context.newPage();
   await reduced.goto(process.env.BASE_URL || "http://localhost:5173");
+  await reduced.getByRole("button", { name: "Open navigation", exact: true }).click();
   await reduced.getByRole("button", { name: "Training", exact: true }).click();
   const d = reduced.locator("[data-exercise-demo]").first();
   await d.scrollIntoViewIfNeeded();
