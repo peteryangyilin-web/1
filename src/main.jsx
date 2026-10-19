@@ -55,6 +55,7 @@ import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 import OverviewProfile from "./components/OverviewProfile";
+import Entrance from "./components/Entrance";
 const TABS = [
   [LayoutGrid, "Overview"],
   [Dumbbell, "Training"],
@@ -1981,4 +1982,9 @@ function PlanForm({ plan, onSubmit, disabled }) {
     </>
   );
 }
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(document.getElementById("root")).render(
+  <>
+    <Entrance />
+    <App />
+  </>,
+);
