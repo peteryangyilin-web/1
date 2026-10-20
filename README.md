@@ -78,3 +78,5 @@ With the development server running, `npm run test:cats` verifies every built-in
 The navigation stays hidden until the pointer reaches the left edge. Opening it slides the main screen and its GO logo right together. The header menu button provides the same navigation on touch screens and keyboards; Escape or clicking outside closes it. The bottom profile remains in the drawer; the workspace heading and coach promotion have been removed.
 
 The white theme uses botanical green for primary actions and selected goals, with sky blue for the profile summary, hydration, and chart data. The GO logo retains its gray O. Shared color styling lives in `src/colorTheme.css`.
+
+Overview guides users through four screens: goal → gender → desired body type → personal details. Choice cards advance automatically; Back keeps the draft choices and inputs. Saving persists the complete profile on this device and opens Training. Gender and desired body type are profile preferences; the existing goal and weekly frequency determine the training schedule.

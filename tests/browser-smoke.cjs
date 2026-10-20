@@ -40,26 +40,33 @@ let activeBrowser;
       .evaluate((e) => getComputedStyle(e).color),
     "rgb(133, 133, 133)",
   );
-  await p.getByRole("radio", { name: /Lose fat/ }).check();
+  assert.equal(await p.getByLabel("Your name", {exact:true}).count(), 0);
+  await p.getByText("Lose fat", {exact:true}).click();
+  assert.equal(await p.getByRole("heading", {name:"Tell us about you",exact:true}).isVisible(), true);
+  await p.getByRole("button", {name:/^Female/}).click();
+  await p.getByRole("button", {name:/^Athletic/}).click();
   await p.getByLabel("Your name", { exact: true }).fill("Jordan Lee");
   await p.getByLabel("Age · years").fill("28");
   await p.getByLabel("Height · cm").fill("175");
   await p.getByLabel("Sessions per week").selectOption("3");
   await p
-    .getByRole("button", { name: "Save your profile", exact: true })
+    .getByRole("button", { name: "Save your profile and go to training", exact: true })
     .click();
+  assert.equal(await p.locator('nav [aria-current="page"]').textContent(), "Training");
   await p.reload();
+  assert.equal(await p.getByRole("radio", {name:/Lose fat/}).isChecked(), true);
+  await p.getByText("Lose fat", {exact:true}).click();
+  assert.equal(await p.getByRole("button", {name:/^Female/}).getAttribute("aria-pressed"), "true");
+  await p.getByRole("button", {name:/^Female/}).click();
+  assert.equal(await p.getByRole("button", {name:/^Athletic/}).getAttribute("aria-pressed"), "true");
+  await p.getByRole("button", {name:/^Athletic/}).click();
   assert.equal(
     await p.getByLabel("Your name", { exact: true }).inputValue(),
     "Jordan Lee",
   );
   assert.equal(await p.getByLabel("Age · years").inputValue(), "28");
   assert.equal(await p.getByLabel("Height · cm").inputValue(), "175");
-  assert.equal(
-    await p.getByRole("radio", { name: /Lose fat/ }).isChecked(),
-    true,
-  );
-  await p.getByRole("button", { name: "Go to training", exact: true }).click();
+  await p.getByRole("button", { name: "Save your profile and go to training", exact: true }).click();
   assert.equal(
     await p.locator('nav [aria-current="page"]').textContent(),
     "Training",

@@ -1,6 +1,8 @@
 export const DEFAULT_PROFILE = {
   name: "Alex Morgan",
   goal: "muscle",
+  gender: null,
+  bodyType: null,
   age: null,
   height: null,
   experience: "intermediate",

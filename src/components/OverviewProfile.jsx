@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Dumbbell,
   Activity,
@@ -9,6 +9,7 @@ import {
   UserRound,
   SlidersHorizontal,
   CalendarDays,
+  ArrowLeft,
 } from "lucide-react";
 import "./overviewProfile.css";
 const GOALS = [
@@ -37,15 +38,35 @@ const GOALS = [
     icon: Heart,
   },
 ];
+const BODY_TYPES = [
+  { id: "lean", title: "Lean", text: "A lighter, defined look." },
+  { id: "athletic", title: "Athletic", text: "Balanced strength and definition." },
+  { id: "strong", title: "Strong", text: "A fuller, muscular build." },
+];
+function BodyIllustration({ type = "athletic", gender }) {
+  const broad = type === "strong" ? 35 : type === "lean" ? 23 : 29;
+  return <svg viewBox="0 0 180 190" className="body-illustration" aria-hidden="true">
+    <ellipse cx="90" cy="178" rx="53" ry="6" fill="currentColor" opacity=".07" />
+    <circle cx="90" cy="33" r="17" fill="currentColor" opacity=".85" />
+    {gender === "female" && <path d="M72 33 Q66 5 90 9 Q115 8 110 48 L103 51 L101 29 Q87 33 78 23 L77 47 L69 45Z" fill="currentColor" />}
+    <path d={`M${90-broad} 60 Q90 48 ${90+broad} 60 L${108+(broad-23)/2} 111 L${gender==='female'?116:110} 163 Q113 174 102 174 L90 124 L78 174 Q67 174 67 163 L${gender==='female'?74:72} 111Z`} fill="currentColor" opacity=".75" />
+    <path d={`M${90-broad} 64 L${51-(broad-23)/2} 112 M${90+broad} 64 L${129+(broad-23)/2} 112`} fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" opacity=".75" />
+    <path d="M78 85 Q90 91 102 85 M90 95 V108" fill="none" stroke="white" strokeWidth="2" opacity=".4" />
+  </svg>;
+}
 export default function OverviewProfile({ profile, onSave, onTraining }) {
   const [draft, setDraft] = useState(profile),
-    [saved, setSaved] = useState(false);
+    [step, setStep] = useState(0);
+  const headingRef = useRef(null);
+  const stepTitles = ["Choose your goal", "Tell us about you", "Choose your ideal body type", "Fill in your information"];
+  const goToStep = (next) => { setStep(next); window.scrollTo({ top: 0, behavior: "instant" }); };
+  useEffect(() => { headingRef.current?.focus({ preventScroll: true }); }, [step]);
   useEffect(() => {
     setDraft(profile);
   }, [profile]);
   const set = (key, value) => {
     setDraft((p) => ({ ...p, [key]: value }));
-    setSaved(false);
+
   };
   const goal = GOALS.find((g) => g.id === draft.goal) || GOALS[0],
     GoalIcon = goal.icon;
@@ -70,6 +91,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
       className="profile-overview"
       onSubmit={(e) => {
         e.preventDefault();
+        if (step !== 3) return;
         const numeric = [
           "age",
           "height",
@@ -89,21 +111,18 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
           next[key] =
             draft[key] === "" || draft[key] == null ? null : Number(draft[key]);
         onSave(next);
-        setSaved(true);
+        onTraining();
       }}
     >
-      <section className="profile-goal-section">
-        <div className="profile-section-heading">
-          <span className="section-number">01</span>
-          <div>
-            <h2>What are you working toward?</h2>
-            <p>
-              Choose the goal that feels right for you. You can change it
-              anytime.
-            </p>
-          </div>
-          <span className="profile-step-label">YOUR DIRECTION</span>
-        </div>
+      <div className="wizard-progress" aria-label={`Step ${step + 1} of 4`}>
+        {["Goal", "Gender", "Body type", "Your details"].map((label, index) => <span key={label} className={index <= step ? "reached" : ""} aria-current={index === step ? "step" : undefined}><i />{label}</span>)}
+      </div>
+      <div className="wizard-heading">
+        <span className="eyebrow">STEP 0{step + 1} / 04</span>
+        <h2 ref={headingRef} tabIndex={-1}>{stepTitles[step]}</h2>
+        <p>{["Start with what matters to you. We’ll take it from here.", "Choose an option to continue.", "Pick the direction that feels like you. You can change it anytime.", "Your starting point. Your rhythm. Your own pace."][step]}</p>
+      </div>
+      {step === 0 && <section className="profile-goal-section wizard-stage" key="goal">
         <fieldset className="goal-choices">
           <legend className="sr-only">Choose your fitness goal</legend>
           {GOALS.map((g) => {
@@ -120,7 +139,8 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
                   name="goal"
                   value={g.id}
                   checked={draft.goal === g.id}
-                  onChange={() => set("goal", g.id)}
+                  onChange={() => { set("goal", g.id); goToStep(1); }}
+                  onClick={() => { if (draft.goal === g.id) goToStep(1); }}
                 />
                 <span className="goal-choice-icon">
                   <Icon size={22} strokeWidth={1.5} />
@@ -134,8 +154,23 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
             );
           })}
         </fieldset>
-      </section>
-      <div className="profile-content-grid">
+      </section>}
+      {step === 1 && <section className="wizard-stage" key="gender">
+        <div className="wizard-choices gender-choices" role="group" aria-label="Choose your gender">
+          {[{id:"male",title:"Male"},{id:"female",title:"Female"}].map(option => <button type="button" key={option.id} className={"wizard-choice " + (draft.gender === option.id ? "selected" : "")} aria-pressed={draft.gender === option.id} onClick={() => { set("gender", option.id); goToStep(2); }}>
+            <BodyIllustration gender={option.id} /><strong>{option.title}</strong><span>Continue <ArrowUpRight size={15} /></span>
+          </button>)}
+        </div>
+      </section>}
+      {step === 2 && <section className="wizard-stage" key="body">
+        <div className="wizard-choices body-choices" role="group" aria-label="Choose your ideal body type">
+          {BODY_TYPES.map(option => <button type="button" key={option.id} className={"wizard-choice " + (draft.bodyType === option.id ? "selected" : "")} aria-pressed={draft.bodyType === option.id} onClick={() => { set("bodyType", option.id); goToStep(3); }}>
+            <BodyIllustration type={option.id} gender={draft.gender} /><strong>{option.title}</strong><p>{option.text}</p><span>Choose this direction <ArrowUpRight size={15} /></span>
+          </button>)}
+        </div>
+        <p className="wizard-note">A personal preference, not a promised result. Your goal and weekly schedule guide your training.</p>
+      </section>}
+      {step === 3 && <div className="profile-content-grid wizard-stage" key="details">
         <div className="profile-main-column">
           <section className="panel profile-info-panel">
             <div className="profile-section-heading">
@@ -263,6 +298,10 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
               <dd>{goal.title}</dd>
             </div>
             <div>
+              <dt>YOUR DIRECTION</dt>
+              <dd>{BODY_TYPES.find(b => b.id === draft.bodyType)?.title || "—"} · {draft.gender === "female" ? "Female" : "Male"}</dd>
+            </div>
+            <div>
               <dt>YOUR WEEK</dt>
               <dd>
                 {draft.days} sessions <span>/ week</span>
@@ -289,31 +328,16 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
             </span>
           </div>
         </aside>
-      </div>
-      <div className="profile-save-bar">
-        <span>
-          {saved ? (
-            <>
-              <Check size={15} />
-              Profile saved.
-            </>
-          ) : (
-            <>Make it yours. Save when you’re ready.</>
-          )}
-        </span>
+      </div>}
+      {step === 3 && <div className="profile-save-bar">
+        <span>Your profile stays on this device.</span>
         <div>
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={onTraining}
-          >
-            Go to training <ArrowUpRight size={15} />
-          </button>
           <button type="submit" className="primary-button">
-            Save your profile <Check size={15} />
+            Save your profile and go to training <ArrowUpRight size={15} />
           </button>
         </div>
-      </div>
+      </div>}
+      {step > 0 && <button type="button" className="wizard-back secondary-button" onClick={() => goToStep(step - 1)}><ArrowLeft size={15} /> Back</button>}
     </form>
   );
 }
