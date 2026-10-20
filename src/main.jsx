@@ -58,6 +58,7 @@ import ExerciseDemo from "./components/ExerciseDemo";
 import OverviewProfile from "./components/OverviewProfile";
 import Entrance from "./components/Entrance";
 import "./components/navigation.css";
+import "./colorTheme.css";
 const TABS = [
   [LayoutGrid, "Overview"],
   [Dumbbell, "Training"],

@@ -76,3 +76,5 @@ With the development server running, `npm run test:cats` verifies every built-in
 ## Navigation drawer
 
 The navigation stays hidden until the pointer reaches the left edge. Opening it slides the main screen and its GO logo right together. The header menu button provides the same navigation on touch screens and keyboards; Escape or clicking outside closes it. The bottom profile remains in the drawer; the workspace heading and coach promotion have been removed.
+
+The white theme uses botanical green for primary actions and selected goals, with sky blue for the profile summary, hydration, and chart data. The GO logo retains its gray O. Shared color styling lives in `src/colorTheme.css`.

@@ -1,0 +1,79 @@
+/* A quiet white canvas, with botanical green actions and sky-blue data. */
+:root {
+  --accent: #187451;
+  --accent-soft: #e7f5ed;
+  --green: #187451;
+  --green-bright: #38a579;
+  --green-wash: #f0f8f3;
+  --sky: #147ba8;
+  --sky-bright: #67bce8;
+  --sky-wash: #edf7fd;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.goal-choice:focus-within {
+  outline-color: var(--sky);
+}
+.primary-button,
+.profile-save-bar .primary-button {
+  background: var(--green);
+  box-shadow: 0 3px 12px #18745114;
+}
+.primary-button:hover:not(:disabled),
+.profile-save-bar .primary-button:hover:not(:disabled) {
+  background: #105d40;
+  box-shadow: 0 5px 16px #18745124;
+}
+.lime-button { background: var(--accent-soft); color: #185f43; }
+.lime-button:hover:not(:disabled) { background: #d4eddf; }
+.secondary-button:hover:not(:disabled) { background: var(--sky-wash); border-color: #b4d9ed; }
+.saved-state i,
+.green-dot,
+footer .green-dot { background: var(--green-bright); }
+.navigation-edge:after { background: var(--sky-bright); }
+.nav-item.active { background: var(--accent-soft); color: var(--green); }
+.nav-item.active:before { background: var(--green-bright); }
+.nav-item:hover { background: var(--green-wash); color: var(--green); }
+.avatar { background: var(--sky-wash); color: var(--sky); border-color: #d0e8f4; }
+/* Overview: the selected goal is green; the live summary is softly blue. */
+.goal-choice-icon { background: var(--sky-wash); color: var(--sky); }
+.goal-choice:nth-child(odd) .goal-choice-icon { background: var(--accent-soft); color: var(--green); }
+.goal-choice:hover { border-color: #83bca2; }
+.goal-choice.selected { background: var(--green-wash); border-color: var(--green); box-shadow: 0 0 0 1px var(--green); }
+.goal-choice.selected .goal-choice-icon,
+.goal-choice.selected .goal-radio { background: var(--green); color: #fff; border-color: var(--green); }
+.section-number { color: var(--sky); border-color: #c6e2f0; background: var(--sky-wash); }
+.profile-summary { background: var(--sky-wash); border-color: #d7eaf5; }
+.profile-summary-icon { color: var(--sky); border-color: #d0e8f4; }
+.profile-summary dl > div,
+.profile-summary-note { border-color: #d0e3ed; }
+.profile-summary .eyebrow,
+.profile-summary dt { color: #537283; }
+.profile-summary > p,
+.profile-summary-note { color: #577080; }
+.profile-main-column .field input:focus,
+.profile-main-column .field select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px #147ba810; }
+/* Consistent color roles across training, nutrition and progress. */
+.week-day.selected { background: var(--sky-wash); }
+.week-day.selected > strong,
+.today-button,
+.water-card h3 svg,
+.water-glasses .filled { color: var(--sky); }
+.week-day > i > span,
+.progress-track > i,
+.segment-track i.filled,
+.streak-days i.on { background: var(--green-bright); }
+.calorie-ring .ring-progress { stroke: var(--green-bright); }
+.macro-track > i { background: var(--green-bright); }
+.carbs .macro-track > i { background: var(--sky-bright); }
+.fats .macro-track > i { background: #a7becf; }
+.mini-bars i,
+.chart-bar { background: var(--sky-bright); }
+.chart-bar.missing { background: #e9eff2; }
+.water-card { background: #f6fbfe; border-color: #dcecf5; }
+.food-icon { color: var(--green); background: var(--green-wash); }
+.snack-option.selected { background: var(--green-wash); border-color: #83bca2; }
+.selection-check { color: var(--green); }
