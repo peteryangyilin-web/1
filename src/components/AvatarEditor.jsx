@@ -28,7 +28,7 @@ export default function AvatarEditor({ value, onSave, onClose }) {
     ctx.fillRect(0, 0, 256, 256);
     ctx.drawImage(image, (image.naturalWidth - side) * x / 100, (image.naturalHeight - side) * y / 100, side, side, 0, 0, 256, 256);
   }, [image, zoom, x, y]);
-  return <dialog ref={dialog} className="avatar-editor" aria-labelledby="avatar-editor-title" onCancel={onClose} onClick={e => { if (e.target === dialog.current) { const r = dialog.current.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) onClose(); } }}>
+  return <dialog ref={dialog} className="avatar-editor" aria-labelledby="avatar-editor-title" onCancel={onClose} onKeyDown={e => { if (e.key === "Escape" || e.key === "Tab") e.stopPropagation(); }} onClick={e => { if (e.target === dialog.current) { const r = dialog.current.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) onClose(); } }}>
     <div className="avatar-editor-top"><span className="eyebrow">MAKE IT YOURS</span><button type="button" className="icon-button" aria-label="Close avatar editor" onClick={onClose}><X size={18} /></button></div>
     <h2 id="avatar-editor-title">Create your own avatar?</h2>
     <p>You, your pet, or something you love. Give your GO character a little personality.</p>

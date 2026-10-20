@@ -56,6 +56,7 @@ import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 import OverviewProfile from "./components/OverviewProfile";
+import AvatarEditor from "./components/AvatarEditor";
 import Entrance from "./components/Entrance";
 import "./components/navigation.css";
 import "./colorTheme.css";
@@ -472,7 +473,7 @@ function App() {
               setModal({ type: "settings" });
             }}
           >
-            <div className="avatar">{initials}</div>
+            <div className="avatar">{profile.avatar ? <img src={profile.avatar} alt="" /> : initials}</div>
             <div>
               <strong>{profile.name}</strong>
               <small>Be a little better.</small>
@@ -542,7 +543,7 @@ function App() {
               aria-label="Profile settings"
               onClick={() => setModal({ type: "settings" })}
             >
-              {initials}
+              {profile.avatar ? <img src={profile.avatar} alt="" /> : initials}
             </button>
           </div>
           {notice && (
@@ -1875,6 +1876,8 @@ function MetricsForm({ record, selected, disabled, onSubmit }) {
   );
 }
 function SettingsForm({ profile, onSubmit }) {
+  const [avatar, setAvatar] = useState(profile.avatar || null);
+  const [editingAvatar, setEditingAvatar] = useState(false);
   return (
     <>
       <span className="eyebrow">BUILT AROUND YOUR LIFE</span>
@@ -1886,6 +1889,7 @@ function SettingsForm({ profile, onSubmit }) {
           const f = new FormData(e.currentTarget);
           onSubmit({
             ...profile,
+            avatar,
             name: f.get("name").trim(),
             goal: f.get("goal"),
             ...Object.fromEntries(
@@ -1905,6 +1909,16 @@ function SettingsForm({ profile, onSubmit }) {
           });
         }}
       >
+        <div className="settings-avatar-section">
+          <span className="field">Profile photo</span>
+          <div className="settings-avatar-row">
+            <div className="settings-avatar-preview">{avatar ? <img src={avatar} alt="Your profile photo" /> : <Activity size={28} strokeWidth={1.3} />}</div>
+            <div><button type="button" className="secondary-button" onClick={() => setEditingAvatar(true)}>{avatar ? "Change profile photo" : "Upload profile photo"}</button>
+            <p>You, your pet, or something you love.</p>
+            {avatar && <button type="button" className="settings-avatar-remove" onClick={() => setAvatar(null)}>Remove profile photo</button>}</div>
+          </div>
+          <small>Save preferences to keep your changes on this device.</small>
+        </div>
         <Field label="Your name" name="name" type="text" value={profile.name} />
         <div className="form-grid">
           <label className="field">
@@ -1974,6 +1988,7 @@ function SettingsForm({ profile, onSubmit }) {
           Save preferences <Check size={16} />
         </button>
       </form>
+      {editingAvatar && <AvatarEditor value={avatar} onClose={() => setEditingAvatar(false)} onSave={photo => { setAvatar(photo); setEditingAvatar(false); }} />}
     </>
   );
 }

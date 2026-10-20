@@ -544,3 +544,14 @@
 .avatar-editor-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:22px; }
 .avatar-editor-actions .secondary-button { padding:11px 16px; border-radius:5px; font-size:11px; }
 @media(max-width:650px) { .avatar-editor { padding:22px; } .wizard-avatar-trigger { padding:11px 12px; } }
+
+.avatar > img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.settings-avatar-section { margin:24px 0; padding-bottom:22px; border-bottom:1px solid var(--line); }
+.settings-avatar-section > .field { margin-bottom:12px; }
+.settings-avatar-row { display:flex; align-items:center; gap:20px; }
+.settings-avatar-preview { width:76px; height:76px; border-radius:50%; flex-shrink:0; display:grid; place-items:center; background:var(--sky-wash); color:var(--sky); overflow:hidden; border:1px solid #d0e8f4; }
+.settings-avatar-preview img { width:100%; height:100%; object-fit:cover; }
+.settings-avatar-row .secondary-button { padding:10px 14px; border-radius:5px; font-size:11px; }
+.settings-avatar-row p,.settings-avatar-section > small { font-size:10px; color:#78837e; line-height:1.8; }
+.settings-avatar-section > small { display:block; margin-top:14px; }
+.settings-avatar-remove { font-size:10px; color:#65766e; padding:0; text-decoration:underline; text-underline-offset:3px; }
