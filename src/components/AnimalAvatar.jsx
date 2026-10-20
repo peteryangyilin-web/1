@@ -13,7 +13,7 @@ const FEMALE_BUILDS = {
 };
 
 /** A whole animal character. Human-like posture, animal anatomy from ears to paws. */
-export default function AnimalAvatar({ species = "shiba", build = "athletic", gender = "male", className = "" }) {
+export default function AnimalAvatar({ species = "shiba", build = "athletic", gender = "male", showMuscles = true, className = "" }) {
   const unique = useId().replace(/:/g, "");
   const id = name => `animal-${unique}-${name}`;
   const cat = species === "selkirk";
@@ -33,7 +33,7 @@ export default function AnimalAvatar({ species = "shiba", build = "athletic", ge
   const leftLeg = (build === "strong" ? 96 : build === "athletic" ? 99 : 102) - (female ? 6 : 0);
   const rightLeg = 240-leftLeg;
   const paw = build === "strong" ? 19 : build === "athletic" ? 16 : 14;
-  return <svg className={`animal-avatar animal-avatar-${cat ? "selkirk" : "shiba"} animal-avatar-${build} ${className}`} viewBox="0 0 240 300" data-species={species} data-build={build} data-gender={female ? "female" : "male"} role="img" aria-label={`${cat ? "Selkirk Rex cat" : "Shiba Inu dog"} ${female ? "female" : "male"} ${build} full-body avatar`}>
+  return <svg className={`animal-avatar animal-avatar-${cat ? "selkirk" : "shiba"} animal-avatar-${build} ${className}`} viewBox="0 0 240 300" data-species={species} data-build={build} data-gender={female ? "female" : "male"} data-muscle-details={showMuscles ? "on" : "off"} role="img" aria-label={`${cat ? "Selkirk Rex cat" : "Shiba Inu dog"} ${female ? "female" : "male"} ${build} full-body avatar`}>
     <defs>
       <linearGradient id={id("coat")} x1=".2" y1="0" x2=".9" y2="1"><stop stopColor={cat ? "#fffefb" : "#efb46f"} /><stop offset="1" stopColor={coat} /></linearGradient>
       <linearGradient id={id("belly")} x1="0" y1="0" x2="0" y2="1"><stop stopColor={cream} /><stop offset="1" stopColor={cat ? "#faf0e2" : "#f5d6aa"} /></linearGradient>
@@ -49,12 +49,12 @@ export default function AnimalAvatar({ species = "shiba", build = "athletic", ge
       <g className="animal-tail" fill="none" strokeLinecap="round">
         {cat ? <><path d="M151 213Q196 238 196 190Q196 163 177 168Q164 174 180 184" stroke={coatDark} strokeWidth="20" /><path d="M156 212Q192 231 192 192" stroke="#c8976e" strokeWidth="12" /><path d="M177 168Q164 174 180 184" stroke={cream} strokeWidth="15" /></> : <><path d="M151 202Q190 208 190 180Q188 155 169 163Q151 169 165 182" stroke={coatDark} strokeWidth="24" /><path d="M155 200Q184 205 184 181Q183 165 171 170" stroke="#f5c486" strokeWidth="14" /><path d="M170 170Q159 174 165 182" stroke={cream} strokeWidth="13" /></>}
       </g>
-      <g className="animal-body" data-shoulder-width={chest * 2} data-waist-width={waist * 2} data-hip-width={hip * 2} data-muscle-definition={shape.definition}>
+      <g className="animal-body" data-shoulder-width={chest * 2} data-waist-width={waist * 2} data-hip-width={hip * 2} data-muscle-definition={showMuscles ? shape.definition : 0}>
         {/* One continuous fur-covered body, with distinct shoulder and waist proportions. */}
         {[leftLeg, rightLeg].map((center, side) => <g key={side}>
           <path d={`M${center-shape.leg} 211Q${center-shape.leg-2} 231 ${center-shape.leg*.7} 251L${center-shape.leg*.6} 263Q${center} 275 ${center+shape.leg*.7} 262L${center+shape.leg*.65} 250Q${center+shape.leg} 227 ${center+shape.leg} 211Z`} fill={`url(#${id("coat")})`} />
           {cat && side === 1 && <path d={`M${center-shape.leg*.7} 218Q${center+shape.leg*.8} 213 ${center+shape.leg*.8} 234Q${center+3} 243 ${center-shape.leg*.65} 235Z`} fill={`url(#${id("patch")})`} />}
-          {build !== "lean" && <path d={`M${center-3} 229Q${center+shape.leg*.45} 236 ${center+shape.leg*.4} 249M${center-shape.leg*.55} 247Q${center-6} 252 ${center-5} 257`} fill="none" stroke={muscle} strokeOpacity={shape.definition*.6} strokeWidth={build === "strong" ? 2.3 : 1.6} strokeLinecap="round" />}
+          {showMuscles && build !== "lean" && <path className="animal-limb-contours" d={`M${center-3} 229Q${center+shape.leg*.45} 236 ${center+shape.leg*.4} 249M${center-shape.leg*.55} 247Q${center-6} 252 ${center-5} 257`} fill="none" stroke={muscle} strokeOpacity={shape.definition*.6} strokeWidth={build === "strong" ? 2.3 : 1.6} strokeLinecap="round" />}
           <path d={`M${center-paw} 260Q${center-paw+3} 251 ${center} 254Q${center+paw-2} 252 ${center+paw} 263L${center+paw} 270Q${center+paw-3} 278 ${center} 276Q${center-paw-3} 278 ${center-paw} 268Z`} fill={cream} />
           <path d={`M${center-6} 267V274M${center+4} 267V275`} stroke={coatDark} strokeOpacity=".4" strokeWidth="1.5" strokeLinecap="round" />
         </g>)}
@@ -64,9 +64,13 @@ export default function AnimalAvatar({ species = "shiba", build = "athletic", ge
           <path d={`M${120+waist} 183Q${125+hip} 181 ${128+hip} 217Q${120+hip*.6} 236 ${120+hip*.3} 224Q${120+hip*.55} 211 ${120+waist*.65} 204Z`} />
         </g>}
         <path d={belly} fill={`url(#${id("belly")})`} />
-        <g className="animal-muscle-contours" clipPath={`url(#${id("torso")})`} fill="none" stroke={muscle} strokeOpacity={shape.definition} strokeWidth={build === "strong" ? 2.7 : 1.8} strokeLinecap="round" strokeLinejoin="round">
-          {/* Upper chest stays smooth; abdominal and limb contours distinguish builds. */}
+        {showMuscles && <g className="animal-muscle-contours" clipPath={`url(#${id("torso")})`} fill="none" stroke={muscle} strokeOpacity={shape.definition} strokeWidth={build === "strong" ? 2.7 : 1.8} strokeLinecap="round" strokeLinejoin="round">
           {build !== "lean" && <>
+            <g className="animal-pectoral-contours">
+              <path d={`M${120-chest*.78} 149Q${120-chest*.4} 140 116 148M124 148Q${120+chest*.4} 140 ${120+chest*.78} 149`} />
+              <path d={`M${120-chest*.74} 160Q${120-chest*.4} 174 116 165M124 165Q${120+chest*.4} 174 ${120+chest*.74} 160`} />
+              <path d="M120 146V169" opacity=".65" />
+            </g>
             <path d={`M${120-chest*.62} 173L${120-waist*.8} 190M${120+chest*.62} 173L${120+waist*.8} 190`} opacity=".65" />
             {[178, 190, 202].map((y, index) => <g key={y}>
               <path d={`M116 ${y}Q${120-waist*.65} ${y-4} ${120-waist*.6} ${y+2}Q${120-waist*.65} ${y+9} 116 ${y+7}M124 ${y}Q${120+waist*.65} ${y-4} ${120+waist*.6} ${y+2}Q${120+waist*.65} ${y+9} 124 ${y+7}`} fill={muscle} fillOpacity={build === "strong" ? .09 : .04} strokeOpacity={index === 2 ? shape.definition*.65 : shape.definition} />
@@ -74,20 +78,20 @@ export default function AnimalAvatar({ species = "shiba", build = "athletic", ge
             <path d="M120 177V210" opacity=".5" strokeWidth="1.4" />
           </>}
           <path d={`M${120-waist*.82} 194Q${120-waist*.65} 205 ${120-waist*.4} 213M${120+waist*.82} 194Q${120+waist*.65} 205 ${120+waist*.4} 213`} opacity=".45" />
-        </g>
+        </g>}
         {/* Animal forelimbs, with visible deltoids and biceps on stronger builds. */}
         {build === "strong" ? <>
           <path d={`M${armLeft} 145Q53 156 60 178L80 197M${armRight} 145Q187 156 180 178L160 197`} stroke={coatDark} strokeWidth={shape.arm*1.9} fill="none" strokeLinecap="round" strokeLinejoin="round" />
           <path d={`M${armLeft+2} 143Q58 157 65 175L82 192M${armRight-2} 143Q182 157 175 175L158 192`} stroke={`url(#${id("coat")})`} strokeWidth={shape.arm*1.65} fill="none" strokeLinecap="round" strokeLinejoin="round" />
           {cat && <path d={`M${armLeft+2} 143Q58 157 65 175`} stroke={`url(#${id("patch")})`} strokeWidth={shape.arm*1.2} fill="none" strokeLinecap="round" />}
-          <path d="M67 143Q52 157 64 166M63 173Q70 169 77 177M173 143Q188 157 176 166M177 173Q170 169 163 177" fill="none" stroke={muscle} strokeOpacity=".65" strokeWidth="2.7" strokeLinecap="round" />
+          {showMuscles && <path className="animal-limb-contours" d="M67 143Q52 157 64 166M63 173Q70 169 77 177M173 143Q188 157 176 166M177 173Q170 169 163 177" fill="none" stroke={muscle} strokeOpacity=".65" strokeWidth="2.7" strokeLinecap="round" />}
           <ellipse cx="83" cy="196" rx="14" ry="15" fill={cream} transform="rotate(-25 83 196)" /><ellipse cx="157" cy="196" rx="14" ry="15" fill={cream} transform="rotate(25 157 196)" />
           <path d="M77 198L84 203M156 203L163 198" stroke={coatDark} strokeWidth="1.5" opacity=".4" />
         </> : <>
           <path d={`M${armLeft} 144Q${armLeft-10} 162 ${armLeft-14} 188L${armLeft-17} 210M${armRight} 144Q${armRight+10} 162 ${armRight+14} 188L${armRight+17} 210`} stroke={coatDark} strokeWidth={shape.arm*1.9} fill="none" strokeLinecap="round" />
           <path d={`M${armLeft+1} 142Q${armLeft-6} 162 ${armLeft-10} 187L${armLeft-13} 206M${armRight-1} 142Q${armRight+6} 162 ${armRight+10} 187L${armRight+13} 206`} stroke={`url(#${id("coat")})`} strokeWidth={shape.arm*1.6} fill="none" strokeLinecap="round" />
           {cat && <path d={`M${armLeft+1} 142Q${armLeft-6} 162 ${armLeft-10} 177`} stroke={`url(#${id("patch")})`} strokeWidth={shape.arm*1.25} fill="none" strokeLinecap="round" />}
-          {build === "athletic" && <path d={`M${armLeft-5} 148Q${armLeft-14} 158 ${armLeft-8} 166M${armLeft-7} 173Q${armLeft-13} 177 ${armLeft-11} 185M${armRight+5} 148Q${armRight+14} 158 ${armRight+8} 166M${armRight+7} 173Q${armRight+13} 177 ${armRight+11} 185`} fill="none" stroke={muscle} strokeOpacity=".45" strokeWidth="2" strokeLinecap="round" />}
+          {showMuscles && build === "athletic" && <path className="animal-limb-contours" d={`M${armLeft-5} 148Q${armLeft-14} 158 ${armLeft-8} 166M${armLeft-7} 173Q${armLeft-13} 177 ${armLeft-11} 185M${armRight+5} 148Q${armRight+14} 158 ${armRight+8} 166M${armRight+7} 173Q${armRight+13} 177 ${armRight+11} 185`} fill="none" stroke={muscle} strokeOpacity=".45" strokeWidth="2" strokeLinecap="round" />}
           <ellipse cx={armLeft-15} cy="211" rx={build === "lean" ? 10 : 12} ry="15" fill={cream} /><ellipse cx={armRight+15} cy="211" rx={build === "lean" ? 10 : 12} ry="15" fill={cream} />
           <path d={`M${armLeft-19} 215V222M${armLeft-12} 215V223M${armRight+12} 215V223M${armRight+19} 215V222`} stroke={coatDark} strokeWidth="1.4" opacity=".4" strokeLinecap="round" />
         </>}

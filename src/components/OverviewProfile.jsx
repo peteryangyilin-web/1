@@ -344,7 +344,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
       </div>}
       <div className="wizard-footer-actions">
       {step > 0 && <button type="button" className="wizard-back secondary-button" onClick={() => goToStep(step - 1)}><ArrowLeft size={15} /> Back</button>}
-      {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" aria-label="Select your avatar" onClick={() => setEditingAvatar(true)}><AnimalAvatar gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} /> Select your avatar <ArrowUpRight size={15} /></button>}
+      {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" aria-label="Select your avatar" onClick={() => setEditingAvatar(true)}><AnimalAvatar showMuscles={false} gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} /> Select your avatar <ArrowUpRight size={15} /></button>}
       </div>
       {editingAvatar && <AnimalAvatarPicker gender={draft.gender || "male"} value={draft.avatarCharacter || "shiba"} onClose={() => setEditingAvatar(false)} onSelect={avatarCharacter => { set("avatarCharacter", avatarCharacter); setEditingAvatar(false); }} />}
     </form>
