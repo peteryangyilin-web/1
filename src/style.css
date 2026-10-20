@@ -91,6 +91,10 @@ button svg {
 .avatar {
   width: 33px;
   height: 33px;
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  line-height: 1;
   border-radius: 50%;
   background: #ececec;
   border: 1px solid #dedede;

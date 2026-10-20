@@ -41,6 +41,8 @@ let activeBrowser;
     "rgb(133, 133, 133)",
   );
   assert.equal(await p.getByLabel("Your name", {exact:true}).count(), 0);
+  assert.equal(await p.locator('.goal-artwork').count(), 4);
+  assert.equal(await p.getByRole('button', {name:'Step 2: About you',exact:true}).isDisabled(), true);
   await p.getByText("Lose fat", {exact:true}).click();
   assert.equal(await p.getByRole("heading", {name:"Tell us about you",exact:true}).isVisible(), true);
   await p.getByRole("button", {name:/^Female/}).click();
@@ -49,6 +51,10 @@ let activeBrowser;
   await p.getByLabel("Age · years").fill("28");
   await p.getByLabel("Height · cm").fill("175");
   await p.getByLabel("Sessions per week").selectOption("3");
+  await p.getByRole('button', {name:'Step 1: Your goal',exact:true}).click();
+  assert.equal(await p.getByRole('heading', {name:'Choose your goal',exact:true}).isVisible(), true);
+  await p.getByRole('button', {name:'Step 4: Your details',exact:true}).click();
+  assert.equal(await p.getByLabel('Your name', {exact:true}).inputValue(), 'Jordan Lee');
   await p
     .getByRole("button", { name: "Save your profile and go to training", exact: true })
     .click();

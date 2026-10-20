@@ -10,9 +10,13 @@ import {
   SlidersHorizontal,
   CalendarDays,
   ArrowLeft,
+  Clock,
+  ShieldCheck,
 } from "lucide-react";
 import "./overviewProfile.css";
 import AvatarEditor from "./AvatarEditor";
+import GoalArtwork from "./GoalArtwork";
+import "./overviewExperience.css";
 const GOALS = [
   {
     id: "muscle",
@@ -60,10 +64,11 @@ function BodyIllustration({ type = "athletic", gender, avatar }) {
 export default function OverviewProfile({ profile, onSave, onTraining }) {
   const [draft, setDraft] = useState(profile),
     [step, setStep] = useState(0),
+    [furthestStep, setFurthestStep] = useState(0),
     [editingAvatar, setEditingAvatar] = useState(false);
   const headingRef = useRef(null);
   const stepTitles = ["Choose your goal", "Tell us about you", "Choose your ideal body type", "Fill in your information"];
-  const goToStep = (next) => { setStep(next); window.scrollTo({ top: 0, behavior: "instant" }); };
+  const goToStep = (next) => { setFurthestStep(previous => Math.max(previous, next)); setStep(next); window.scrollTo({ top: 0, behavior: "instant" }); };
   useEffect(() => { headingRef.current?.focus({ preventScroll: true }); }, [step]);
   useEffect(() => {
     setDraft(profile);
@@ -92,7 +97,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
   );
   return (
     <form
-      className="profile-overview"
+      className={`profile-overview overview-experience overview-step-${step}`}
       onSubmit={(e) => {
         e.preventDefault();
         if (step !== 3) return;
@@ -118,11 +123,12 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
         onTraining();
       }}
     >
-      <div className="wizard-progress" aria-label={`Step ${step + 1} of 4`}>
-        {["Goal", "Gender", "Body type", "Your details"].map((label, index) => <span key={label} className={index <= step ? "reached" : ""} aria-current={index === step ? "step" : undefined}><i />{label}</span>)}
-      </div>
+      <nav className="wizard-progress" aria-label="Profile setup progress">
+        {["Your goal", "About you", "Body type", "Your details"].map((label, index) => <button type="button" key={label} disabled={index > furthestStep} onClick={() => goToStep(index)} className={index <= step ? "reached" : ""} aria-current={index === step ? "step" : undefined} aria-label={`Step ${index + 1}: ${label}`}><span className="wizard-step-number">{index < step ? <Check size={12} /> : `0${index + 1}`}</span><span>{label}</span></button>)}
+        <span className="wizard-time"><Clock size={13} /> About 2 min</span>
+      </nav>
       <div className="wizard-heading">
-        <span className="eyebrow">STEP 0{step + 1} / 04</span>
+        <span className="eyebrow">YOUR NEXT CHAPTER · STEP 0{step + 1} OF 04</span>
         <h2 ref={headingRef} tabIndex={-1}>{stepTitles[step]}</h2>
         <p>{["Start with what matters to you. We’ll take it from here.", "Choose an option to continue.", "Pick the direction that feels like you. You can change it anytime.", "Your starting point. Your rhythm. Your own pace."][step]}</p>
       </div>
@@ -146,18 +152,19 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
                   onChange={() => { set("goal", g.id); goToStep(1); }}
                   onClick={() => { if (draft.goal === g.id) goToStep(1); }}
                 />
-                <span className="goal-choice-icon">
-                  <Icon size={22} strokeWidth={1.5} />
-                </span>
+                <span className="goal-card-top"><span className="goal-choice-icon"><Icon size={17} strokeWidth={1.5} /></span><span className="goal-card-index">0{GOALS.indexOf(g) + 1}</span></span>
+                <GoalArtwork goal={g.id} />
                 <span className="goal-radio">
                   {draft.goal === g.id && <Check size={11} />}
                 </span>
                 <strong>{g.title}</strong>
                 <p>{g.text}</p>
+                <span className="goal-card-continue">Let’s do this <ArrowUpRight size={17} /></span>
               </label>
             );
           })}
         </fieldset>
+        <div className="goal-friendly-note"><span><ShieldCheck size={15} /> Your pace. Your starting point.</span><span>Choose one to continue. You can always change it.</span></div>
       </section>}
       {step === 1 && <section className="wizard-stage" key="gender">
         <div className="wizard-choices gender-choices" role="group" aria-label="Choose your gender">

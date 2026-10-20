@@ -76,6 +76,18 @@ let browser;
   await page.reload();
   await page.locator('#go-intro').waitFor({state:'detached'});
   assert.equal(await page.locator('button[aria-label="Profile settings"] img').count(),1);
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({width, height:900});
+    const geometry = await page.locator('button[aria-label="Profile settings"]').evaluate(button => {
+      const image = button.querySelector('img');
+      const box = button.getBoundingClientRect(), photo = image.getBoundingClientRect();
+      return {width:box.width, height:box.height, imageWidth:photo.width, imageHeight:photo.height, padding:getComputedStyle(button).padding, overflow:getComputedStyle(button).overflow};
+    });
+    assert.equal(geometry.width, geometry.height, `profile button must stay square at ${width}px`);
+    assert.equal(geometry.imageWidth, geometry.imageHeight, `uploaded photo must stay square at ${width}px`);
+    assert.equal(geometry.padding, '0px', 'native button padding must not squeeze the image');
+    assert.equal(geometry.overflow, 'hidden', 'photo is clipped by the circular frame');
+  }
   assert.deepEqual(errors, []);
   console.log('PASS avatar upload errors, crop controls, photo-to-character integration, back/cancel, mobile layout, save/reload, removal, settings upload from both entry points, header/sidebar sync and Escape');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => { await browser?.close(); });

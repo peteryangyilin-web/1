@@ -567,7 +567,7 @@ function App() {
               leaving. <button onClick={exportData}>Export now</button>
             </div>
           )}
-          <section className="greeting">
+          <section className={"greeting " + (tab === "Overview" ? "overview-greeting" : "")}>
             <div>
               <div className="eyebrow">
                 {tab === "Overview"
@@ -606,7 +606,7 @@ function App() {
               </h1>
               <p>
                 {tab === "Overview"
-                  ? "Choose your goal. Tell us a little about yourself. Build your own starting point."
+                  ? "A little about you. A plan that feels like you."
                   : tab === "Training"
                     ? "Your sessions, your sets, your own kind of stronger."
                     : tab === "Nutrition"

@@ -1,0 +1,71 @@
+/* The home experience stays focused on one decision, with a little movement. */
+.overview-greeting { max-width:1160px; margin:10px auto 36px; align-items:flex-start; }
+.overview-greeting h1 { font-size:clamp(32px,3.5vw,48px); font-weight:550; letter-spacing:-2px; margin:17px 0 14px; }
+.overview-greeting h1 em { color:var(--green-bright); }
+.overview-greeting p { font-size:13px; color:#6d7c75; }
+.overview-experience { max-width:1160px; margin:0 auto; }
+.overview-experience .wizard-progress { display:flex; align-items:center; gap:0; max-width:none; border-top:1px solid #e4eae7; border-bottom:1px solid #e4eae7; padding:17px 0; margin:0 0 38px; }
+.wizard-progress > button { position:relative; display:flex; align-items:center; gap:9px; font-size:11px; padding:4px 24px 4px 0; color:#86928c; border-radius:3px; }
+.wizard-progress > button:not(:first-child) { padding-left:24px; }
+.wizard-progress > button:not(:first-child):before { content:""; height:1px; width:14px; background:#dbe3de; position:absolute; left:0; top:50%; transform:translateX(-7px); }
+.wizard-progress > button:disabled { opacity:1; color:#919b96; }
+.wizard-progress > button.reached { color:var(--green); }
+.wizard-step-number { width:26px; height:26px; border:1px solid #e0e6e2; border-radius:50%; display:grid; place-items:center; font-size:9px; flex-shrink:0; }
+.reached .wizard-step-number { background:var(--accent-soft); border-color:#cde4d6; }
+[aria-current="step"] .wizard-step-number { background:var(--green); border-color:var(--green); color:#fff; box-shadow:0 0 0 4px #18745108; }
+.wizard-progress .wizard-time { display:flex; align-items:center; gap:7px; color:#7a8780; margin-left:auto; font-size:10px; flex:none; }
+.overview-experience .wizard-heading { margin-bottom:25px; }
+.overview-experience .wizard-heading h2 { margin:10px 0; font-size:31px; letter-spacing:-1.1px; }
+.overview-experience .wizard-heading p { font-size:12px; }
+.overview-experience .goal-choices { gap:18px; margin-bottom:20px; }
+.overview-experience .goal-choice { display:flex; flex-direction:column; padding:20px 22px 22px; border-radius:16px; overflow:hidden; border:1px solid #dfe8e2; background:#f7fbf8; color:var(--green); transition:transform .25s, box-shadow .25s, border-color .2s, background .2s; }
+.overview-experience .goal-choice:nth-of-type(even) { color:var(--sky); border-color:#dce8ef; background:#f4f9fd; }
+.overview-experience .goal-choice.selected { box-shadow:none; border-color:#b4d3c2; }
+.overview-experience .goal-choice:hover { transform:translateY(-5px); border-color:currentColor; box-shadow:0 14px 35px #234c3a0d; }
+.goal-card-top { display:flex; align-items:center; justify-content:space-between; }
+.goal-card-top .goal-choice-icon { width:32px; height:32px; margin:0; background:#fff; border:1px solid #e2eae5; border-radius:10px; color:inherit; }
+.goal-card-index { font-size:10px; letter-spacing:1px; opacity:.55; padding-right:26px; }
+.overview-experience .goal-radio { top:28px; right:22px; width:15px; height:15px; }
+.goal-artwork { display:block; width:100%; height:160px; margin:5px 0 12px; overflow:visible; }
+.goal-figure { transform-origin:120px 145px; transition:transform .5s cubic-bezier(.2,.7,.2,1); }
+.goal-choice:hover .goal-figure { transform:translateY(-4px) rotate(-3deg); }
+.goal-artwork-wellbeing .goal-figure { transform-origin:120px 100px; }
+.goal-spark { transition:opacity .4s, transform .5s; transform-origin:center; }
+.goal-choice:hover .goal-spark { opacity:.9; transform:scale(1.08); }
+.overview-experience .goal-choice > strong { font-size:18px; font-weight:550; letter-spacing:-.6px; }
+.overview-experience .goal-choice > p { max-width:none; font-size:11px; color:#687970; line-height:1.7; margin:9px 0 24px; }
+.goal-card-continue { display:flex; align-items:center; justify-content:space-between; gap:10px; border-top:1px solid #dce9e1; padding-top:16px; font-size:10px; margin-top:auto; }
+.goal-choice:nth-of-type(even) .goal-card-continue { border-color:#dce7ef; }
+.goal-card-continue svg { transition:transform .2s; }
+.goal-choice:hover .goal-card-continue svg { transform:translate(2px,-2px); }
+.goal-friendly-note { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:12px 0 8px; font-size:10px; color:#77857d; }
+.goal-friendly-note > span:first-child { display:flex; align-items:center; gap:8px; color:#527462; }
+.overview-experience .wizard-choice { border-radius:16px; }
+@media(max-width:1100px) {
+  .overview-experience .goal-choices { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .goal-artwork { height:170px; }
+}
+@media(max-width:650px) {
+  .overview-greeting { margin:6px auto 28px; }
+  .overview-greeting h1 { font-size:34px; letter-spacing:-1.5px; margin:15px 0 12px; }
+  .overview-greeting p { font-size:12px; line-height:1.7; }
+  .overview-experience .wizard-progress { padding:16px 0; margin-bottom:28px; justify-content:space-between; gap:5px; }
+  .wizard-progress > button,.wizard-progress > button:not(:first-child) { flex-direction:column; gap:8px; padding:0 3px; font-size:9px; }
+  .wizard-progress > button:not(:first-child):before { display:none; }
+  .wizard-progress .wizard-time { display:none; }
+  .overview-experience .wizard-heading h2 { font-size:27px; }
+  .overview-experience .goal-choices { gap:12px; }
+  .overview-experience .goal-choice { padding:15px 14px; border-radius:13px; }
+  .goal-card-index { display:none; }
+  .overview-experience .goal-radio { top:24px; right:14px; width:14px; height:14px; }
+  .goal-card-top .goal-choice-icon { width:29px; height:29px; }
+  .goal-artwork { height:117px; margin:8px 0 10px; }
+  .overview-experience .goal-choice > strong { font-size:15px; letter-spacing:-.5px; line-height:1.4; }
+  .overview-experience .goal-choice > p { font-size:10px; margin:8px 0 16px; }
+  .goal-card-continue { font-size:9px; padding-top:12px; }
+  .goal-friendly-note { align-items:flex-start; flex-direction:column; gap:10px; line-height:1.7; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .overview-experience .goal-choice,.goal-figure,.goal-spark,.goal-card-continue svg { transition:none; }
+  .overview-experience .goal-choice:hover,.goal-choice:hover .goal-figure,.goal-choice:hover .goal-spark,.goal-choice:hover .goal-card-continue svg { transform:none; }
+}
