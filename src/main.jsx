@@ -136,7 +136,8 @@ function App() {
     [toast, setToast] = useState(""),
     [saveError, setSaveError] = useState(false),
     [clock, setClock] = useState(Date.now()),
-    [drawerOpen, setDrawerOpen] = useState(false);
+    [drawerOpen, setDrawerOpen] = useState(false),
+    [overviewVisit, setOverviewVisit] = useState(0);
   const drawerRef = useRef(null),
     navToggleRef = useRef(null),
     drawerTimer = useRef(null);
@@ -504,10 +505,12 @@ function App() {
             </button>
             <a
               className="logo main-logo"
-              href="#"
+              href="/"
               aria-label="GO home"
               onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
                 e.preventDefault();
+                setOverviewVisit((visit) => visit + 1);
                 navigate("Overview");
               }}
             >
@@ -635,6 +638,7 @@ function App() {
           )}
           {tab === "Overview" && (
             <OverviewProfile
+              key={overviewVisit}
               profile={profile}
               onSave={(next) => {
                 setStore((s) => ({ ...s, profile: next }));
