@@ -3,6 +3,7 @@ export const DEFAULT_PROFILE = {
   goal: "muscle",
   gender: null,
   bodyType: null,
+  avatar: null,
   age: null,
   height: null,
   experience: "intermediate",

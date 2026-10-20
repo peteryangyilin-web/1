@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useId } from "react";
 import {
   Dumbbell,
   Activity,
@@ -12,6 +12,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import "./overviewProfile.css";
+import AvatarEditor from "./AvatarEditor";
 const GOALS = [
   {
     id: "muscle",
@@ -43,12 +44,14 @@ const BODY_TYPES = [
   { id: "athletic", title: "Athletic", text: "Balanced strength and definition." },
   { id: "strong", title: "Strong", text: "A fuller, muscular build." },
 ];
-function BodyIllustration({ type = "athletic", gender }) {
+function BodyIllustration({ type = "athletic", gender, avatar }) {
+  const clipId = useId();
   const broad = type === "strong" ? 35 : type === "lean" ? 23 : 29;
   return <svg viewBox="0 0 180 190" className="body-illustration" aria-hidden="true">
     <ellipse cx="90" cy="178" rx="53" ry="6" fill="currentColor" opacity=".07" />
-    <circle cx="90" cy="33" r="17" fill="currentColor" opacity=".85" />
-    {gender === "female" && <path d="M72 33 Q66 5 90 9 Q115 8 110 48 L103 51 L101 29 Q87 33 78 23 L77 47 L69 45Z" fill="currentColor" />}
+    {!avatar && <circle cx="90" cy="33" r="17" fill="currentColor" opacity=".85" />}
+    {avatar && <><defs><clipPath id={clipId}><circle cx="90" cy="31" r="23" /></clipPath></defs><circle cx="90" cy="31" r="25" fill="white" /><image href={avatar} x="67" y="8" width="46" height="46" preserveAspectRatio="xMidYMid slice" clipPath={`url(#${clipId})`} /></>}
+    {!avatar && gender === "female" && <path d="M72 33 Q66 5 90 9 Q115 8 110 48 L103 51 L101 29 Q87 33 78 23 L77 47 L69 45Z" fill="currentColor" />}
     <path d={`M${90-broad} 60 Q90 48 ${90+broad} 60 L${108+(broad-23)/2} 111 L${gender==='female'?116:110} 163 Q113 174 102 174 L90 124 L78 174 Q67 174 67 163 L${gender==='female'?74:72} 111Z`} fill="currentColor" opacity=".75" />
     <path d={`M${90-broad} 64 L${51-(broad-23)/2} 112 M${90+broad} 64 L${129+(broad-23)/2} 112`} fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" opacity=".75" />
     <path d="M78 85 Q90 91 102 85 M90 95 V108" fill="none" stroke="white" strokeWidth="2" opacity=".4" />
@@ -56,7 +59,8 @@ function BodyIllustration({ type = "athletic", gender }) {
 }
 export default function OverviewProfile({ profile, onSave, onTraining }) {
   const [draft, setDraft] = useState(profile),
-    [step, setStep] = useState(0);
+    [step, setStep] = useState(0),
+    [editingAvatar, setEditingAvatar] = useState(false);
   const headingRef = useRef(null);
   const stepTitles = ["Choose your goal", "Tell us about you", "Choose your ideal body type", "Fill in your information"];
   const goToStep = (next) => { setStep(next); window.scrollTo({ top: 0, behavior: "instant" }); };
@@ -158,14 +162,14 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
       {step === 1 && <section className="wizard-stage" key="gender">
         <div className="wizard-choices gender-choices" role="group" aria-label="Choose your gender">
           {[{id:"male",title:"Male"},{id:"female",title:"Female"}].map(option => <button type="button" key={option.id} className={"wizard-choice " + (draft.gender === option.id ? "selected" : "")} aria-pressed={draft.gender === option.id} onClick={() => { set("gender", option.id); goToStep(2); }}>
-            <BodyIllustration gender={option.id} /><strong>{option.title}</strong><span>Continue <ArrowUpRight size={15} /></span>
+            <BodyIllustration avatar={draft.avatar} gender={option.id} /><strong>{option.title}</strong><span>Continue <ArrowUpRight size={15} /></span>
           </button>)}
         </div>
       </section>}
       {step === 2 && <section className="wizard-stage" key="body">
         <div className="wizard-choices body-choices" role="group" aria-label="Choose your ideal body type">
           {BODY_TYPES.map(option => <button type="button" key={option.id} className={"wizard-choice " + (draft.bodyType === option.id ? "selected" : "")} aria-pressed={draft.bodyType === option.id} onClick={() => { set("bodyType", option.id); goToStep(3); }}>
-            <BodyIllustration type={option.id} gender={draft.gender} /><strong>{option.title}</strong><p>{option.text}</p><span>Choose this direction <ArrowUpRight size={15} /></span>
+            <BodyIllustration avatar={draft.avatar} type={option.id} gender={draft.gender} /><strong>{option.title}</strong><p>{option.text}</p><span>Choose this direction <ArrowUpRight size={15} /></span>
           </button>)}
         </div>
         <p className="wizard-note">A personal preference, not a promised result. Your goal and weekly schedule guide your training.</p>
@@ -281,7 +285,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
         <aside className="profile-summary panel">
           <span className="eyebrow">YOUR NEXT CHAPTER</span>
           <div className="profile-summary-icon">
-            <GoalIcon size={28} strokeWidth={1.3} />
+            {draft.avatar ? <img src={draft.avatar} alt="Your custom avatar" className="profile-avatar-image" /> : <GoalIcon size={28} strokeWidth={1.3} />}
           </div>
           <h2>
             Your goal.
@@ -337,7 +341,12 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
           </button>
         </div>
       </div>}
+      <div className="wizard-footer-actions">
       {step > 0 && <button type="button" className="wizard-back secondary-button" onClick={() => goToStep(step - 1)}><ArrowLeft size={15} /> Back</button>}
+      {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" onClick={() => setEditingAvatar(true)}>{draft.avatar && <img src={draft.avatar} alt="" />}{draft.avatar ? "Edit your avatar" : "Create your own avatar?"} <ArrowUpRight size={15} /></button>}
+      {step === 1 && draft.avatar && <button type="button" className="wizard-avatar-remove" onClick={() => set("avatar", null)}>Remove avatar</button>}
+      </div>
+      {editingAvatar && <AvatarEditor value={draft.avatar} onClose={() => setEditingAvatar(false)} onSave={avatar => { set("avatar", avatar); setEditingAvatar(false); }} />}
     </form>
   );
 }
