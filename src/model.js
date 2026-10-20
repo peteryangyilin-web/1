@@ -4,6 +4,7 @@ export const DEFAULT_PROFILE = {
   gender: null,
   bodyType: null,
   avatar: null,
+  avatarCharacter: "shiba",
   age: null,
   height: null,
   experience: "intermediate",

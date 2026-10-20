@@ -1,0 +1,45 @@
+.animal-picker { width:780px; max-width:calc(100vw - 32px); max-height:calc(100dvh - 32px); padding:30px; overflow-y:auto; border:1px solid #e1e9e4; border-radius:22px; background:#fff; color:var(--ink); box-shadow:0 28px 100px #183b332b; }
+.animal-picker::backdrop { background:#142a2559; backdrop-filter:blur(6px); }
+.animal-picker-top { display:flex; align-items:center; justify-content:space-between; gap:15px; }
+.animal-picker h2 { font-family:var(--serif); font-size:30px; letter-spacing:-1px; font-weight:550; margin:17px 0 10px; }
+.animal-picker > p { font-size:12px; color:#6d7c75; line-height:1.8; }
+.animal-picker-options { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:24px 0; }
+.animal-picker-card { display:flex; flex-direction:column; align-items:center; padding:20px; border:1px solid #dce8e0; border-radius:16px; background:#f6faf7; text-align:center; transition:border-color .2s, box-shadow .2s; }
+.animal-picker-card:nth-child(even) { background:#f3f9fd; border-color:#dbe8f1; }
+.animal-picker-card:hover,.animal-picker-card.selected { border-color:var(--green); box-shadow:0 0 0 1px var(--green); }
+.animal-picker-badge { display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; color:#6a8272; font-size:8px; letter-spacing:1.2px; }
+.animal-picker-check { display:grid; place-items:center; border:1px solid #c7d9ce; border-radius:50%; width:19px; height:19px; }
+.selected .animal-picker-check { background:var(--green); color:#fff; border-color:var(--green); }
+.animal-picker-card .animal-avatar { width:210px; max-width:100%; height:250px; margin:8px 0 12px; }
+.animal-picker-card > strong { font-family:var(--serif); font-size:23px; font-weight:600; letter-spacing:-.6px; }
+.animal-picker-breed { color:#698075; font-size:11px; margin-top:7px; }
+.animal-picker-card > p { color:#738279; font-size:10px; line-height:1.8; margin:12px 0 0; }
+.animal-picker-footer { display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.animal-picker-footer > span { font-size:10px; color:#738279; line-height:1.8; max-width:220px; }
+.animal-picker-footer > div { display:flex; gap:10px; }
+.animal-picker-footer .secondary-button { padding:11px 16px; border-radius:5px; font-size:10px; }
+.wizard-avatar-trigger .animal-avatar { width:30px; height:35px; }
+.wizard-character-note { display:flex; align-items:center; justify-content:space-between; gap:16px; max-width:940px; margin:0 0 20px; color:#718176; font-size:11px; }
+.wizard-character-note button { display:flex; align-items:center; gap:7px; color:var(--green); font-size:11px; padding:5px 0; }
+.body-choices .animal-avatar { width:210px; height:250px; max-width:100%; margin:0 0 20px; }
+.profile-summary-icon.character-summary { height:150px; width:100%; border:0; border-radius:0; background:none; }
+.character-summary .animal-avatar { width:135px; height:160px; }
+.gender-symbol { width:80px; height:80px; margin:26px 0 32px; }
+@media(max-width:650px) {
+  .animal-picker { padding:22px 17px; }
+  .animal-picker h2 { font-size:27px; }
+  .animal-picker-top .eyebrow { font-size:6px; letter-spacing:1px; }
+  .animal-picker-options { gap:10px; margin:20px 0; }
+  .animal-picker-card { padding:14px 9px; border-radius:13px; }
+  .animal-picker-badge { font-size:6px; letter-spacing:.5px; }
+  .animal-picker-card .animal-avatar { height:190px; margin:8px 0; }
+  .animal-picker-card > strong { font-size:18px; }
+  .animal-picker-breed { font-size:9px; }
+  .animal-picker-card > p { font-size:9px; }
+  .animal-picker-footer { align-items:stretch; flex-direction:column; gap:17px; }
+  .animal-picker-footer > span { max-width:none; }
+  .animal-picker-footer > div { justify-content:flex-end; }
+  .body-choices .animal-avatar { grid-row:1/4; height:155px; width:112px; margin:0; }
+  .body-choices .wizard-choice { grid-template-columns:112px 1fr; column-gap:16px; }
+  .wizard-character-note { font-size:10px; }
+}
