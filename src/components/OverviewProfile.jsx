@@ -170,7 +170,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
         <div className="wizard-character-note"><span>Your avatar: <strong>{characterName(draft.avatarCharacter)}</strong></span><button type="button" onClick={() => setEditingAvatar(true)}>Change avatar <ArrowUpRight size={14} /></button></div>
         <div className="wizard-choices body-choices" role="group" aria-label="Choose your ideal body type">
           {BODY_TYPES.map(option => <button type="button" key={option.id} aria-label={option.title} className={"wizard-choice " + (draft.bodyType === option.id ? "selected" : "")} aria-pressed={draft.bodyType === option.id} onClick={() => { set("bodyType", option.id); goToStep(3); }}>
-            <AnimalAvatar species={draft.avatarCharacter || "shiba"} build={option.id} /><strong>{option.title}</strong><p>{option.text}</p><span>Choose this direction <ArrowUpRight size={15} /></span>
+            <AnimalAvatar gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} build={option.id} /><strong>{option.title}</strong><p>{option.text}</p><span>Choose this direction <ArrowUpRight size={15} /></span>
           </button>)}
         </div>
         <p className="wizard-note">A personal preference, not a promised result. Your goal and weekly schedule guide your training.</p>
@@ -286,7 +286,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
         <aside className="profile-summary panel">
           <span className="eyebrow">YOUR NEXT CHAPTER</span>
           <div className="profile-summary-icon character-summary">
-            <AnimalAvatar species={draft.avatarCharacter || "shiba"} build={draft.bodyType || "athletic"} />
+            <AnimalAvatar gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} build={draft.bodyType || "athletic"} />
           </div>
           <h2>
             Your goal.
@@ -344,9 +344,9 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
       </div>}
       <div className="wizard-footer-actions">
       {step > 0 && <button type="button" className="wizard-back secondary-button" onClick={() => goToStep(step - 1)}><ArrowLeft size={15} /> Back</button>}
-      {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" aria-label="Select your avatar" onClick={() => setEditingAvatar(true)}><AnimalAvatar species={draft.avatarCharacter || "shiba"} /> Select your avatar <ArrowUpRight size={15} /></button>}
+      {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" aria-label="Select your avatar" onClick={() => setEditingAvatar(true)}><AnimalAvatar gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} /> Select your avatar <ArrowUpRight size={15} /></button>}
       </div>
-      {editingAvatar && <AnimalAvatarPicker value={draft.avatarCharacter || "shiba"} onClose={() => setEditingAvatar(false)} onSelect={avatarCharacter => { set("avatarCharacter", avatarCharacter); setEditingAvatar(false); }} />}
+      {editingAvatar && <AnimalAvatarPicker gender={draft.gender || "male"} value={draft.avatarCharacter || "shiba"} onClose={() => setEditingAvatar(false)} onSelect={avatarCharacter => { set("avatarCharacter", avatarCharacter); setEditingAvatar(false); }} />}
     </form>
   );
 }

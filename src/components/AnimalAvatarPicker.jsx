@@ -9,7 +9,7 @@ export const AVATAR_CHARACTERS = [
 ];
 export const characterName = species => AVATAR_CHARACTERS.find(item => item.id === species)?.name || "Shiba Inu";
 
-export default function AnimalAvatarPicker({ value, onSelect, onClose }) {
+export default function AnimalAvatarPicker({ value, gender = "male", onSelect, onClose }) {
   const dialog = useRef(null);
   const [selected, setSelected] = useState(value || "shiba");
   useEffect(() => { dialog.current.showModal(); return () => dialog.current?.close(); }, []);
@@ -22,7 +22,7 @@ export default function AnimalAvatarPicker({ value, onSelect, onClose }) {
     <div className="animal-picker-options" role="group" aria-label="Animal avatars">
       {AVATAR_CHARACTERS.map(character => <button type="button" key={character.id} className={`animal-picker-card ${selected === character.id ? "selected" : ""}`} aria-pressed={selected === character.id} aria-label={`Select ${character.name}`} onClick={() => setSelected(character.id)}>
         <span className="animal-picker-badge">{character.label}<span className="animal-picker-check">{selected === character.id && <Check size={13} />}</span></span>
-        <AnimalAvatar species={character.id} />
+        <AnimalAvatar gender={gender} species={character.id} />
         <strong>{character.name}</strong><span className="animal-picker-breed">{character.breed}</span><p>{character.description}</p>
       </button>)}
     </div>
