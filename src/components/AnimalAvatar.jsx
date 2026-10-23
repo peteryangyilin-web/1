@@ -4,6 +4,7 @@ import "./animalAvatar.css";
 const MALE_SHIBA_ARTWORK = {
   lean: "/avatars/male-dog-lean.png",
   athletic: "/avatars/male-dog-athletic.png",
+  strong: "/avatars/male-dog-strong.png",
 };
 
 const BUILDS = {
