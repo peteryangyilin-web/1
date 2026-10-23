@@ -25,3 +25,8 @@ button:hover .animal-tail {
   button:hover .animal-character,
   button:hover .animal-tail { transform: none; }
 }
+
+.animal-avatar-uploaded {
+  object-fit: contain;
+  object-position: center;
+}

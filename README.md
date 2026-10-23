@@ -86,3 +86,5 @@ On the Gender step, **Select your avatar** offers a full-body, upright Shiba Inu
 The shared personal settings dialog also offers profile-photo upload above Your name, from both the sidebar profile and header profile button. The saved photo appears in both entry points; photo changes remain a draft until Save preferences.
 
 The Overview entry uses four local SVG movement illustrations, subtle hover feedback, a compact setup estimate, and a navigable step indicator. Users can revisit reached steps without losing their draft; future steps stay disabled until reached. Motion respects reduced-motion preferences. Header and sidebar profile photos use a square, padding-free circular frame on mobile and desktop.
+
+The Male → Shiba Inu → Lean body card and final profile summary use the supplied original image at `public/avatars/male-dog-lean.png`. The image is displayed in full with its original proportions. Plain avatar selection previews and the other body/species/gender variants keep their existing illustrations.

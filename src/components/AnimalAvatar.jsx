@@ -15,6 +15,15 @@ const FEMALE_BUILDS = {
 /** A whole animal character. Human-like posture, animal anatomy from ears to paws. */
 export default function AnimalAvatar({ species = "shiba", build = "athletic", gender = "male", showMuscles = true, className = "" }) {
   const unique = useId().replace(/:/g, "");
+  if (species === "shiba" && gender === "male" && build === "lean" && showMuscles) {
+    return <img
+      src="/avatars/male-dog-lean.png"
+      className={`animal-avatar animal-avatar-shiba animal-avatar-lean animal-avatar-uploaded ${className}`}
+      width="1024" height="1536" decoding="async"
+      data-species="shiba" data-build="lean" data-gender="male" data-muscle-details="on"
+      alt="Shiba Inu dog male lean full-body avatar"
+    />;
+  }
   const id = name => `animal-${unique}-${name}`;
   const cat = species === "selkirk";
   const female = gender === "female";
