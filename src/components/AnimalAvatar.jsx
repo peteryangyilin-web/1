@@ -1,6 +1,11 @@
 import React, { useId } from "react";
 import "./animalAvatar.css";
 
+const MALE_SHIBA_ARTWORK = {
+  lean: "/avatars/male-dog-lean.png",
+  athletic: "/avatars/male-dog-athletic.png",
+};
+
 const BUILDS = {
   lean: { chest: 27, waist: 21, hip: 25, leg: 13, arm: 10, definition: .32 },
   athletic: { chest: 38, waist: 25, hip: 29, leg: 18, arm: 15, definition: .55 },
@@ -15,13 +20,15 @@ const FEMALE_BUILDS = {
 /** A whole animal character. Human-like posture, animal anatomy from ears to paws. */
 export default function AnimalAvatar({ species = "shiba", build = "athletic", gender = "male", showMuscles = true, className = "" }) {
   const unique = useId().replace(/:/g, "");
-  if (species === "shiba" && gender === "male" && build === "lean" && showMuscles) {
+  const suppliedArtwork = species === "shiba" && gender === "male" && showMuscles
+    ? MALE_SHIBA_ARTWORK[build] : null;
+  if (suppliedArtwork) {
     return <img
-      src="/avatars/male-dog-lean.png"
-      className={`animal-avatar animal-avatar-shiba animal-avatar-lean animal-avatar-uploaded ${className}`}
+      src={suppliedArtwork}
+      className={`animal-avatar animal-avatar-shiba animal-avatar-${build} animal-avatar-uploaded ${className}`}
       width="1024" height="1536" decoding="async"
-      data-species="shiba" data-build="lean" data-gender="male" data-muscle-details="on"
-      alt="Shiba Inu dog male lean full-body avatar"
+      data-species="shiba" data-build={build} data-gender="male" data-muscle-details="on"
+      alt={`Shiba Inu dog male ${build} full-body avatar`}
     />;
   }
   const id = name => `animal-${unique}-${name}`;

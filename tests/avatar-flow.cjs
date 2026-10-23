@@ -14,22 +14,26 @@ let browser;
   const picker = page.getByRole('dialog',{name:'Select your avatar',exact:true});
   const checkPlainPicker = async () => {
     assert.equal(await picker.locator('.animal-avatar[data-muscle-details="off"]').count(),2, 'both picker characters use a plain body preview');
-    assert.equal(await picker.locator('img.animal-avatar-uploaded').count(),0, 'the supplied Lean image does not replace plain picker characters');
+    assert.equal(await picker.locator('img.animal-avatar-uploaded').count(),0, 'the supplied body images do not replace plain picker characters');
     assert.equal(await picker.locator('.animal-muscle-contours, .animal-limb-contours, .animal-pectoral-contours').count(),0, 'picker characters have no chest, abdomen or limb muscle lines');
   };
   const checkBuildMuscles = async () => {
     assert.equal(await page.locator('.body-choices .animal-avatar[data-muscle-details="on"]').count(),3, 'body-type previews retain build definition');
     assert.equal(await page.locator('.body-choices [data-build="lean"] .animal-pectoral-contours').count(),0, 'Lean remains free of added chest definition');
     for (const build of ['athletic','strong']) {
+      if (await page.locator(`.body-choices img.animal-avatar[data-build="${build}"]`).count()) {
+        await checkMaleImage(page.locator('.body-choices'), build);
+        continue;
+      }
       const pectorals = page.locator(`.body-choices [data-build="${build}"] .animal-pectoral-contours`);
       assert.equal(await pectorals.count(),1, `${build} restores chest definition`);
       assert(await pectorals.locator('path').count() >= 2, `${build} renders the paired chest contours`);
     }
   };
-  const checkMaleLeanImage = async (scope) => {
-    const image = scope.locator('img.animal-avatar[data-species="shiba"][data-gender="male"][data-build="lean"]');
-    assert.equal(await image.count(),1, 'only Male Shiba Lean uses the supplied image');
-    assert.equal(await image.getAttribute('src'),'/avatars/male-dog-lean.png');
+  const checkMaleImage = async (scope, build = 'lean') => {
+    const image = scope.locator(`img.animal-avatar[data-species="shiba"][data-gender="male"][data-build="${build}"]`);
+    assert.equal(await image.count(),1, `Male Shiba ${build} uses its supplied image`);
+    assert.equal(await image.getAttribute('src'),`/avatars/male-dog-${build}.png`);
     const details = await image.evaluate(async image => {
       await image.decode();
       return {width:image.naturalWidth,height:image.naturalHeight,fit:getComputedStyle(image).objectFit};
@@ -84,8 +88,9 @@ let browser;
   await picker.getByRole('button',{name:'Use this avatar',exact:true}).click();
   assert.equal(await page.locator('.body-choices .animal-avatar[data-species="shiba"]').count(),3);
   await checkBuildMuscles();
-  await checkMaleLeanImage(page.locator('.body-choices'));
-  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-species="shiba"]').count(),2, 'Athletic and Strong retain their vector models');
+  await checkMaleImage(page.locator('.body-choices'));
+  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-species="shiba"]').count(),1, 'Strong retains its vector model');
+  await checkMaleImage(page.locator('.body-choices'), 'athletic');
   const shibaMalePaths = await page.locator('.body-choices svg.animal-avatar').evaluateAll(es=>Object.fromEntries(es.map(e=>[e.dataset.build,e.querySelector('.animal-torso').getAttribute('d')])));
   await page.getByRole('button',{name:'Step 2: About you',exact:true}).click();
   await page.getByRole('button',{name:/^Female/}).click();
@@ -94,10 +99,11 @@ let browser;
   assert.equal(await page.locator('.body-choices svg.animal-avatar[data-build="lean"]').count(),1, 'Female Lean keeps its original vector model');
   assert.equal(await page.locator('.body-choices img.animal-avatar-uploaded').count(),0, 'the new image never replaces female variants');
   const shibaFemalePaths = await page.locator('.body-choices svg.animal-avatar').evaluateAll(es=>Object.fromEntries(es.map(e=>[e.dataset.build,e.querySelector('.animal-torso').getAttribute('d')])));
-  for (const build of ['athletic','strong']) assert.notEqual(shibaFemalePaths[build],shibaMalePaths[build], `${build} preserves distinct gender silhouettes`);
+  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-build="athletic"]').count(),1, 'Female Athletic retains its original vector model');
+  assert.notEqual(shibaFemalePaths.strong,shibaMalePaths.strong, 'Strong preserves distinct gender silhouettes');
   await page.getByRole('button',{name:'Step 2: About you',exact:true}).click();
   await page.getByRole('button',{name:/^Male/}).click();
-  await checkMaleLeanImage(page.locator('.body-choices'));
+  await checkMaleImage(page.locator('.body-choices'));
   assert.deepEqual(await page.locator('.body-choices svg.animal-avatar').evaluateAll(es=>Object.fromEntries(es.map(e=>[e.dataset.build,e.querySelector('.animal-torso').getAttribute('d')]))),shibaMalePaths);
 
   await page.getByRole('button',{name:'Change avatar',exact:true}).click();
@@ -108,7 +114,7 @@ let browser;
   assert.equal(await page.locator('.character-summary svg.animal-avatar[data-species="shiba"][data-build="strong"]').count(),1);
   await page.getByRole('button',{name:'Step 3: Body type',exact:true}).click();
   await page.getByRole('button',{name:'Lean',exact:true}).click();
-  await checkMaleLeanImage(page.locator('.character-summary'));
+  await checkMaleImage(page.locator('.character-summary'));
   await page.getByRole('button',{name:'Save your profile and go to training',exact:true}).click();
   await page.reload();
   await page.locator('#go-intro').waitFor({state:'detached'});
@@ -118,8 +124,17 @@ let browser;
   await checkPlainPicker();
   await picker.getByRole('button',{name:'Cancel',exact:true}).click();
   await page.getByRole('button',{name:/^Male/}).click();
-  await checkMaleLeanImage(page.locator('.body-choices'));
+  await checkMaleImage(page.locator('.body-choices'));
   assert.equal(await page.getByRole('button',{name:'Lean',exact:true}).getAttribute('aria-pressed'),'true', 'the selected Male Lean image survives save and reload');
+  await page.getByRole('button',{name:'Athletic',exact:true}).click();
+  await checkMaleImage(page.locator('.character-summary'), 'athletic');
+  await page.getByRole('button',{name:'Save your profile and go to training',exact:true}).click();
+  await page.reload();
+  await page.locator('#go-intro').waitFor({state:'detached'});
+  await page.getByText('Build muscle',{exact:true}).click();
+  await page.getByRole('button',{name:/^Male/}).click();
+  await checkMaleImage(page.locator('.body-choices'), 'athletic');
+  assert.equal(await page.getByRole('button',{name:'Athletic',exact:true}).getAttribute('aria-pressed'),'true', 'the selected Male Athletic image survives save and reload');
   await page.getByRole('button',{name:'Step 2: About you',exact:true}).click();
   await page.getByRole('button',{name:'Select your avatar',exact:true}).click();
   await picker.getByRole('button',{name:'Select Selkirk Rex',exact:true}).click();
@@ -188,5 +203,5 @@ let browser;
     assert.equal(geometry.overflow, 'hidden', 'photo is clipped by the circular frame');
   }
   assert.deepEqual(errors, []);
-  console.log('PASS supplied Male Shiba Lean image loads in cards and summary, persists after save/reload and stays scoped away from female/other builds/plain picker; full-body Shiba/Selkirk selection, plain picker avatars, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round header/sidebar photos');
+  console.log('PASS supplied Male Shiba Lean/Athletic images load in cards and summary, persist after save/reload and stay scoped away from female/Strong/plain picker; full-body Shiba/Selkirk selection, plain picker avatars, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round header/sidebar photos');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => { await browser?.close(); });
