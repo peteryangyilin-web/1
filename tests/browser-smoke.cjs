@@ -33,21 +33,14 @@ let activeBrowser;
   assert.equal(await p.getByRole('heading', {name:'Choose your goal',exact:true}).count(),0, 'welcome opens before profile setup');
   assert.equal(await p.getByRole('radio', {name:/Lose fat/}).count(),0, 'goal choices stay hidden until Get started');
   assert.equal(await p.getByLabel('Your name', {exact:true}).count(),0);
-  const beforeDemo = await p.evaluate(() => JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map(key=>[key,localStorage.getItem(key)]))));
-  await p.getByRole('button', {name:'View demo',exact:true}).click();
-  const demo = p.getByRole('dialog', {name:'A look inside GO',exact:true});
-  await demo.waitFor();
-  for (const feature of ['Training','Nutrition','Progress']) {
-    await demo.getByRole('tab', {name:feature,exact:true}).click();
-    assert.equal(await demo.getByRole('tabpanel', {name:feature,exact:true}).isVisible(),true);
-  }
-  await demo.getByRole('tab', {name:'Progress',exact:true}).focus();
-  await p.keyboard.press('ArrowRight');
-  assert.equal(await demo.getByRole('tab', {name:'Training',exact:true}).getAttribute('aria-selected'),'true');
-  await p.keyboard.press('Escape');
-  assert.equal(await p.getByRole('dialog').count(),0);
+  assert.equal(await p.getByRole('button', {name:'View demo',exact:true}).count(),0, 'the demo action has been removed');
+  assert.equal(await p.locator('.welcome-card-group').count(),2, 'the conveyor uses one repeated card group');
+  const duplicateGroup = p.locator('.welcome-card-group').nth(1);
+  assert.equal(await duplicateGroup.getAttribute('aria-hidden'),'true', 'repeated cards stay out of the accessibility tree');
+  assert.equal(await duplicateGroup.evaluate(element=>element.inert),true, 'repeated cards cannot receive focus');
+  assert.equal(await duplicateGroup.isVisible(),false, 'reduced-motion users see a single static group');
+  assert.equal(await p.locator('.welcome-card-track').evaluate(element=>element.getAnimations().filter(animation=>animation.animationName==='welcome-conveyor').length),0, 'reduced motion disables automatic card movement');
   assert.equal(await p.getByRole('button', {name:'Get started',exact:true}).isVisible(),true);
-  assert.equal(await p.evaluate(() => JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map(key=>[key,localStorage.getItem(key)])))),beforeDemo, 'viewing the demo leaves personal records unchanged');
   assert.equal(
     await p.getByRole("button", { name: "My plan", exact: true }).count(),
     0,
@@ -274,9 +267,50 @@ let activeBrowser;
     path: path.join(screenshots, "go-mobile.png"),
     fullPage: true,
   });
+  // Exercise the actual moving conveyor separately from the reduced-motion app flows.
+  const moving = await b.newPage({viewport:{width:1440,height:1000},reducedMotion:'no-preference'});
+  moving.setDefaultTimeout(7000);
+  moving.on('pageerror', error=>errors.push(error.message));
+  await moving.goto(process.env.BASE_URL || 'http://localhost:5173');
+  await moving.locator('#go-intro').waitFor({state:'detached'});
+  const conveyor = moving.locator('.welcome-card-viewport');
+  const track = moving.locator('.welcome-card-track');
+  const beforeMove = (await track.boundingBox()).x;
+  await moving.waitForTimeout(180);
+  assert((await track.boundingBox()).x < beforeMove - 1, 'the entire card track moves left');
+  const loop = await track.evaluate(element=>{
+    const animation = element.getAnimations().find(animation=>animation.animationName==='welcome-conveyor');
+    const timing = animation.effect.getTiming();
+    const groups = element.querySelectorAll('.welcome-card-group');
+    animation.currentTime = 0;
+    const firstStart = groups[0].getBoundingClientRect().left;
+    animation.currentTime = Number(timing.duration) - 1;
+    const repeatedEnd = groups[1].getBoundingClientRect().left;
+    animation.currentTime = 1000;
+    return {iterations:timing.iterations,firstStart,repeatedEnd};
+  });
+  assert.equal(loop.iterations,Infinity, 'the conveyor repeats continuously');
+  assert(Math.abs(loop.firstStart-loop.repeatedEnd)<1, 'the repeated group lines up with the original across the loop boundary');
+  await moving.getByRole('button',{name:'Pause card animation',exact:true}).click();
+  assert.equal(await conveyor.getAttribute('data-paused'),'true');
+  const pausedX = (await track.boundingBox()).x;
+  await moving.waitForTimeout(120);
+  assert(Math.abs((await track.boundingBox()).x-pausedX)<.1, 'pause stops horizontal motion');
+  await moving.getByRole('button',{name:'Resume card animation',exact:true}).click();
+  assert.equal(await conveyor.getAttribute('data-paused'),'false');
+  const resumedX = (await track.boundingBox()).x;
+  await moving.waitForTimeout(180);
+  assert((await track.boundingBox()).x < resumedX - 1, 'resume continues moving left');
+  for (const width of [320,390]) {
+    await moving.setViewportSize({width,height:844});
+    assert.equal(await moving.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false, `moving conveyor fits ${width}px screens`);
+    await p.setViewportSize({width,height:844});
+    assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false, `reduced-motion cards fit ${width}px screens`);
+  }
+  await moving.close();
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: welcome entry, demo without data mutation, Get started, GO home reset; profile persistence, metrics, meal add/edit/delete, water persistence, date isolation, plan editing, timer, completion validation, set recovery, history, goal calculation, CSV export, all 5 mobile views; snack selection, sound toggle, unwrap, bite completion, game persistence, keyboard control, and no virtual calorie logging; no browser errors.",
+    "PASS: welcome entry, looping leftward conveyor, pause/resume, reduced motion, Get started, GO home reset; profile persistence, metrics, meal add/edit/delete, water persistence, date isolation, plan editing, timer, completion validation, set recovery, history, goal calculation, CSV export, all 5 mobile views; snack selection, sound toggle, unwrap, bite completion, game persistence, keyboard control, and no virtual calorie logging; no browser errors.",
   );
   await b.close();
 })().catch(async (e) => {
