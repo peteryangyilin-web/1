@@ -1,5 +1,6 @@
 /* A quiet white canvas, with botanical green actions and sky-blue data. */
 :root {
+  --brand-green: #185b43;
   --accent: #187451;
   --accent-soft: #e7f5ed;
   --green: #187451;
@@ -77,3 +78,10 @@ footer .green-dot { background: var(--green-bright); }
 .food-icon { color: var(--green); background: var(--green-wash); }
 .snack-option.selected { background: var(--green-wash); border-color: #83bca2; }
 .selection-check { color: var(--green); }
+
+.main-logo .go-symbol,
+.welcome-center h1,
+.overview-greeting h1,
+.overview-greeting h1 em {
+  color: var(--brand-green);
+}
