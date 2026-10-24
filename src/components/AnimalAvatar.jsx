@@ -1,16 +1,23 @@
 import React, { useId } from "react";
 import "./animalAvatar.css";
 
-const MALE_AVATAR_ARTWORK = {
-  shiba: {
-    lean: "/avatars/male-dog-lean.png",
-    athletic: "/avatars/male-dog-athletic.png",
-    strong: "/avatars/male-dog-strong.png",
+const AVATAR_ARTWORK = {
+  male: {
+    shiba: {
+      lean: "/avatars/male-dog-lean.png",
+      athletic: "/avatars/male-dog-athletic.png",
+      strong: "/avatars/male-dog-strong.png",
+    },
+    selkirk: {
+      lean: "/avatars/male-cat-lean.png",
+      athletic: "/avatars/male-cat-athletic.png",
+      strong: "/avatars/male-cat-strong.png",
+    },
   },
-  selkirk: {
-    lean: "/avatars/male-cat-lean.png",
-    athletic: "/avatars/male-cat-athletic.png",
-    strong: "/avatars/male-cat-strong.png",
+  female: {
+    selkirk: {
+      lean: "/avatars/female-cat-lean.png",
+    },
   },
 };
 
@@ -28,15 +35,15 @@ const FEMALE_BUILDS = {
 /** A whole animal character. Human-like posture, animal anatomy from ears to paws. */
 export default function AnimalAvatar({ species = "shiba", build = "athletic", gender = "male", showMuscles = true, className = "" }) {
   const unique = useId().replace(/:/g, "");
-  const suppliedArtwork = gender === "male" && showMuscles
-    ? MALE_AVATAR_ARTWORK[species]?.[build] : null;
+  const suppliedArtwork = showMuscles
+    ? AVATAR_ARTWORK[gender]?.[species]?.[build] : null;
   if (suppliedArtwork) {
     return <img
       src={suppliedArtwork}
       className={`animal-avatar animal-avatar-${species} animal-avatar-${build} animal-avatar-uploaded ${className}`}
       width="1024" height="1536" decoding="async"
-      data-species={species} data-build={build} data-gender="male" data-muscle-details="on"
-      alt={`${species === "selkirk" ? "Selkirk Rex cat" : "Shiba Inu dog"} male ${build} full-body avatar`}
+      data-species={species} data-build={build} data-gender={gender} data-muscle-details="on"
+      alt={`${species === "selkirk" ? "Selkirk Rex cat" : "Shiba Inu dog"} ${gender} ${build} full-body avatar`}
     />;
   }
   const id = name => `animal-${unique}-${name}`;
