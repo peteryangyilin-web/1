@@ -89,4 +89,4 @@ The Overview entry uses four local SVG movement illustrations, subtle hover feed
 
 The Male → Shiba Inu → Lean, Athletic and Strong body cards and final profile summary use the supplied original images at `public/avatars/male-dog-lean.png`, `public/avatars/male-dog-athletic.png` and `public/avatars/male-dog-strong.png`. All three images are displayed in full with their original proportions. Plain avatar selection previews and the other body/species/gender variants keep their existing illustrations.
 
-Male → Selkirk Rex → Lean also uses the supplied original at `public/avatars/male-cat-lean.png`, displayed in full in the body card and final summary. Other cat builds, female variants, and plain selection previews retain their existing illustrations.
+Male → Selkirk Rex → Lean and Athletic also use the supplied originals at `public/avatars/male-cat-lean.png` and `public/avatars/male-cat-athletic.png`, displayed in full in the body cards and final summary. Strong, female variants, and plain selection previews retain their existing illustrations.

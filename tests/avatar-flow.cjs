@@ -21,8 +21,9 @@ let browser;
     assert.equal(await page.locator('.body-choices .animal-avatar[data-muscle-details="on"]').count(),3, 'body-type previews retain build definition');
     assert.equal(await page.locator('.body-choices [data-build="lean"] .animal-pectoral-contours').count(),0, 'Lean remains free of added chest definition');
     for (const build of ['athletic','strong']) {
-      if (await page.locator(`.body-choices img.animal-avatar[data-build="${build}"]`).count()) {
-        await checkMaleImage(page.locator('.body-choices'), build);
+      const suppliedImage = page.locator(`.body-choices img.animal-avatar[data-build="${build}"]`);
+      if (await suppliedImage.count()) {
+        await checkMaleImage(page.locator('.body-choices'), build, await suppliedImage.getAttribute('data-species'));
         continue;
       }
       const pectorals = page.locator(`.body-choices [data-build="${build}"] .animal-pectoral-contours`);
@@ -52,9 +53,8 @@ let browser;
   assert.deepEqual(await page.locator('.body-choices .animal-avatar').evaluateAll(es=>es.map(e=>e.dataset.build)),['lean','athletic','strong']);
   await checkBuildMuscles();
   await checkMaleImage(page.locator('.body-choices'), 'lean', 'selkirk');
-  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-species="selkirk"]').count(),2, 'Male cat Athletic and Strong keep their vector models');
-  const torsoWidths = await page.locator('.body-choices .animal-torso').evaluateAll(es=>es.map(e=>e.getBBox().width));
-  assert(torsoWidths[1] > torsoWidths[0] * 1.2, 'strong silhouette should be visibly wider than athletic');
+  await checkMaleImage(page.locator('.body-choices'), 'athletic', 'selkirk');
+  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-species="selkirk"]').count(),1, 'Male cat Strong keeps its vector model');
   assert.equal(await page.locator('.body-choices .animal-avatar[data-gender="male"]').count(),3);
   const svgPaths = () => page.locator('.body-choices svg.animal-avatar').evaluateAll(es=>Object.fromEntries(es.map(e=>[e.dataset.build,e.querySelector('.animal-torso').getAttribute('d')])));
   const svgProportions = () => page.locator('.body-choices svg.animal-avatar').evaluateAll(es=>Object.fromEntries(es.map(e=>{const body=e.querySelector('.animal-body');return [e.dataset.build,{waist:Number(body.dataset.waistWidth),hip:Number(body.dataset.hipWidth)}]})));
@@ -66,9 +66,13 @@ let browser;
   await checkBuildMuscles();
   assert.equal(await page.locator('.body-choices svg.animal-avatar[data-build="lean"]').count(),1, 'Female cat Lean keeps its original vector model');
   assert.equal(await page.locator('.body-choices img.animal-avatar-uploaded').count(),0, 'the supplied Male cat image does not replace female variants');
+  const torsoWidths = await page.locator('.body-choices .animal-torso').evaluateAll(es=>es.map(e=>e.getBBox().width));
+  assert(torsoWidths[1] > torsoWidths[0] * 1.15, 'Female Athletic silhouette should be wider than Lean');
+  assert(torsoWidths[2] > torsoWidths[1] * 1.15, 'Female Strong silhouette should be wider than Athletic');
+  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-build="athletic"]').count(),1, 'Female cat Athletic keeps its original vector model');
   const femalePaths = await svgPaths();
   const femaleProportions = await svgProportions();
-  for (const build of ['athletic','strong']) {
+  for (const build of Object.keys(malePaths)) {
     assert.notEqual(femalePaths[build],malePaths[build], 'gender changes the actual body silhouette for each vector build');
     const shape = femaleProportions[build], original = maleProportions[build];
     assert(shape.waist < original.waist, 'female waist is narrower for the same build');
@@ -95,6 +99,15 @@ let browser;
   await page.getByRole('button',{name:/^Male/}).click();
   await checkMaleImage(page.locator('.body-choices'), 'lean', 'selkirk');
   assert.equal(await page.getByRole('button',{name:'Lean',exact:true}).getAttribute('aria-pressed'),'true', 'Male cat Lean selection and supplied image survive save/reload');
+  await page.getByRole('button',{name:'Athletic',exact:true}).click();
+  await checkMaleImage(page.locator('.character-summary'), 'athletic', 'selkirk');
+  await page.getByRole('button',{name:'Save your profile and go to training',exact:true}).click();
+  await page.reload();
+  await page.locator('#go-intro').waitFor({state:'detached'});
+  await page.getByText('Build muscle',{exact:true}).click();
+  await page.getByRole('button',{name:/^Male/}).click();
+  await checkMaleImage(page.locator('.body-choices'), 'athletic', 'selkirk');
+  assert.equal(await page.getByRole('button',{name:'Athletic',exact:true}).getAttribute('aria-pressed'),'true', 'Male cat Athletic selection and supplied image survive save/reload');
 
   await page.getByRole('button',{name:'Change avatar',exact:true}).click();
   await picker.getByRole('button',{name:'Select Shiba Inu',exact:true}).click();
@@ -226,5 +239,5 @@ let browser;
     assert.equal(geometry.overflow, 'hidden', 'photo is clipped by the circular frame');
   }
   assert.deepEqual(errors, []);
-  console.log('PASS supplied Male Selkirk Lean image loads in card/summary and persists while other cat variants and picker stay unchanged; supplied Male Shiba Lean/Athletic/Strong images load in cards and summary, persist after save/reload and stay scoped away from female/plain picker; full-body Shiba/Selkirk selection, plain picker avatars, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round header/sidebar photos');
+  console.log('PASS supplied Male Selkirk Lean/Athletic images load in cards/summary and persist while Female cat, Strong and picker stay unchanged; supplied Male Shiba Lean/Athletic/Strong images load in cards and summary, persist after save/reload and stay scoped away from female/plain picker; full-body Shiba/Selkirk selection, plain picker avatars, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round header/sidebar photos');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => { await browser?.close(); });

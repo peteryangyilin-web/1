@@ -9,6 +9,7 @@ const MALE_AVATAR_ARTWORK = {
   },
   selkirk: {
     lean: "/avatars/male-cat-lean.png",
+    athletic: "/avatars/male-cat-athletic.png",
   },
 };
 
