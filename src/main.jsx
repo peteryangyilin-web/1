@@ -56,6 +56,7 @@ import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 import OverviewProfile from "./components/OverviewProfile";
+import OverviewWelcome from "./components/OverviewWelcome";
 import AvatarEditor from "./components/AvatarEditor";
 import Entrance from "./components/Entrance";
 import "./components/navigation.css";
@@ -138,7 +139,8 @@ function App() {
     [saveError, setSaveError] = useState(false),
     [clock, setClock] = useState(Date.now()),
     [drawerOpen, setDrawerOpen] = useState(false),
-    [overviewVisit, setOverviewVisit] = useState(0);
+    [overviewVisit, setOverviewVisit] = useState(0),
+    [overviewStarted, setOverviewStarted] = useState(false);
   const drawerRef = useRef(null),
     navToggleRef = useRef(null),
     drawerTimer = useRef(null);
@@ -269,6 +271,7 @@ function App() {
   const navigate = (label) => {
     closeDrawer(drawerRef.current?.contains(document.activeElement));
     setTab(label);
+    if (label === "Overview") setOverviewStarted(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const openSession = () => {
@@ -560,14 +563,14 @@ function App() {
             </div>
           )}
         </header>
-        <main>
+        <main className={tab === "Overview" && !overviewStarted ? "overview-welcome-main" : undefined}>
           {saveError && (
             <div className="storage-warning">
               Changes cannot be saved in this browser. Export your data before
               leaving. <button onClick={exportData}>Export now</button>
             </div>
           )}
-          <section className={"greeting " + (tab === "Overview" ? "overview-greeting" : "")}>
+          {(tab !== "Overview" || overviewStarted) && <section className={"greeting " + (tab === "Overview" ? "overview-greeting" : "")}>
             <div>
               <div className="eyebrow">
                 {tab === "Overview"
@@ -626,7 +629,7 @@ function App() {
                 <ChevronRight size={14} />
               </button>
             )}
-          </section>
+          </section>}
           {tab === "Snack break" && (
             <SnackSimulation
               value={store.simulation}
@@ -637,7 +640,13 @@ function App() {
               }}
             />
           )}
-          {tab === "Overview" && (
+          {tab === "Overview" && !overviewStarted && (
+            <OverviewWelcome profile={profile} onStart={() => {
+              setOverviewStarted(true);
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }} />
+          )}
+          {tab === "Overview" && overviewStarted && (
             <OverviewProfile
               key={overviewVisit}
               profile={profile}
@@ -1107,7 +1116,7 @@ function App() {
               </section>
             </>
           )}
-          <footer>
+          {(tab !== "Overview" || overviewStarted) && <footer>
             <span className="footer-logo">
               GO<sup>®</sup>
             </span>
@@ -1115,7 +1124,7 @@ function App() {
             <span>
               <span className="green-dot" /> ALL IN GOOD FORM
             </span>
-          </footer>
+          </footer>}
         </main>
       </div>
       {toast && (

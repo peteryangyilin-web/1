@@ -23,13 +23,31 @@ let activeBrowser;
       await p.getByRole('button', { name: 'Open navigation', exact: true }).click();
     await p.locator('#go-navigation').getByRole('button', { name: label, exact: true }).click();
   };
+  const startOverview = () => p.getByRole('button', {name:'Get started',exact:true}).click();
   const errors = [];
   p.on("pageerror", (e) => errors.push(e.message));
   await p.goto(process.env.BASE_URL || "http://localhost:5173");
   await p.evaluate(() => localStorage.clear());
   await p.reload();
   await p.getByRole("heading", { name: "Let’s make it yours." }).waitFor();
-  assert.equal(await p.locator(".hero").count(), 0);
+  assert.equal(await p.getByRole('heading', {name:'Choose your goal',exact:true}).count(),0, 'welcome opens before profile setup');
+  assert.equal(await p.getByRole('radio', {name:/Lose fat/}).count(),0, 'goal choices stay hidden until Get started');
+  assert.equal(await p.getByLabel('Your name', {exact:true}).count(),0);
+  const beforeDemo = await p.evaluate(() => JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map(key=>[key,localStorage.getItem(key)]))));
+  await p.getByRole('button', {name:'View demo',exact:true}).click();
+  const demo = p.getByRole('dialog', {name:'A look inside GO',exact:true});
+  await demo.waitFor();
+  for (const feature of ['Training','Nutrition','Progress']) {
+    await demo.getByRole('tab', {name:feature,exact:true}).click();
+    assert.equal(await demo.getByRole('tabpanel', {name:feature,exact:true}).isVisible(),true);
+  }
+  await demo.getByRole('tab', {name:'Progress',exact:true}).focus();
+  await p.keyboard.press('ArrowRight');
+  assert.equal(await demo.getByRole('tab', {name:'Training',exact:true}).getAttribute('aria-selected'),'true');
+  await p.keyboard.press('Escape');
+  assert.equal(await p.getByRole('dialog').count(),0);
+  assert.equal(await p.getByRole('button', {name:'Get started',exact:true}).isVisible(),true);
+  assert.equal(await p.evaluate(() => JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map(key=>[key,localStorage.getItem(key)])))),beforeDemo, 'viewing the demo leaves personal records unchanged');
   assert.equal(
     await p.getByRole("button", { name: "My plan", exact: true }).count(),
     0,
@@ -41,8 +59,13 @@ let activeBrowser;
     "rgb(133, 133, 133)",
   );
   assert.equal(await p.getByLabel("Your name", {exact:true}).count(), 0);
+  await startOverview();
   assert.equal(await p.locator('.goal-artwork').count(), 4);
   assert.equal(await p.getByRole('button', {name:'Step 2: About you',exact:true}).isDisabled(), true);
+  await p.getByText("Lose fat", {exact:true}).click();
+  await p.getByRole('link', {name:'GO home',exact:true}).click();
+  assert.equal(await p.getByRole('heading', {name:'Choose your goal',exact:true}).count(),0);
+  await startOverview();
   await p.getByText("Lose fat", {exact:true}).click();
   assert.equal(await p.getByRole("heading", {name:"Tell us about you",exact:true}).isVisible(), true);
   await p.getByRole("button", {name:/^Female/}).click();
@@ -60,6 +83,7 @@ let activeBrowser;
     .click();
   assert.equal(await p.locator('nav [aria-current="page"]').textContent(), "Training");
   await p.reload();
+  await startOverview();
   assert.equal(await p.getByRole("radio", {name:/Lose fat/}).isChecked(), true);
   await p.getByText("Lose fat", {exact:true}).click();
   assert.equal(await p.getByRole("button", {name:/^Female/}).getAttribute("aria-pressed"), "true");
@@ -215,6 +239,8 @@ let activeBrowser;
   await navTo("Nutrition");
   assert.match(await p.locator(".calorie-ring").textContent(), /520/);
   await navTo("Overview");
+  assert.equal(await p.getByRole('button', {name:'Get started',exact:true}).isVisible(),true, 'Overview navigation returns to welcome');
+  assert.equal(await p.getByRole('heading', {name:'Choose your goal',exact:true}).count(),0);
   await p.evaluate(() => window.scrollTo(0, 0));
   await p.waitForTimeout(180);
   await p.screenshot({
@@ -240,6 +266,8 @@ let activeBrowser;
     );
   }
   await navTo("Overview");
+  assert.equal(await p.getByRole('button', {name:'Get started',exact:true}).isVisible(),true, 'Overview navigation returns to welcome');
+  assert.equal(await p.getByRole('heading', {name:'Choose your goal',exact:true}).count(),0);
   await p.evaluate(() => window.scrollTo(0, 0));
   await p.waitForTimeout(180);
   await p.screenshot({
@@ -248,7 +276,7 @@ let activeBrowser;
   });
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: profile persistence, metrics, meal add/edit/delete, water persistence, date isolation, plan editing, timer, completion validation, set recovery, history, goal calculation, CSV export, all 5 mobile views; snack selection, sound toggle, unwrap, bite completion, game persistence, keyboard control, and no virtual calorie logging; no browser errors.",
+    "PASS: welcome entry, demo without data mutation, Get started, GO home reset; profile persistence, metrics, meal add/edit/delete, water persistence, date isolation, plan editing, timer, completion validation, set recovery, history, goal calculation, CSV export, all 5 mobile views; snack selection, sound toggle, unwrap, bite completion, game persistence, keyboard control, and no virtual calorie logging; no browser errors.",
   );
   await b.close();
 })().catch(async (e) => {
