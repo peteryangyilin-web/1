@@ -88,3 +88,5 @@ The shared personal settings dialog also offers profile-photo upload above Your 
 The Overview entry uses four local SVG movement illustrations, subtle hover feedback, a compact setup estimate, and a navigable step indicator. Users can revisit reached steps without losing their draft; future steps stay disabled until reached. Motion respects reduced-motion preferences. Header and sidebar profile photos use a square, padding-free circular frame on mobile and desktop.
 
 The Male → Shiba Inu → Lean, Athletic and Strong body cards and final profile summary use the supplied original images at `public/avatars/male-dog-lean.png`, `public/avatars/male-dog-athletic.png` and `public/avatars/male-dog-strong.png`. All three images are displayed in full with their original proportions. Plain avatar selection previews and the other body/species/gender variants keep their existing illustrations.
+
+Male → Selkirk Rex → Lean also uses the supplied original at `public/avatars/male-cat-lean.png`, displayed in full in the body card and final summary. Other cat builds, female variants, and plain selection previews retain their existing illustrations.

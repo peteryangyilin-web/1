@@ -1,10 +1,15 @@
 import React, { useId } from "react";
 import "./animalAvatar.css";
 
-const MALE_SHIBA_ARTWORK = {
-  lean: "/avatars/male-dog-lean.png",
-  athletic: "/avatars/male-dog-athletic.png",
-  strong: "/avatars/male-dog-strong.png",
+const MALE_AVATAR_ARTWORK = {
+  shiba: {
+    lean: "/avatars/male-dog-lean.png",
+    athletic: "/avatars/male-dog-athletic.png",
+    strong: "/avatars/male-dog-strong.png",
+  },
+  selkirk: {
+    lean: "/avatars/male-cat-lean.png",
+  },
 };
 
 const BUILDS = {
@@ -21,15 +26,15 @@ const FEMALE_BUILDS = {
 /** A whole animal character. Human-like posture, animal anatomy from ears to paws. */
 export default function AnimalAvatar({ species = "shiba", build = "athletic", gender = "male", showMuscles = true, className = "" }) {
   const unique = useId().replace(/:/g, "");
-  const suppliedArtwork = species === "shiba" && gender === "male" && showMuscles
-    ? MALE_SHIBA_ARTWORK[build] : null;
+  const suppliedArtwork = gender === "male" && showMuscles
+    ? MALE_AVATAR_ARTWORK[species]?.[build] : null;
   if (suppliedArtwork) {
     return <img
       src={suppliedArtwork}
-      className={`animal-avatar animal-avatar-shiba animal-avatar-${build} animal-avatar-uploaded ${className}`}
+      className={`animal-avatar animal-avatar-${species} animal-avatar-${build} animal-avatar-uploaded ${className}`}
       width="1024" height="1536" decoding="async"
-      data-species="shiba" data-build={build} data-gender="male" data-muscle-details="on"
-      alt={`Shiba Inu dog male ${build} full-body avatar`}
+      data-species={species} data-build={build} data-gender="male" data-muscle-details="on"
+      alt={`${species === "selkirk" ? "Selkirk Rex cat" : "Shiba Inu dog"} male ${build} full-body avatar`}
     />;
   }
   const id = name => `animal-${unique}-${name}`;
