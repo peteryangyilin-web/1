@@ -17,6 +17,8 @@ const AVATAR_ARTWORK = {
   female: {
     selkirk: {
       lean: "/avatars/female-cat-lean.png",
+      athletic: "/avatars/female-cat-athletic.png",
+      strong: "/avatars/female-cat-strong.png",
     },
   },
 };
