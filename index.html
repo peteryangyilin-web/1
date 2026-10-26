@@ -9,134 +9,31 @@
       content="GO — Your training, nutrition and progress, in one clear view."
     />
     <title>GO — Every move matters.</title>
+    <link rel="preload" as="image" href="/branding/go-loading-smooth-stay.gif" />
     <style>
-      html.go-entering {
-        overflow: hidden;
-      }
-      #go-intro {
-        position: fixed;
-        inset: 0;
-        z-index: 10000;
-        display: grid;
-        place-items: center;
-        overflow: hidden;
-        background: #fff;
-        color: var(--brand-green, #b6d532);
-      }
-      .go-intro-center {
-        position: relative;
-        display: grid;
-        place-items: center;
-        width: 204px;
-        height: 204px;
-      }
-      .go-intro-wordmark {
-        position: relative;
-        display: inline-flex;
-        font-family: "Manrope Variable", sans-serif;
-        font-size: 78px;
-        line-height: 1;
-        font-weight: 800;
-        letter-spacing: -7px;
-        padding-right: 7px;
-        transform-origin: center;
-        will-change: transform, opacity;
-      }
-      .go-intro-wordmark span {
-        color: #858585;
-      }
-      .go-intro-orbit {
-        position: absolute;
-        inset: 0;
-        border: 1px solid #e9e9e9;
-        border-radius: 50%;
-      }
-      .go-intro-orbit::after {
-        content: "";
-        position: absolute;
-        inset: -1px;
-        border: 1.5px solid transparent;
-        border-top-color: #202020;
-        border-right-color: #929292;
-        border-radius: 50%;
-      }
-      .go-intro-running {
-        animation: go-intro-out 220ms 1650ms ease-out both;
-      }
-      .go-intro-running .go-intro-orbit::after {
-        animation: go-intro-spin 1050ms linear infinite;
-      }
-      .go-intro-running .go-intro-orbit {
-        animation: go-intro-orbit-out 1650ms ease-in-out both;
-      }
-      .go-intro-running .go-intro-wordmark {
-        animation: go-intro-zoom 1850ms both;
-      }
-      .go-intro-reduced {
-        animation: go-intro-out 150ms ease-out both;
-      }
-      @keyframes go-intro-spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes go-intro-orbit-out {
-        0%,
-        72% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        100% {
-          opacity: 0;
-          transform: scale(1.12);
-        }
-      }
-      @keyframes go-intro-zoom {
-        0% {
-          opacity: 0;
-          transform: scale(0.96);
-        }
-        14%,
-        70% {
-          opacity: 1;
-          transform: scale(1);
-          animation-timing-function: cubic-bezier(0.72, 0, 0.85, 0.18);
-        }
-        90% {
-          opacity: 0.85;
-        }
-        100% {
-          opacity: 0;
-          transform: scale(32);
-        }
-      }
-      @keyframes go-intro-out {
-        from {
-          opacity: 1;
-        }
-        to {
-          opacity: 0;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .go-intro-running,
-        .go-intro-reduced {
-          animation: go-intro-out 150ms ease-out both;
-        }
-        .go-intro-running .go-intro-wordmark,
-        .go-intro-running .go-intro-orbit,
-        .go-intro-running .go-intro-orbit::after {
-          animation: none;
-        }
-      }
+      html.go-entering { overflow: hidden; }
+      #go-intro { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; overflow: hidden; background: #fcfcfc; }
+      .go-intro-center { display: grid; place-items: center; width: min(480px, 100vw); aspect-ratio: 6 / 5; }
+      .go-intro-image, .go-intro-fallback { grid-area: 1 / 1; }
+      .go-intro-image { display: block; width: 100%; height: auto; max-height: 80dvh; object-fit: contain; opacity: 0; }
+      .go-intro-fallback { font-family: "Manrope Variable", sans-serif; font-size: 78px; font-weight: 800; color: var(--brand-green, #b6d532); }
+      .go-intro-fallback span { color: #858585; }
+      .go-intro-ready .go-intro-image { opacity: 1; }
+      .go-intro-ready .go-intro-fallback { visibility: hidden; }
+      .go-intro-skip { position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); right: 28px; padding: 10px 16px; border: 1px solid #ddd; border-radius: 24px; background: #fff; color: #626862; font: 12px sans-serif; cursor: pointer; }
+      .go-intro-skip:focus-visible { outline: 2px solid #187451; outline-offset: 4px; }
+      .go-intro-leaving { animation: go-intro-out 220ms ease-out both; }
+      @keyframes go-intro-out { to { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) { .go-intro-image { visibility: hidden; } .go-intro-leaving { animation: none; } }
     </style>
   </head>
   <body>
     <div id="go-intro" role="status" aria-label="Opening GO">
       <div class="go-intro-center" aria-hidden="true">
-        <div class="go-intro-orbit"></div>
-        <div class="go-intro-wordmark">G<span>O</span></div>
+        <div class="go-intro-fallback">G<span>O</span></div>
+        <img class="go-intro-image" src="/branding/go-loading-smooth-stay.gif" width="480" height="400" alt="" decoding="async" />
       </div>
+      <button class="go-intro-skip" type="button">Skip intro</button>
     </div>
     <div id="root" inert></div>
     <script type="module" src="/src/main.jsx"></script>

@@ -272,6 +272,7 @@ let activeBrowser;
   moving.setDefaultTimeout(7000);
   moving.on('pageerror', error=>errors.push(error.message));
   await moving.goto(process.env.BASE_URL || 'http://localhost:5173');
+  await moving.getByRole('button', {name:'Skip intro',exact:true}).click();
   await moving.locator('#go-intro').waitFor({state:'detached'});
   const conveyor = moving.locator('.welcome-card-viewport');
   const track = moving.locator('.welcome-card-track');

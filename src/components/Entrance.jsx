@@ -1,56 +1,69 @@
 import { useEffect } from "react";
 
-// The splash lives in index.html so the first paint is already the GO mark.
+// Keep the supplied GIF intact: 220 frames, one 9.46-second pass, no loop.
+const INTRO_DURATION_MS = 9460;
+
 export default function Entrance() {
   useEffect(() => {
     const splash = document.getElementById("go-intro");
     if (!splash) return;
-    let finished = false,
-      startTimer;
+    const image = splash.querySelector(".go-intro-image");
+    const skip = splash.querySelector(".go-intro-skip");
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let finished = false, started = false, leaving = false;
+    let playTimer, exitTimer, safetyTimer;
     const finish = () => {
       if (finished) return;
       finished = true;
-      clearTimeout(startTimer);
-      document.documentElement.classList.remove("go-entering");
-      document.getElementById("root")?.removeAttribute("inert");
-      splash.remove();
+      clearTimeout(playTimer);
+      clearTimeout(exitTimer);
+      clearTimeout(safetyTimer);
+      image?.removeEventListener("load", onLoad);
+      image?.removeEventListener("error", dismiss);
+      skip?.removeEventListener("click", dismiss);
+      splash.removeEventListener("animationend", onEnd);
       window.removeEventListener("keydown", onKey);
       motion.removeEventListener("change", onMotion);
+      document.documentElement.classList.remove("go-entering");
+      document.getElementById("root")?.removeAttribute("inert");
+      const restoreFocus = splash.contains(document.activeElement);
+      splash.remove();
+      if (restoreFocus) document.querySelector(".welcome-actions button")?.focus();
     };
-    const onKey = (e) => {
-      if (e.key === "Escape") finish();
+    const dismiss = () => {
+      if (finished || leaving) return;
+      leaving = true;
+      clearTimeout(playTimer);
+      splash.classList.add("go-intro-leaving");
+      exitTimer = setTimeout(finish, 300);
     };
-    const onMotion = (event) => {
-      if (event.matches) finish();
+    const onLoad = () => {
+      if (started || finished || leaving) return;
+      started = true;
+      splash.classList.add("go-intro-ready");
+      playTimer = setTimeout(dismiss, INTRO_DURATION_MS);
     };
-    const onEnd = (e) => {
-      if (e.target === splash && e.animationName === "go-intro-out") finish();
+    const onEnd = event => {
+      if (event.target === splash && event.animationName === "go-intro-out") finish();
     };
+    const onKey = event => { if (event.key === "Escape") dismiss(); };
+    const onMotion = event => { if (event.matches) finish(); };
+    if (motion.matches) {
+      finish();
+      return;
+    }
     splash.addEventListener("animationend", onEnd);
     window.addEventListener("keydown", onKey);
     motion.addEventListener("change", onMotion);
-    // Wait briefly for the bundled logo font, with a firm upper limit.
-    if (motion.matches) {
-      startTimer = setTimeout(finish, 100);
-    } else {
-      const fontReady = document.fonts?.ready || Promise.resolve();
-      Promise.race([
-        fontReady,
-        new Promise((resolve) => {
-          startTimer = setTimeout(resolve, 350);
-        }),
-      ]).then(() => {
-        if (!finished) splash.classList.add("go-intro-running");
-      });
+    skip?.addEventListener("click", dismiss);
+    image?.addEventListener("load", onLoad);
+    image?.addEventListener("error", dismiss);
+    safetyTimer = setTimeout(dismiss, 18000);
+    if (image?.complete) {
+      if (image.naturalWidth) onLoad();
+      else dismiss();
     }
-    const safety = setTimeout(finish, 2800);
-    return () => {
-      clearTimeout(safety);
-      splash.removeEventListener("animationend", onEnd);
-      window.removeEventListener("keydown", onKey);
-      finish();
-    };
+    return finish;
   }, []);
   return null;
 }

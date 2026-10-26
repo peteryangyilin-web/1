@@ -11,7 +11,8 @@
     "test:browser": "node tests/browser-smoke.cjs",
     "generate:demos": "node scripts/generate-exercise-gifs.mjs",
     "test:cats": "node tests/cat-demos.cjs",
-    "test:avatar": "node tests/avatar-flow.cjs"
+    "test:avatar": "node tests/avatar-flow.cjs",
+    "test:entrance": "node tests/entrance.cjs"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",

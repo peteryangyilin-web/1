@@ -4,7 +4,7 @@ A responsive, black-and-white fitness app built with React and Vite. White surfa
 
 ## What works
 
-- **Entrance:** a white first-paint splash with a centered GO mark and rotating ring, followed by a fast logo zoom into the app (about two seconds). It runs on full page entry, not internal navigation; Escape skips it and reduced-motion users enter directly.
+- **Entrance:** the supplied `public/branding/go-loading-smooth-stay.gif` plays once at its original timing (9.46 seconds), then fades into the app. It runs on full page entry, not internal navigation. Skip intro or Escape enters sooner; reduced-motion users enter directly. Image errors and a bounded safety timeout also release the page.
 
 - **Overview:** choose a fitness goal (muscle, fat loss, endurance, or wellbeing), enter personal information and starting/target weight, set training frequency, and edit daily nutrition, movement, hydration, and sleep targets. The profile saves locally and updates the training schedule. Optional age and height are stored as profile information. The logo uses a gray O.
 - **Cat coach:** all 22 built-in exercises include a bundled, looping cat demonstration GIF and static poster, pause/play controls, two movement phases, and expandable form cues. Animations only play near the viewport and default to still images with reduced-motion settings. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
@@ -94,3 +94,5 @@ Male → Selkirk Rex → Lean, Athletic and Strong also use the supplied origina
 Overview opens on a centered welcome screen with a warm gray-to-sky backdrop and floating product preview cards. **Get started** opens the existing four-step setup. Preview cards move continuously to the left in a seamless loop; a Pause/Play control stops and resumes the motion. Duplicate cards are hidden from assistive technology. Reduced-motion users get a static, horizontally scrollable strip. The GO logo and Overview navigation return to this welcome screen. Uploaded character artwork and profile persistence remain part of the setup flow.
 
 Female → Selkirk Rex → Lean uses the supplied original at `public/avatars/female-cat-lean.png`, displayed in full in its body card, final summary, and saved-character welcome preview. Other female builds and plain avatar selection previews retain their existing illustrations.
+
+With a dev or preview server running, `npm run test:entrance` checks supplied-GIF playback, automatic reveal, Skip/Escape, reduced motion, failed-image fallback, and unlocked navigation.
