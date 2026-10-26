@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 
-// Keep the supplied GIF intact: 220 frames, one 9.46-second pass, no loop.
-const INTRO_DURATION_MS = 9460;
+// The full supplied sequence is retimed to four seconds, including the exit fade.
+const INTRO_DURATION_MS = 4000;
+const INTRO_FADE_MS = 220;
 
 export default function Entrance() {
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function Entrance() {
       if (started || finished || leaving) return;
       started = true;
       splash.classList.add("go-intro-ready");
-      playTimer = setTimeout(dismiss, INTRO_DURATION_MS);
+      playTimer = setTimeout(dismiss, INTRO_DURATION_MS - INTRO_FADE_MS);
     };
     const onEnd = event => {
       if (event.target === splash && event.animationName === "go-intro-out") finish();

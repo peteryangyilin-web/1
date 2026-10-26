@@ -20,12 +20,16 @@ let browser;
     (async()=>{
       const p=await page(); await p.goto(base);
       await p.locator('#go-intro.go-intro-ready').waitFor();
+      const startedAt = Date.now();
       assert.equal(await p.locator('#root').getAttribute('inert'),'');
+      assert.match(await p.locator('.go-intro-image').getAttribute('src'), /go-loading-4s\.gif$/);
       assert.deepEqual(await p.locator('.go-intro-image').evaluate(i=>[i.naturalWidth,i.naturalHeight]),[480,400]);
       const box=await p.locator('.go-intro-image').boundingBox();
       assert(Math.abs(box.x+box.width/2-195)<1);
       await p.waitForTimeout(600); assert.equal(await p.locator('#go-intro').count(),1);
       await unlocked(p);
+      const elapsed = Date.now() - startedAt;
+      assert(elapsed > 3300 && elapsed < 5500, `intro should finish in about four seconds, got ${elapsed}ms`);
       await p.getByRole('button',{name:'Get started',exact:true}).click();
       assert.equal(await p.locator('#go-intro').count(),0,'internal navigation does not replay');
       await p.close();
@@ -41,9 +45,9 @@ let browser;
       const p=await page({reducedMotion:'reduce'}); await p.goto(base); await unlocked(p); await p.close();
     })(),
     (async()=>{
-      const p=await page(); await p.route('**/branding/go-loading-smooth-stay.gif',r=>r.abort()); await p.goto(base); await unlocked(p); await p.close();
+      const p=await page(); await p.route('**/branding/go-loading-4s.gif',r=>r.abort()); await p.goto(base); await unlocked(p); await p.close();
     })(),
   ]);
   assert.deepEqual(errors,[]);
-  console.log('PASS original GIF playback and automatic entry, centered mobile layout, Skip/Escape, reduced motion and failed-image fallback; interactions unlock and navigation does not replay');
+  console.log('PASS four-second full-sequence GIF playback and automatic entry, centered mobile layout, Skip/Escape, reduced motion and failed-image fallback; interactions unlock and navigation does not replay');
 })().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>{await browser?.close()});

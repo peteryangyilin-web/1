@@ -4,7 +4,7 @@ A responsive, black-and-white fitness app built with React and Vite. White surfa
 
 ## What works
 
-- **Entrance:** the supplied `public/branding/go-loading-smooth-stay.gif` plays once at its original timing (9.46 seconds), then fades into the app. It runs on full page entry, not internal navigation. Skip intro or Escape enters sooner; reduced-motion users enter directly. Image errors and a bounded safety timeout also release the page.
+- **Entrance:** the full supplied animation is retimed into `public/branding/go-loading-4s.gif` and plays once in four seconds, including the exit fade. The original `go-loading-smooth-stay.gif` remains available as the source asset. It runs on full page entry, not internal navigation. Skip intro or Escape enters sooner; reduced-motion users enter directly. Image errors and a bounded safety timeout also release the page.
 
 - **Overview:** choose a fitness goal (muscle, fat loss, endurance, or wellbeing), enter personal information and starting/target weight, set training frequency, and edit daily nutrition, movement, hydration, and sleep targets. The profile saves locally and updates the training schedule. Optional age and height are stored as profile information. The logo uses a gray O.
 - **Cat coach:** all 22 built-in exercises include a bundled, looping cat demonstration GIF and static poster, pause/play controls, two movement phases, and expandable form cues. Animations only play near the viewport and default to still images with reduced-motion settings. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
