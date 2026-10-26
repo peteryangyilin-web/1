@@ -15,6 +15,11 @@ const AVATAR_ARTWORK = {
     },
   },
   female: {
+    shiba: {
+      lean: "/avatars/female-dog-lean.png",
+      athletic: "/avatars/female-dog-athletic.png",
+      strong: "/avatars/female-dog-strong.png",
+    },
     selkirk: {
       lean: "/avatars/female-cat-lean.png",
       athletic: "/avatars/female-cat-athletic.png",

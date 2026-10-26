@@ -93,6 +93,8 @@ Male → Selkirk Rex → Lean, Athletic and Strong also use the supplied origina
 
 Overview opens on a centered welcome screen with a warm gray-to-sky backdrop and floating product preview cards. **Get started** opens the existing four-step setup. Preview cards move continuously to the left in a seamless loop; a Pause/Play control stops and resumes the motion. Duplicate cards are hidden from assistive technology. Reduced-motion users get a static, horizontally scrollable strip. The GO logo and Overview navigation return to this welcome screen. Uploaded character artwork and profile persistence remain part of the setup flow.
 
-Female → Selkirk Rex → Lean, Athletic and Strong use the supplied originals at `public/avatars/female-cat-lean.png`, `public/avatars/female-cat-athletic.png` and `public/avatars/female-cat-strong.png`, displayed in full in body cards, final summaries and saved-character welcome previews. Female dog builds and plain avatar selection previews retain their existing illustrations.
+Female → Selkirk Rex → Lean, Athletic and Strong use the supplied originals at `public/avatars/female-cat-lean.png`, `public/avatars/female-cat-athletic.png` and `public/avatars/female-cat-strong.png`, displayed in full in body cards, final summaries and saved-character welcome previews. Plain avatar selection previews retain their existing illustrations.
 
 With a dev or preview server running, `npm run test:entrance` checks supplied-GIF playback, automatic reveal, Skip/Escape, reduced motion, failed-image fallback, and unlocked navigation.
+
+Female → Shiba Inu → Lean, Athletic and Strong use the supplied originals at `public/avatars/female-dog-lean.png`, `public/avatars/female-dog-athletic.png` and `public/avatars/female-dog-strong.png`. The full images appear in body cards, final summaries and saved-character welcome previews.

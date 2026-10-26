@@ -153,10 +153,21 @@ let browser;
   await page.getByRole('button',{name:/^Female/}).click();
   assert.equal(await page.locator('.body-choices .animal-avatar[data-species="shiba"][data-gender="female"]').count(),3);
   await checkBuildMuscles();
-  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-build="lean"]').count(),1, 'Female Lean keeps its original vector model');
-  assert.equal(await page.locator('.body-choices img.animal-avatar-uploaded').count(),0, 'the new image never replaces female variants');
-  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-build="athletic"]').count(),1, 'Female Athletic retains its original vector model');
-  assert.equal(await page.locator('.body-choices svg.animal-avatar[data-build="strong"]').count(),1, 'Female Strong retains its original vector model');
+  assert.equal(await page.locator('.body-choices svg.animal-avatar').count(),0, 'all female dog builds use supplied originals');
+  for (const [build,label] of [['lean','Lean'],['athletic','Athletic'],['strong','Strong']]) {
+    await checkArtwork(page.locator('.body-choices'),build,'shiba','female');
+    await page.getByRole('button',{name:label,exact:true}).click();
+    await checkArtwork(page.locator('.character-summary'),build,'shiba','female');
+    await page.getByRole('button',{name:'Save your profile and go to training',exact:true}).click();
+    await page.reload();
+    await page.locator('#go-intro').waitFor({state:'detached'});
+    await checkArtwork(page.locator('.welcome-card-group').first().locator('.welcome-character-card'),build,'shiba','female');
+    await startOverview();
+    await page.getByText('Build muscle',{exact:true}).click();
+    await page.getByRole('button',{name:/^Female/}).click();
+    await checkArtwork(page.locator('.body-choices'),build,'shiba','female');
+    assert.equal(await page.getByRole('button',{name:label,exact:true}).getAttribute('aria-pressed'),'true', `Female dog ${label} survives save/reload`);
+  }
   await page.getByRole('button',{name:'Step 2: About you',exact:true}).click();
   await page.getByRole('button',{name:/^Male/}).click();
   await checkArtwork(page.locator('.body-choices'));
@@ -270,5 +281,5 @@ let browser;
     assert.equal(geometry.overflow, 'hidden', 'photo is clipped by the circular frame');
   }
   assert.deepEqual(errors, []);
-  console.log('PASS supplied Female Selkirk Lean/Athletic/Strong images load in cards/summary/welcome and persist; supplied Male Selkirk Lean/Athletic/Strong images load in cards/summary and persist while picker stays unchanged; supplied Male Shiba Lean/Athletic/Strong images load in cards and summary, persist after save/reload and stay scoped away from female/plain picker; full-body Shiba/Selkirk selection, plain picker avatars, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round header/sidebar photos');
+  console.log('PASS supplied Female Shiba Lean/Athletic/Strong images load in cards/summary/welcome and persist; supplied Female Selkirk Lean/Athletic/Strong images load in cards/summary/welcome and persist; supplied Male Selkirk Lean/Athletic/Strong images load in cards/summary and persist while picker stays unchanged; supplied Male Shiba Lean/Athletic/Strong images load in cards and summary, persist after save/reload and stay scoped away from female/plain picker; full-body Shiba/Selkirk selection, plain picker avatars, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round header/sidebar photos');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => { await browser?.close(); });
