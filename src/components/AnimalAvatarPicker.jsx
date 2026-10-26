@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Check, X, ArrowUpRight } from "lucide-react";
-import AnimalAvatar from "./AnimalAvatar";
 import "./animalAvatarPicker.css";
 
 export const AVATAR_CHARACTERS = [
-  { id: "shiba", name: "Shiba Inu", breed: "柴犬", description: "Bright-eyed. Curly-tailed. Ready to GO.", label: "THE SUNNY ONE" },
-  { id: "selkirk", name: "Selkirk Rex", breed: "塞尔凯克卷毛猫", description: "Soft curls. Quiet confidence. Your own pace.", label: "THE CURLY ONE" },
+  { id: "shiba", previewImage: "/avatars/male-dog-lean.png", name: "Shiba Inu", breed: "柴犬", description: "Bright-eyed. Curly-tailed. Ready to GO.", label: "THE SUNNY ONE" },
+  { id: "selkirk", previewImage: "/avatars/female-cat-lean.png", name: "Selkirk Rex", breed: "塞尔凯克卷毛猫", description: "Soft curls. Quiet confidence. Your own pace.", label: "THE CURLY ONE" },
 ];
 export const characterName = species => AVATAR_CHARACTERS.find(item => item.id === species)?.name || "Shiba Inu";
 
-export default function AnimalAvatarPicker({ value, gender = "male", onSelect, onClose }) {
+export default function AnimalAvatarPicker({ value, onSelect, onClose }) {
   const dialog = useRef(null);
   const [selected, setSelected] = useState(value || "shiba");
   useEffect(() => { dialog.current.showModal(); return () => dialog.current?.close(); }, []);
@@ -22,7 +21,7 @@ export default function AnimalAvatarPicker({ value, gender = "male", onSelect, o
     <div className="animal-picker-options" role="group" aria-label="Animal avatars">
       {AVATAR_CHARACTERS.map(character => <button type="button" key={character.id} className={`animal-picker-card ${selected === character.id ? "selected" : ""}`} aria-pressed={selected === character.id} aria-label={`Select ${character.name}`} onClick={() => setSelected(character.id)}>
         <span className="animal-picker-badge">{character.label}<span className="animal-picker-check">{selected === character.id && <Check size={13} />}</span></span>
-        <AnimalAvatar showMuscles={false} gender={gender} species={character.id} />
+        <img className="animal-avatar animal-avatar-uploaded" src={character.previewImage} data-species={character.id} width="1024" height="1536" alt={`${character.name} full-body avatar`} decoding="async" />
         <strong>{character.name}</strong><span className="animal-picker-breed">{character.breed}</span><p>{character.description}</p>
       </button>)}
     </div>
