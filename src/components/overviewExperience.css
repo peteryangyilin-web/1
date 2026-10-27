@@ -26,12 +26,8 @@
 .goal-card-top .goal-choice-icon { width:32px; height:32px; margin:0; background:#fff; border:1px solid #e2eae5; border-radius:10px; color:inherit; }
 .goal-card-index { font-size:10px; letter-spacing:1px; opacity:.55; padding-right:26px; }
 .overview-experience .goal-radio { top:28px; right:22px; width:15px; height:15px; }
-.goal-artwork { display:block; width:100%; height:160px; margin:5px 0 12px; overflow:visible; }
-.goal-figure { transform-origin:120px 145px; transition:transform .5s cubic-bezier(.2,.7,.2,1); }
-.goal-choice:hover .goal-figure { transform:translateY(-4px) rotate(-3deg); }
-.goal-artwork-wellbeing .goal-figure { transform-origin:120px 100px; }
-.goal-spark { transition:opacity .4s, transform .5s; transform-origin:center; }
-.goal-choice:hover .goal-spark { opacity:.9; transform:scale(1.08); }
+.goal-artwork { display:block; width:100%; height:220px; margin:5px 0 12px; object-fit:contain; object-position:center; transition:transform .3s; }
+.goal-choice:hover .goal-artwork { transform:translateY(-4px); }
 .overview-experience .goal-choice > strong { font-size:18px; font-weight:550; letter-spacing:-.6px; }
 .overview-experience .goal-choice > p { max-width:none; font-size:11px; color:#687970; line-height:1.7; margin:9px 0 24px; }
 .goal-card-continue { display:flex; align-items:center; justify-content:space-between; gap:10px; border-top:1px solid #dce9e1; padding-top:16px; font-size:10px; margin-top:auto; }
@@ -43,7 +39,7 @@
 .overview-experience .wizard-choice { border-radius:16px; }
 @media(max-width:1100px) {
   .overview-experience .goal-choices { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .goal-artwork { height:170px; }
+  .goal-artwork { height:220px; }
 }
 @media(max-width:650px) {
   .overview-greeting { margin:6px auto 28px; }
@@ -59,13 +55,13 @@
   .goal-card-index { display:none; }
   .overview-experience .goal-radio { top:24px; right:14px; width:14px; height:14px; }
   .goal-card-top .goal-choice-icon { width:29px; height:29px; }
-  .goal-artwork { height:117px; margin:8px 0 10px; }
+  .goal-artwork { height:160px; margin:8px 0 10px; }
   .overview-experience .goal-choice > strong { font-size:15px; letter-spacing:-.5px; line-height:1.4; }
   .overview-experience .goal-choice > p { font-size:10px; margin:8px 0 16px; }
   .goal-card-continue { font-size:9px; padding-top:12px; }
   .goal-friendly-note { align-items:flex-start; flex-direction:column; gap:10px; line-height:1.7; }
 }
 @media(prefers-reduced-motion:reduce) {
-  .overview-experience .goal-choice,.goal-figure,.goal-spark,.goal-card-continue svg { transition:none; }
-  .overview-experience .goal-choice:hover,.goal-choice:hover .goal-figure,.goal-choice:hover .goal-spark,.goal-choice:hover .goal-card-continue svg { transform:none; }
+  .overview-experience .goal-choice,.goal-artwork,.goal-card-continue svg { transition:none; }
+  .overview-experience .goal-choice:hover,.goal-choice:hover .goal-artwork,.goal-choice:hover .goal-card-continue svg { transform:none; }
 }
