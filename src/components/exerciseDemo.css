@@ -17,10 +17,11 @@
   width: 150px;
   border-radius: 7px;
   overflow: hidden;
-  background: #f5f5f5;
-  aspect-ratio: 300/220;
+  background: #fff;
+  aspect-ratio: 1;
 }
 .demo-visual > img,
+.demo-visual > video,
 .cat-animation {
   display: block;
   width: 100%;
@@ -471,3 +472,11 @@
     letter-spacing: 0;
   }
 }
+
+.demo-media-fallback { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:white; }
+.demo-media-fallback > .animal-avatar { flex:1; min-height:0; width:100%; object-fit:contain; }
+.demo-retry { display:flex; align-items:center; gap:4px; padding:6px; font-size:9px; color:#315d45; }
+
+/* Keep the selected coach readable without obscuring the exercise. */
+.exercise-demo .cat-coach-label { font-size:7px; color:#526358; padding:3px 5px; border-radius:5px; background:#ffffffed; letter-spacing:.1px; }
+.exercise-demo.compact .cat-coach-label { font-size:6px; }

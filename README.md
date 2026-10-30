@@ -7,7 +7,7 @@ A responsive, black-and-white fitness app built with React and Vite. White surfa
 - **Entrance:** the full supplied animation is retimed into `public/branding/go-loading-4s.gif` and plays once in four seconds, including the exit fade. The original `go-loading-smooth-stay.gif` remains available as the source asset. It runs on full page entry, not internal navigation. Skip intro or Escape enters sooner; reduced-motion users enter directly. Image errors and a bounded safety timeout also release the page.
 
 - **Overview:** choose a fitness goal (muscle, fat loss, endurance, or wellbeing), enter personal information and starting/target weight, set training frequency, and edit daily nutrition, movement, hydration, and sleep targets. The profile saves locally and updates the training schedule. Optional age and height are stored as profile information. The logo uses a gray O.
-- **Cat coach:** all 22 built-in exercises include a bundled, looping cat demonstration GIF and static poster, pause/play controls, two movement phases, and expandable form cues. Animations only play near the viewport and default to still images with reduced-motion settings. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
+- **Avatar coach:** all 22 built-in exercises select the saved female/male cat or Shiba Inu character. Local looping videos use sixteen painted poses per movement, with static posters, pause/play, movement phases and form cues. Offscreen videos pause; reduced-motion users start with a static poster. Failed media retains the selected character and offers retry. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
 - **Training:** real calendar dates, past/future week navigation, goal- and frequency-based schedules, custom daily plans, day-specific exercises, editable weight/repetition values for every set, completed-set tracking, a pause/resume session timer that survives refresh, saved session history, and editing completed sessions. Future days support planning, not logging a finished workout.
 - **Nutrition:** create, edit, and delete meals with calories, protein, carbs, and fats; estimated quick-add servings; automatic daily totals; editable targets; and water tracking.
 - **Progress:** recorded-day step/sleep charts, completed sessions, actual consecutive-day streaks, weight logs, directional weight-goal progress, and CSV summaries. Unlogged days remain empty and are excluded from averages.
@@ -55,23 +55,27 @@ Steps, sleep, weight, and meals are manually entered. There is no wearable conne
 
 Legacy Forma profile preferences are migrated automatically; internal legacy storage keys remain compatible.
 
-## Cat demonstration assets
+## Avatar training animations
 
-The cat coach is styled after the supplied brown-and-white long-haired tabby reference: a round face, dark forehead stripes, olive eyes, white muzzle, pink nose, and white paws. The original portrait remains at `public/cat-coach/portrait.png` as a design reference. The animation now uses a cohesive furry character rig in `public/cat-coach/character-rig.png`: head, rounded white-chested torso, tabby upper limbs, white lower limbs and paws, and a fluffy striped tail share the same artwork. Dense joint samples keep the textured limbs connected throughout movement, with a gentle tail swish.
+Training and the active-session dialog select media from the saved `gender` and `avatarCharacter` fields through `src/trainingAvatars.js`. The library has female cat, male cat, female Shiba Inu and male Shiba Inu variants. Existing profiles without a selection use the same male Shiba default as the profile UI.
 
-The GIFs and posters in `public/exercises` are local assets. They do not require an external image/video host. Their original animated SVG poses live in `src/exerciseDemos.js` and `src/components/ExerciseDemo.jsx`.
+All 22 exercise types are covered by 19 movement sequences per character (76 videos). Walking, warm-up, steady cardio and cool-down share a walking sequence with an activity-specific playback rate. Strength variations such as flat/incline presses and cable/dumbbell rows have separate choreography. Exercise names, phases and form cues still come from `src/exerciseDemos.js`.
 
-To regenerate them with the dev server running (requires Chromium and Python with Pillow):
+The PNG sprite sheets in `assets/animation-sources/training` contain sixteen separately painted poses in a 4×4 grid. `scripts/build-training-animations.mjs` slices the sheets, aligns grounded contact points, and plays the poses forward/backward. It does not use optical flow, blended silhouettes or crossfades. The 3-second MP4 loops and static PNG posters in `public/training` are checked in; a normal app build needs no media-generation service or external media host.
+
+To rebuild the media locally (requires FFmpeg, ffprobe and ImageMagick):
 
 ```sh
-npm run generate:demos
-# Or regenerate one movement:
-npm run generate:demos -- squat
+npm run generate:training
+# Rebuild one source sheet:
+npm run generate:training -- female-cat-squat.png
+# Rebuild all videos after changing the assembler:
+npm run generate:training -- --force
 ```
 
-The capture helper in `scripts/demoCapture.jsx` is development tooling and is not an application route. Regeneration is not needed for a production build; the generated assets are checked in.
+With a dev or preview server on port 5173, `npm run test:training` checks all 22 mappings for each character, real video playback, pause/resume, form tips, the active-session dialog, mobile layout, reduced-motion defaults, and failure/retry behavior. `npm test` verifies all media paths and distinguishes characters and exercise variations. `npm run test:cats` remains an alias for the current avatar training browser checks.
 
-With the development server running, `npm run test:cats` verifies every built-in GIF decodes, frames visibly animate, pause/play and form tips work, session demonstrations appear, mobile layout fits, and reduced-motion users initially get static posters. `npm test` also checks exercise-to-demo mappings and bundled asset coverage.
+Legacy SVG capture tooling (`npm run generate:demos`) and original `public/exercises` assets remain available for reference; Training uses the avatar-specific library.
 
 ## Navigation drawer
 

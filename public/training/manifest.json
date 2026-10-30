@@ -1,0 +1,458 @@
+[
+  {
+    "avatar": "female-cat",
+    "motion": "bench",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "calf",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "curl",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "deadbug",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "dumbbellrow",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "facepull",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "hinge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "hip",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "incline",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "lateral",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "lunge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "mobility",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "pulldown",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "pushup",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "row",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "shoulder",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "squat",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "triceps",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-cat",
+    "motion": "walk",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "bench",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "calf",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "curl",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "deadbug",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "dumbbellrow",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "facepull",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "hinge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "hip",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "incline",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "lateral",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "lunge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "mobility",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "pulldown",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "pushup",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "row",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "shoulder",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "squat",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "triceps",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "female-dog",
+    "motion": "walk",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "bench",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "calf",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "curl",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "deadbug",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "dumbbellrow",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "facepull",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "hinge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "hip",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "incline",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "lateral",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "lunge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "mobility",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "pulldown",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "pushup",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "row",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "shoulder",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "squat",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "triceps",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-cat",
+    "motion": "walk",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "bench",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "calf",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "curl",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "deadbug",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "dumbbellrow",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "facepull",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "hinge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "hip",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "incline",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "lateral",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "lunge",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "mobility",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "pulldown",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "pushup",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "row",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "shoulder",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "squat",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "triceps",
+    "poses": 16,
+    "duration": 3
+  },
+  {
+    "avatar": "male-dog",
+    "motion": "walk",
+    "poses": 16,
+    "duration": 3
+  }
+]

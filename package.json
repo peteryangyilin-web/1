@@ -12,7 +12,9 @@
     "generate:demos": "node scripts/generate-exercise-gifs.mjs",
     "test:cats": "node tests/cat-demos.cjs",
     "test:avatar": "node tests/avatar-flow.cjs",
-    "test:entrance": "node tests/entrance.cjs"
+    "test:entrance": "node tests/entrance.cjs",
+    "test:training": "node tests/avatar-training.cjs",
+    "generate:training": "node scripts/build-training-animations.mjs"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",

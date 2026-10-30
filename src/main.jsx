@@ -836,7 +836,7 @@ function App() {
                     <span className="subtle">{plan.duration} min</span>
                   </div>
                   <p className="demo-intro">
-                    Meet your cat coach. Watch the movement, then open the form
+                    Your avatar, your coach. Watch the movement, then open the form
                     tips.
                   </p>
                   {plan.exercises.map((e, i) => (
@@ -848,7 +848,7 @@ function App() {
                           {e.sets} × {e.reps}
                         </small>
                       </div>
-                      <ExerciseDemo name={e.name} compact />
+                      <ExerciseDemo name={e.name} profile={profile} compact />
                     </div>
                   ))}
                 </section>
@@ -1264,7 +1264,7 @@ function App() {
                         <span>{String(ei + 1).padStart(2, "0")}</span>
                         {e.name}
                       </h3>
-                      <ExerciseDemo name={e.name} />
+                      <ExerciseDemo name={e.name} profile={profile} />
                       <div className="set-header">
                         <span>SET</span>
                         <span>WEIGHT · KG</span>

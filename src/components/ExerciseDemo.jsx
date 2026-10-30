@@ -1,9 +1,11 @@
 import React, { useEffect, useId, useRef, useState, useMemo } from "react";
-import { Pause, Play, ChevronDown, ChevronUp, Cat } from "lucide-react";
+import { Pause, Play, ChevronDown, ChevronUp, Cat, Dog, RotateCcw } from "lucide-react";
 import { getExerciseDemo, sampleDemoFrames } from "../exerciseDemos";
 import "./exerciseDemo.css";
+import AnimalAvatar from "./AnimalAvatar";
+import { getTrainingMedia, resolveTrainingAvatar } from "../trainingAvatars";
 
-export default function ExerciseDemo({ name, compact = false }) {
+export default function ExerciseDemo({ name, profile, compact = false }) {
   const demo = getExerciseDemo(name),
     ref = useRef(null);
   const [playing, setPlaying] = useState(
@@ -13,6 +15,21 @@ export default function ExerciseDemo({ name, compact = false }) {
     [expanded, setExpanded] = useState(false),
     [failed, setFailed] = useState(false);
   const detailsId = useId();
+  const videoRef = useRef(null);
+  const media = getTrainingMedia(profile, demo);
+  const mediaKey = media?.video;
+  const CoachIcon = (media || resolveTrainingAvatar(profile)).animal === "cat" ? Cat : Dog;
+  useEffect(() => { setFailed(false); }, [mediaKey]);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || failed) return;
+    video.playbackRate = media.playbackRate;
+    if (playing && visible) {
+      video.play().catch(error => {
+        if (error.name === "NotAllowedError") setPlaying(false);
+      });
+    } else video.pause();
+  }, [playing, visible, mediaKey, media?.playbackRate, failed]);
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
@@ -26,7 +43,7 @@ export default function ExerciseDemo({ name, compact = false }) {
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [demo?.id]);
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = () => {
@@ -38,11 +55,10 @@ export default function ExerciseDemo({ name, compact = false }) {
   if (!demo)
     return (
       <div className="custom-demo-note">
-        <Cat size={16} />
+        <CoachIcon size={16} />
         <span>Custom exercise — a matching demo isn’t available yet.</span>
       </div>
     );
-  const animating = playing && visible;
   return (
     <div
       ref={ref}
@@ -52,26 +68,33 @@ export default function ExerciseDemo({ name, compact = false }) {
         (expanded ? "expanded" : "")
       }
       data-exercise-demo={demo.id}
+      data-training-avatar={media.key}
     >
       <div className="exercise-demo-preview">
         <div className="demo-visual">
           {failed ? (
-            <CatAnimation demo={demo} paused={!animating} />
+            <div className="demo-media-fallback" role="status">
+              <AnimalAvatar species={media.species} gender={media.gender} build={profile?.bodyType || "athletic"} />
+              <button type="button" className="demo-retry" onClick={() => setFailed(false)}><RotateCcw size={12} /> Retry animation</button>
+            </div>
           ) : (
-            <img
-              src={`/exercises/${demo.id}${animating ? ".gif" : ".png"}`}
-              alt={`Cat coach demonstrating ${demo.title}`}
-              loading="lazy"
-              width="300"
-              height="220"
+            <video
+              key={mediaKey}
+              ref={videoRef}
+              src={media.video}
+              poster={media.poster}
+              aria-label={`${media.label} demonstrating ${demo.title}`}
+              muted loop playsInline preload="none"
+              width="400" height="400"
               onError={() => setFailed(true)}
             />
           )}
           <span className="cat-coach-label">
-            <Cat size={10} />
-            GO CAT COACH
+            <CoachIcon size={10} />
+            {media.label.toUpperCase()}
           </span>
           <button
+            type="button"
             className="demo-play"
             aria-label={`${playing ? "Pause" : "Play"} ${name} demo`}
             aria-pressed={playing}
@@ -92,6 +115,7 @@ export default function ExerciseDemo({ name, compact = false }) {
             ))}
           </div>
           <button
+            type="button"
             className="demo-details"
             aria-expanded={expanded}
             aria-controls={detailsId}
