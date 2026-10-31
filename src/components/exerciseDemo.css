@@ -7,19 +7,19 @@
 .demo-play:hover { background:#edf3ed; }
 .demo-play svg { width:15px; height:15px; }
 .demo-summary { min-width:0; flex:1; }
-.demo-eyebrow { font-size:10px; color:#778379; letter-spacing:1px; display:block; margin-bottom:8px; line-height:1.5; }
-.demo-summary > strong { font-size:18px; font-weight:550; color:#303b33; display:block; line-height:1.4; }
+.demo-eyebrow { font-size:12px; color:#778379; letter-spacing:1px; display:block; margin-bottom:8px; line-height:1.5; }
+.demo-summary > strong { font-size:24px; font-weight:600; color:#303b33; display:block; line-height:1.4; }
 .demo-phases { display:flex; flex-direction:column; gap:9px; margin-top:12px; }
-.demo-phases > span { font-size:14px; display:flex; align-items:flex-start; gap:8px; color:#667369; line-height:1.5; }
-.demo-phases i { font-style:normal; font-size:10px; display:grid; place-items:center; width:19px; height:19px; margin-top:1px; border-radius:50%; background:#edf1ed; color:#667369; flex-shrink:0; }
-.demo-details { padding:4px 0; display:flex; align-items:center; gap:6px; font-size:14px; color:#416b51; margin-top:10px; }
+.demo-phases > span { font-size:18px; display:flex; align-items:flex-start; gap:8px; color:#667369; line-height:1.5; }
+.demo-phases i { font-style:normal; font-size:12px; display:grid; place-items:center; width:24px; height:24px; margin-top:1px; border-radius:50%; background:#edf1ed; color:#667369; flex-shrink:0; }
+.demo-details { padding:4px 0; display:flex; align-items:center; gap:6px; font-size:18px; color:#416b51; margin-top:10px; }
 .demo-details:hover { color:#183f26; }
 .demo-instructions { border-top:1px solid #e5eae5; padding:18px 20px; background:white; }
-.demo-instructions h4 { font-size:15px; font-weight:550; color:#3a483d; margin:0 0 12px; }
+.demo-instructions h4 { font-size:18px; font-weight:550; color:#3a483d; margin:0 0 12px; }
 .demo-instructions ol { padding-left:20px; margin:0; display:flex; flex-direction:column; gap:10px; }
-.demo-instructions li { font-size:14px; line-height:1.7; color:#617065; padding-left:4px; }
+.demo-instructions li { font-size:16px; line-height:1.7; color:#617065; padding-left:4px; }
 .demo-instructions li::marker { color:#768779; }
-.demo-instructions p { font-size:12px; line-height:1.7; color:#7d897f; margin:14px 0 0; }
+.demo-instructions p { font-size:14px; line-height:1.7; color:#7d897f; margin:14px 0 0; }
 .exercise-demo.compact { margin:0; border:0; background:none; border-radius:0; }
 .compact .exercise-demo-preview { padding:0; }
 .compact .demo-instructions { margin-top:14px; border:1px solid #e5eae5; border-radius:10px; }
@@ -60,15 +60,15 @@
   .exercise-demo-preview,.compact .exercise-demo-preview { gap:16px; }
   .exercise-demo-preview { padding:12px; }
   .demo-visual { flex-basis:144px; width:144px; height:144px; }
-  .demo-eyebrow { font-size:9px; letter-spacing:.4px; }
-  .demo-summary > strong { font-size:16px; }
-  .demo-phases > span { font-size:13px; }
-  .demo-details { font-size:13px; }
+  .demo-eyebrow { font-size:11px; letter-spacing:.4px; }
+  .demo-summary > strong { font-size:20px; }
+  .demo-phases > span { font-size:16px; }
+  .demo-details { font-size:16px; }
   .cat-coach-label { font-size:8px; left:5px; top:5px; }
   .demo-play { width:34px; height:34px; right:6px; bottom:6px; }
   .demo-instructions { padding:15px; }
-  .demo-instructions h4 { font-size:14px; }
-  .demo-instructions li { font-size:13px; }
+  .demo-instructions h4 { font-size:17px; }
+  .demo-instructions li { font-size:16px; }
   .cat-outline-header { flex-wrap:wrap; gap:7px; }
   .cat-outline-header > strong { font-size:14px; }
   .cat-outline-header > span,.cat-outline-header > small { font-size:11px; }
