@@ -1,0 +1,91 @@
+{
+  "characterCenter": [
+    200,
+    200
+  ],
+  "framingScale": 1.0133333333333334,
+  "meanAnchorScoreBefore": 0.995224789715118,
+  "meanAnchorScoreAfter": 0.995224789715118,
+  "frames": [
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    },
+    {
+      "dx": 0,
+      "dy": 0,
+      "scale": 1
+    }
+  ]
+}

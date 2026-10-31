@@ -21,6 +21,10 @@ let browser;
    await chooseDate(date);
    for(const demo of await p.locator('.session-outline [data-exercise-demo]').all()){
     assert.equal(await demo.getAttribute('data-training-avatar'),key);
+    const visual=await demo.locator('.demo-visual').boundingBox();
+    assert.equal(visual.width,176);assert.equal(visual.height,176);
+    assert.ok(await demo.locator('.demo-summary > strong').evaluate(e=>parseFloat(getComputedStyle(e).fontSize))>=18);
+    assert.ok(await demo.locator('.demo-phases > span').first().evaluate(e=>parseFloat(getComputedStyle(e).fontSize))>=14);
     const video=demo.locator('video');
     assert.ok((await video.getAttribute('src')).startsWith(`/training/${key}/`));
     assert.match(await video.getAttribute('src'), /\?v=[a-f0-9]{12}$/);
@@ -33,6 +37,7 @@ let browser;
    }
   }
   assert.equal(seen.size,22);
+  const card=await p.locator('.workout-card').boundingBox();assert.ok(card.width<=300);assert.ok(card.height<280);
   await chooseDate('2026-10-12');
   const first=p.locator('.session-outline [data-exercise-demo="bench"]');
   await first.scrollIntoViewIfNeeded();
@@ -47,10 +52,12 @@ let browser;
   assert.equal(await first.locator('.demo-instructions li').count(),3);
   await p.getByRole('button',{name:'Start session',exact:true}).click();
   const dialog=p.getByRole('dialog');
-  for(const demo of await dialog.locator('[data-exercise-demo]').all())assert.equal(await demo.getAttribute('data-training-avatar'),key);
+  for(const demo of await dialog.locator('[data-exercise-demo]').all()){assert.equal(await demo.getAttribute('data-training-avatar'),key);const box=await demo.locator('.demo-visual').boundingBox();assert.equal(box.width,176);assert.equal(box.height,176);}
   await p.keyboard.press('Escape');
   await p.setViewportSize({width:390,height:844});
   assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  for(const visual of await p.locator('.session-outline .demo-visual').all()){const box=await visual.boundingBox();assert.equal(box.width,144);assert.equal(box.height,144);}
+  assert.ok(await first.locator('.demo-summary > strong').evaluate(e=>parseFloat(getComputedStyle(e).fontSize))>=16);
   await p.screenshot({path:`/tmp/go-training-${key}.png`,fullPage:true});
   console.log(`${key}: all 22 mappings, real playback, pause, form tips, session modal, reduced motion and mobile pass`);
   await context.close();

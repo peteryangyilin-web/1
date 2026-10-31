@@ -14,7 +14,8 @@
     "test:avatar": "node tests/avatar-flow.cjs",
     "test:entrance": "node tests/entrance.cjs",
     "test:training": "node tests/avatar-training.cjs",
-    "generate:training": "node scripts/build-training-animations.mjs"
+    "generate:training": "node scripts/build-training-animations.mjs",
+    "test:framing": "python3 tests/training-framing.py"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",

@@ -1,482 +1,85 @@
-.exercise-demo {
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  background: #fbfbfb;
-  overflow: hidden;
-  margin: 10px 0 17px;
-}
-.exercise-demo-preview {
-  display: flex;
-  gap: 17px;
-  align-items: center;
-  padding: 13px;
-}
-.demo-visual {
-  position: relative;
-  flex-shrink: 0;
-  width: 150px;
-  border-radius: 7px;
-  overflow: hidden;
-  background: #fff;
-  aspect-ratio: 1;
-}
-.demo-visual > img,
-.demo-visual > video,
-.cat-animation {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.cat-coach-label {
-  position: absolute;
-  left: 8px;
-  top: 7px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 5px;
-  letter-spacing: 0.6px;
-  color: #8e8e8e;
-  pointer-events: none;
-}
-.demo-play {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  display: grid;
-  place-items: center;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #ffffffeb;
-  border: 1px solid #dbdbdb;
-  color: #737373;
-  box-shadow: 0 2px 8px #5656560c;
-}
-.demo-play:hover {
-  background: #e8e8e8;
-}
-.demo-summary {
-  min-width: 0;
-  flex: 1;
-}
-.demo-eyebrow {
-  font-size: 5px;
-  color: #a5a5a5;
-  letter-spacing: 0.8px;
-  display: block;
-  margin-bottom: 8px;
-}
-.demo-summary > strong {
-  font-size: 11px;
-  font-weight: 500;
-  color: #5e5e5e;
-  display: block;
-  line-height: 1.6;
-}
-.demo-phases {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  margin-top: 10px;
-}
-.demo-phases > span {
-  font-size: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #8e8e8e;
-  line-height: 1.6;
-}
-.demo-phases i {
-  font-style: normal;
-  font-size: 6px;
-  display: grid;
-  place-items: center;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #ececec;
-  color: #8e8e8e;
-  flex-shrink: 0;
-}
-.demo-details {
-  padding: 0;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 8px;
-  color: #757575;
-  margin-top: 11px;
-}
-.demo-details:hover {
-  color: #484848;
-}
-.demo-instructions {
-  border-top: 1px solid #e8e8e8;
-  padding: 15px 17px;
-  background: #fff;
-}
-.demo-instructions h4 {
-  font-size: 10px;
-  font-weight: 500;
-  color: #6d6d6d;
-  margin: 0 0 12px;
-}
-.demo-instructions ol {
-  padding-left: 19px;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.demo-instructions li {
-  font-size: 10px;
-  line-height: 1.8;
-  color: #838383;
-  padding-left: 4px;
-}
-.demo-instructions li::marker {
-  color: #a4a4a4;
-  font-size: 8px;
-}
-.demo-instructions p {
-  font-size: 8px;
-  line-height: 1.8;
-  color: #a5a5a5;
-  margin: 14px 0 0;
-}
-.exercise-demo.compact {
-  margin: 0;
-  border: 0;
-  background: none;
-  border-radius: 0;
-}
-.compact .exercise-demo-preview {
-  padding: 0;
-  gap: 12px;
-}
-.compact .demo-visual {
-  width: 112px;
-}
-.compact .demo-eyebrow {
-  font-size: 4px;
-  letter-spacing: 0.4px;
-  margin-bottom: 4px;
-}
-.compact .demo-summary > strong {
-  font-size: 10px;
-}
-.compact .demo-phases {
-  gap: 4px;
-  margin-top: 6px;
-}
-.compact .demo-phases > span {
-  font-size: 7px;
-  gap: 5px;
-}
-.compact .demo-phases i {
-  height: 11px;
-  width: 11px;
-  font-size: 5px;
-}
-.compact .demo-details {
-  font-size: 7px;
-  margin-top: 7px;
-}
-.compact .cat-coach-label {
-  font-size: 4px;
-  left: 6px;
-  top: 5px;
-  gap: 3px;
-}
-.compact .cat-coach-label svg {
-  width: 8px;
-}
-.compact .demo-play {
-  height: 21px;
-  width: 21px;
-  right: 4px;
-  bottom: 4px;
-}
-.compact .demo-play svg {
-  width: 10px;
-}
-.compact .demo-instructions {
-  margin-top: 12px;
-  border: 1px solid #e4e4e4;
-  border-radius: 6px;
-  padding: 13px;
-}
-.compact .demo-instructions li {
-  font-size: 9px;
-}
-.cat-outline-row {
-  border-bottom: 1px solid #ececec;
-  padding: 14px 0;
-}
-.cat-outline-row:last-child {
-  border-bottom: 0;
-}
-.cat-outline-header {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.cat-outline-header > span {
-  font-size: 8px;
-  color: #a5a5a5;
-}
-.cat-outline-header > strong {
-  font-size: 10px;
-  font-weight: 500;
-  color: #636363;
-}
-.cat-outline-header > small {
-  margin-left: auto;
-  font-size: 8px;
-  color: #a0a0a0;
-  white-space: nowrap;
-}
-.cat-outline-header .demo-sets {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.custom-demo-note {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 9px;
-  line-height: 1.8;
-  color: #9b9b9b;
-  background: #f6f6f6;
-  border: 1px dashed #dcdcdc;
-  border-radius: 6px;
-  padding: 12px;
-  margin: 10px 0;
-}
-.custom-demo-note > svg {
-  flex-shrink: 0;
-}
-.session-outline .demo-intro {
-  font-size: 8px;
-  line-height: 1.8;
-  color: #a5a5a5;
-  margin: 8px 0 3px;
-}
-.exercise-list .exercise-demo {
-  margin-top: 13px;
-}
-.cat-training-layout {
-  grid-template-columns: 1fr 1.15fr;
-}
-.cat-training-layout > .workout-card {
-  position: sticky;
-  top: 20px;
-}
-@media (min-width: 1550px) {
-  .compact .demo-visual {
-    width: 135px;
-  }
-  .compact .demo-summary > strong {
-    font-size: 11px;
-  }
-  .compact .demo-phases > span {
-    font-size: 8px;
-  }
-}
-@media (max-width: 1150px) {
-  .cat-training-layout {
-    grid-template-columns: 1fr 1.1fr;
-  }
-  .compact .demo-visual {
-    width: 94px;
-  }
-  .compact .exercise-demo-preview {
-    gap: 10px;
-  }
-  .compact .demo-summary > strong {
-    font-size: 9px;
-  }
-  .compact .demo-eyebrow {
-    font-size: 3px;
-  }
-  .compact .demo-phases > span {
-    font-size: 6px;
-  }
-  .cat-outline-header > strong {
-    font-size: 9px;
-  }
-  .demo-visual {
-    width: 143px;
-  }
-  .demo-summary > strong {
-    font-size: 10px;
-  }
-}
-@media (max-width: 950px) {
-  .cat-training-layout {
-    grid-template-columns: 1fr;
-  }
-  .cat-training-layout > .workout-card {
-    position: static;
-  }
-  .compact .demo-visual {
-    width: 145px;
-  }
-  .compact .demo-summary > strong {
-    font-size: 11px;
-  }
-  .compact .demo-eyebrow {
-    font-size: 5px;
-    letter-spacing: 0.6px;
-  }
-  .compact .demo-phases > span {
-    font-size: 8px;
-  }
-  .compact .demo-details {
-    font-size: 8px;
-  }
-  .cat-outline-header > strong {
-    font-size: 11px;
-  }
-  .cat-outline-header > span,
-  .cat-outline-header > small {
-    font-size: 9px;
-  }
-  .cat-outline-row {
-    padding: 17px 0;
-  }
-  .session-outline .demo-intro {
-    font-size: 9px;
-  }
-}
-@media (max-width: 650px) {
-  .exercise-demo-preview {
-    gap: 12px;
-    padding: 10px;
-  }
-  .demo-visual {
-    width: 125px;
-  }
-  .demo-summary > strong {
-    font-size: 10px;
-  }
-  .demo-eyebrow {
-    font-size: 4px;
-    letter-spacing: 0.4px;
-  }
-  .demo-phases > span {
-    font-size: 8px;
-    line-height: 1.7;
-  }
-  .demo-phases {
-    margin-top: 7px;
-    gap: 5px;
-  }
-  .demo-details {
-    font-size: 8px;
-    margin-top: 9px;
-  }
-  .cat-coach-label {
-    font-size: 4px;
-    gap: 3px;
-    left: 6px;
-    top: 6px;
-  }
-  .cat-coach-label > svg {
-    width: 8px;
-  }
-  .demo-instructions {
-    padding: 14px;
-  }
-  .demo-instructions li {
-    font-size: 10px;
-  }
-  .demo-instructions p {
-    font-size: 8px;
-  }
-  .compact .demo-visual {
-    width: 130px;
-  }
-  .compact .exercise-demo-preview {
-    gap: 13px;
-  }
-  .compact .demo-eyebrow {
-    font-size: 4px;
-    letter-spacing: 0.3px;
-  }
-  .compact .demo-summary > strong {
-    font-size: 10px;
-  }
-  .compact .demo-phases > span {
-    font-size: 7px;
-  }
-  .compact .demo-details {
-    font-size: 8px;
-  }
-  .compact .demo-play {
-    width: 25px;
-    height: 25px;
-  }
-  .compact .demo-play svg {
-    width: 12px;
-  }
-  .cat-outline-header > strong {
-    font-size: 11px;
-  }
-  .cat-outline-header > span,
-  .cat-outline-header > small {
-    font-size: 8px;
-  }
-  .session-outline .demo-intro {
-    font-size: 8px;
-  }
-  .cat-outline-row {
-    padding: 15px 0;
-  }
-  .custom-demo-note {
-    font-size: 8px;
-    padding: 10px;
-  }
-  .exercise-list .demo-visual {
-    width: 115px;
-  }
-  .exercise-list .demo-eyebrow {
-    font-size: 3px;
-  }
-  .exercise-list .demo-phases > span {
-    font-size: 7px;
-  }
-  .exercise-list .demo-summary > strong {
-    font-size: 10px;
-  }
-}
-@media (max-width: 360px) {
-  .exercise-demo-preview {
-    gap: 9px;
-  }
-  .demo-visual,
-  .compact .demo-visual {
-    width: 100px;
-  }
-  .demo-phases > span,
-  .compact .demo-phases > span {
-    font-size: 6px;
-  }
-  .demo-eyebrow {
-    letter-spacing: 0;
-  }
-}
-
+.exercise-demo { border:1px solid #e5e9e5; border-radius:12px; background:#fbfcfb; overflow:hidden; margin:12px 0 18px; }
+.exercise-demo-preview { display:flex; gap:24px; align-items:center; padding:16px; }
+.demo-visual { position:relative; flex:0 0 176px; width:176px; height:176px; aspect-ratio:1; border-radius:10px; overflow:hidden; background:#fff; contain:layout paint; }
+.demo-visual > img,.demo-visual > video,.cat-animation { display:block; width:100%; height:100%; object-fit:contain; object-position:center; transform:none; }
+.cat-coach-label { position:absolute; left:8px; top:7px; display:flex; align-items:center; gap:4px; font-size:9px; letter-spacing:.2px; color:#526358; padding:3px 5px; border-radius:5px; background:#ffffffed; pointer-events:none; }
+.demo-play { position:absolute; right:8px; bottom:8px; display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:#fffffff2; border:1px solid #dce3dc; color:#4c5c51; box-shadow:0 2px 8px #1a30200b; }
+.demo-play:hover { background:#edf3ed; }
+.demo-play svg { width:15px; height:15px; }
+.demo-summary { min-width:0; flex:1; }
+.demo-eyebrow { font-size:10px; color:#778379; letter-spacing:1px; display:block; margin-bottom:8px; line-height:1.5; }
+.demo-summary > strong { font-size:18px; font-weight:550; color:#303b33; display:block; line-height:1.4; }
+.demo-phases { display:flex; flex-direction:column; gap:9px; margin-top:12px; }
+.demo-phases > span { font-size:14px; display:flex; align-items:flex-start; gap:8px; color:#667369; line-height:1.5; }
+.demo-phases i { font-style:normal; font-size:10px; display:grid; place-items:center; width:19px; height:19px; margin-top:1px; border-radius:50%; background:#edf1ed; color:#667369; flex-shrink:0; }
+.demo-details { padding:4px 0; display:flex; align-items:center; gap:6px; font-size:14px; color:#416b51; margin-top:10px; }
+.demo-details:hover { color:#183f26; }
+.demo-instructions { border-top:1px solid #e5eae5; padding:18px 20px; background:white; }
+.demo-instructions h4 { font-size:15px; font-weight:550; color:#3a483d; margin:0 0 12px; }
+.demo-instructions ol { padding-left:20px; margin:0; display:flex; flex-direction:column; gap:10px; }
+.demo-instructions li { font-size:14px; line-height:1.7; color:#617065; padding-left:4px; }
+.demo-instructions li::marker { color:#768779; }
+.demo-instructions p { font-size:12px; line-height:1.7; color:#7d897f; margin:14px 0 0; }
+.exercise-demo.compact { margin:0; border:0; background:none; border-radius:0; }
+.compact .exercise-demo-preview { padding:0; }
+.compact .demo-instructions { margin-top:14px; border:1px solid #e5eae5; border-radius:10px; }
+.cat-outline-row { border-bottom:1px solid #ecefec; padding:22px 0; }
+.cat-outline-row:last-child { border-bottom:0; }
+.cat-outline-header { display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+.cat-outline-header > span { font-size:12px; color:#87928a; }
+.cat-outline-header > strong { font-size:15px; font-weight:550; color:#46554a; }
+.cat-outline-header > small { margin-left:auto; font-size:12px; color:#7c897f; white-space:nowrap; }
+.cat-outline-header .demo-sets { margin-left:auto; display:flex; align-items:center; gap:5px; }
+.custom-demo-note { display:flex; align-items:center; gap:8px; font-size:13px; line-height:1.7; color:#7b877e; background:#f6f8f6; border:1px dashed #dce3dc; border-radius:8px; padding:14px; margin:10px 0; }
+.custom-demo-note > svg { flex-shrink:0; }
+.session-outline .demo-intro { font-size:13px; line-height:1.7; color:#7c887f; margin:10px 0 6px; }
+.session-outline .card-top h3 { font-size:18px; }
+.session-outline .card-top .subtle { font-size:12px; }
+.exercise-list .exercise-demo { margin-top:14px; }
+.dashboard-grid.cat-training-layout { grid-template-columns:minmax(230px,280px) minmax(0,1fr); align-items:start; gap:24px; }
+.cat-training-layout > .workout-card { position:sticky; top:20px; min-height:0; padding:17px 18px; }
+.cat-training-layout .workout-main { margin-top:14px; }
+.cat-training-layout .workout-main h2 { font-size:26px; line-height:1.15; letter-spacing:-.9px; }
+.cat-training-layout .workout-main p { font-size:11px; line-height:1.5; }
+.cat-training-layout .workout-art { display:none; }
+.cat-training-layout .workout-metrics { margin-top:12px; font-size:10px; gap:14px; flex-wrap:wrap; }
+.cat-training-layout .workout-bottom { margin-top:16px; padding-top:12px; gap:10px; }
+.cat-training-layout .exercise-stack > span { display:none; }
+.cat-training-layout .exercise-stack > div { margin-left:0; }
+.cat-training-layout .exercise-stack strong { font-size:10px; }
+.cat-training-layout .exercise-stack small { font-size:9px; line-height:1.4; }
+.cat-training-layout .workout-bottom .lime-button { font-size:11px; padding:9px 10px; gap:7px; flex-shrink:0; }
 .demo-media-fallback { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:white; }
 .demo-media-fallback > .animal-avatar { flex:1; min-height:0; width:100%; object-fit:contain; }
-.demo-retry { display:flex; align-items:center; gap:4px; padding:6px; font-size:9px; color:#315d45; }
-
-/* Keep the selected coach readable without obscuring the exercise. */
-.exercise-demo .cat-coach-label { font-size:7px; color:#526358; padding:3px 5px; border-radius:5px; background:#ffffffed; letter-spacing:.1px; }
-.exercise-demo.compact .cat-coach-label { font-size:6px; }
+.demo-retry { display:flex; align-items:center; gap:4px; padding:6px; font-size:11px; color:#315d45; }
+@media(max-width:1000px) {
+  .dashboard-grid.cat-training-layout { grid-template-columns:1fr; gap:18px; }
+  .cat-training-layout > .workout-card { position:static; }
+}
+@media(max-width:650px) {
+  .exercise-demo-preview,.compact .exercise-demo-preview { gap:16px; }
+  .exercise-demo-preview { padding:12px; }
+  .demo-visual { flex-basis:144px; width:144px; height:144px; }
+  .demo-eyebrow { font-size:9px; letter-spacing:.4px; }
+  .demo-summary > strong { font-size:16px; }
+  .demo-phases > span { font-size:13px; }
+  .demo-details { font-size:13px; }
+  .cat-coach-label { font-size:8px; left:5px; top:5px; }
+  .demo-play { width:34px; height:34px; right:6px; bottom:6px; }
+  .demo-instructions { padding:15px; }
+  .demo-instructions h4 { font-size:14px; }
+  .demo-instructions li { font-size:13px; }
+  .cat-outline-header { flex-wrap:wrap; gap:7px; }
+  .cat-outline-header > strong { font-size:14px; }
+  .cat-outline-header > span,.cat-outline-header > small { font-size:11px; }
+  .cat-outline-row { padding:18px 0; }
+  .session-outline .card-top h3 { font-size:16px; }
+  .cat-training-layout > .workout-card { padding:15px 17px; }
+  .cat-training-layout .workout-main { margin-top:10px; }
+  .cat-training-layout .workout-bottom { margin-top:13px; padding-top:11px; }
+}
+@media(max-width:380px) {
+  .exercise-demo-preview,.compact .exercise-demo-preview { flex-direction:column; align-items:stretch; }
+  .demo-visual { align-self:center; flex-basis:auto; }
+  .demo-summary { width:100%; }
+}

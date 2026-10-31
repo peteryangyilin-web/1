@@ -61,9 +61,9 @@ Training and the active-session dialog select media from the saved `gender` and 
 
 All 22 exercise types are covered by 19 movement sequences per character (76 videos). Walking, warm-up, steady cardio and cool-down share a walking sequence with an activity-specific playback rate. Strength variations such as flat/incline presses and cable/dumbbell rows have separate choreography. Exercise names, phases and form cues still come from `src/exerciseDemos.js`.
 
-The PNG sprite sheets in `assets/animation-sources/training` contain sixteen separately painted poses in a 4×4 grid. `scripts/build-training-animations.mjs` slices the sheets, aligns grounded contact points, and plays the poses forward/backward. It does not use optical flow, blended silhouettes or crossfades. The 3-second MP4 loops and static PNG posters in `public/training` are checked in. The builder also updates `src/trainingMediaVersions.js`; Training requests each video/poster pair with a content version so replacements receive fresh URLs. A normal app build needs no media-generation service or external media host.
+The PNG sprite sheets in `assets/animation-sources/training` contain sixteen separately painted poses in a 4×4 grid. `scripts/build-training-animations.mjs` slices the sheets, registers stationary feet/supports between poses, centers the character within one shared framing for the entire clip, and plays the poses forward/backward. Registration uses translation only, so the camera never zooms between frames. The Python helper analyzes pixels and writes transform measurements; FFmpeg assembles the original painted poses. It does not use optical flow, blended silhouettes or crossfades. The 3-second MP4 loops and static PNG posters in `public/training` are checked in. The builder also updates `src/trainingMediaVersions.js`; Training requests each video/poster pair with a content version so replacements receive fresh URLs. A normal app build needs no media-generation service or external media host.
 
-To rebuild the media locally (requires FFmpeg, ffprobe and ImageMagick):
+To rebuild the media locally (requires FFmpeg, ffprobe, ImageMagick, and Python with Pillow, NumPy and SciPy):
 
 ```sh
 npm run generate:training
@@ -73,7 +73,7 @@ npm run generate:training -- female-cat-squat.png
 npm run generate:training -- --force
 ```
 
-With a dev or preview server on port 5173, `npm run test:training` checks all 22 mappings for each character, real video playback, pause/resume, form tips, the active-session dialog, mobile layout, reduced-motion defaults, and failure/retry behavior. `npm test` verifies all media paths and distinguishes characters and exercise variations. `npm run test:cats` remains an alias for the current avatar training browser checks.
+With a dev or preview server on port 5173, `npm run test:training` checks all 22 mappings for each character, real video playback, pause/resume, form tips, the active-session dialog, mobile layout, reduced-motion defaults, and failure/retry behavior. `npm test` verifies all media paths and distinguishes characters and exercise variations. `npm run test:cats` remains an alias for the current avatar training browser checks. `npm run test:framing` decodes all 76 clips to check centered characters, uncropped artwork, fixed camera scale, and stationary-anchor registration. Training previews share one square size per viewport, with enlarged captions and a compact workout summary card.
 
 Legacy SVG capture tooling (`npm run generate:demos`) and original `public/exercises` assets remain available for reference; Training uses the avatar-specific library.
 
