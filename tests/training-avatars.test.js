@@ -28,6 +28,8 @@ test('all 22 training movements have playable media for all four avatar combinat
       const video = readFileSync(new URL('../public'+media.video, import.meta.url));
       assert.equal(video.subarray(4,8).toString(), 'ftyp');
       const poster = readFileSync(new URL('../public'+media.poster, import.meta.url));
+      const version=createHash('sha256').update(video).update(poster).digest('hex').slice(0,12);
+      for(const asset of [media.video,media.poster]) assert.equal(new URL(asset,'https://go.test').searchParams.get('v'),version,'Training must request the current animation content');
       assert.equal(poster.readUInt32BE(16),400);
       assert.equal(poster.readUInt32BE(20),400);
       assert.ok(media.playbackRate>0 && media.playbackRate<2);

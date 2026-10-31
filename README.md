@@ -61,7 +61,7 @@ Training and the active-session dialog select media from the saved `gender` and 
 
 All 22 exercise types are covered by 19 movement sequences per character (76 videos). Walking, warm-up, steady cardio and cool-down share a walking sequence with an activity-specific playback rate. Strength variations such as flat/incline presses and cable/dumbbell rows have separate choreography. Exercise names, phases and form cues still come from `src/exerciseDemos.js`.
 
-The PNG sprite sheets in `assets/animation-sources/training` contain sixteen separately painted poses in a 4×4 grid. `scripts/build-training-animations.mjs` slices the sheets, aligns grounded contact points, and plays the poses forward/backward. It does not use optical flow, blended silhouettes or crossfades. The 3-second MP4 loops and static PNG posters in `public/training` are checked in; a normal app build needs no media-generation service or external media host.
+The PNG sprite sheets in `assets/animation-sources/training` contain sixteen separately painted poses in a 4×4 grid. `scripts/build-training-animations.mjs` slices the sheets, aligns grounded contact points, and plays the poses forward/backward. It does not use optical flow, blended silhouettes or crossfades. The 3-second MP4 loops and static PNG posters in `public/training` are checked in. The builder also updates `src/trainingMediaVersions.js`; Training requests each video/poster pair with a content version so replacements receive fresh URLs. A normal app build needs no media-generation service or external media host.
 
 To rebuild the media locally (requires FFmpeg, ffprobe and ImageMagick):
 

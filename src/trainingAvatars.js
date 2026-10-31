@@ -1,3 +1,5 @@
+import { TRAINING_MEDIA_VERSIONS } from "./trainingMediaVersions.js";
+
 // Walking-based activities share the same gait at the activity's own tempo.
 const WALKING_DEMOS = new Set(["walk", "warmup", "cardio", "cooldown"]);
 
@@ -18,5 +20,6 @@ export function getTrainingMedia(profile, demo) {
   const avatar = resolveTrainingAvatar(profile);
   const motion = WALKING_DEMOS.has(demo.id) ? "walk" : demo.id;
   const base = `/training/${avatar.key}/${motion}`;
-  return { ...avatar, motion, video: `${base}.mp4`, poster: `${base}.png`, playbackRate: WALKING_DEMOS.has(demo.id) ? 3 / demo.duration : 1 };
+  const version = TRAINING_MEDIA_VERSIONS[`${avatar.key}/${motion}`];
+  return { ...avatar, motion, video: `${base}.mp4?v=${version}`, poster: `${base}.png?v=${version}`, playbackRate: WALKING_DEMOS.has(demo.id) ? 3 / demo.duration : 1 };
 }
