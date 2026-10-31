@@ -85,3 +85,24 @@ footer .green-dot { background: var(--green-bright); }
 .overview-greeting h1 em {
   color: var(--brand-green);
 }
+
+/* A botanical green treatment for the compact training summary. */
+.cat-training-layout > .workout-card {
+  background:linear-gradient(145deg,#e8f2d4 0%,#d6e7ad 100%);
+  border-color:#c6d8a2;
+  color:#243d2b;
+  box-shadow:0 10px 28px #36512c0a;
+}
+.cat-training-layout .workout-card .eyebrow { color:#48623d; }
+.cat-training-layout .workout-card .green-dot { background:#49773a; }
+.cat-training-layout .workout-card .tag { color:#405e35; background:#ffffff52; border-color:#9eb57e80; }
+.cat-training-layout .workout-main h2 { color:#243d2b; }
+.cat-training-layout .workout-main h2 em { color:#567a37; }
+.cat-training-layout .workout-main p { color:#516846; }
+.cat-training-layout .workout-metrics { color:#405b35; }
+.cat-training-layout .workout-metrics svg { color:#557348; }
+.cat-training-layout .workout-bottom { border-color:#7f99513d; }
+.cat-training-layout .exercise-stack strong { color:#3c5734; }
+.cat-training-layout .exercise-stack small { color:#5a704b; }
+.cat-training-layout .workout-bottom .lime-button { background:#2d5438; color:#fff; box-shadow:0 3px 8px #24462b12; }
+.cat-training-layout .workout-bottom .lime-button:hover:not(:disabled) { background:#23452d; }
