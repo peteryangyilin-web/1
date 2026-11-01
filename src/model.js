@@ -138,13 +138,35 @@ export function getPlan(key, profile, record) {
   };
   const active = schedules[profile.days] || schedules[4];
   const slot = active.indexOf(index);
-  const sequence =
-    profile.goal === "endurance"
-      ? ["cardio", "lower", "cardio", "full", "cardio", "pull"]
-      : profile.goal === "wellbeing" || profile.goal === "fatloss"
-        ? ["full", "cardio", "lower", "cardio", "push", "pull"]
-        : ["push", "lower", "pull", "full", "cardio", "lower"];
-  return templates[slot < 0 ? "recovery" : sequence[slot]];
+  const goal = ['muscle','fatloss','endurance','wellbeing'].includes(profile.goal)?profile.goal:'muscle';
+  const sequences = {
+    muscle:['push','lower','pull','full','cardio','lower'],
+    fatloss:['fatStrength','fatCardio','fatLower','fatCardio','fatStrength','fatCardio'],
+    endurance:['cardio','enduranceStrength','longCardio','enduranceStrength','longCardio','cardio'],
+    wellbeing:['gentleFull','gentleMove','gentleLower','gentleMove','gentleFull','gentleMove'],
+  };
+  const variants = {
+    fatStrength:{...templates.full,title:'Strength & steady habits',duration:40,focus:'Maintain strength · Sustainable effort',exercises:templates.full.exercises.map(e=>({...e,reps:12}))},
+    fatLower:{...templates.lower,title:'Lower strength & movement',duration:40,focus:'Leg strength · Consistency',exercises:templates.lower.exercises.map(e=>({...e,reps:12}))},
+    fatCardio:{...templates.cardio,title:'Steady movement',duration:30,exercises:[exercise('Easy warm-up · 5 minutes',1,1),exercise('Steady cardio · 20 minutes',1,1),exercise('Cool-down · 5 minutes',1,1)]},
+    enduranceStrength:{...templates.full,title:'Strength for endurance',duration:30,focus:'Support your cardio · Controlled effort',exercises:templates.full.exercises.map(e=>({...e,sets:2,reps:12}))},
+    longCardio:{...templates.cardio,title:'Build your aerobic base',duration:45,focus:'Longer easy effort · Conversational pace',exercises:[exercise('Easy warm-up · 5 minutes',1,1),exercise('Steady cardio · 35 minutes',1,1),exercise('Cool-down · 5 minutes',1,1)]},
+    gentleFull:{...templates.full,title:'Everyday strength',type:'Movement',duration:25,focus:'Feel stronger in daily life',exercises:[exercise('Goblet squat',2,8),exercise('Push-up',2,8),exercise('Dumbbell row',2,8)]},
+    gentleLower:{...templates.lower,title:'Move with confidence',type:'Movement',duration:25,focus:'Comfortable strength · Balance',exercises:[exercise('Goblet squat',2,8),exercise('Calf raise',2,10),exercise('Hip mobility · 5 minutes',1,1)]},
+    gentleMove:{...templates.recovery,title:'Walk, stretch, reset',type:'Movement',duration:25,focus:'Comfortable walking · Joint movement',exercises:[exercise('Easy walk · 15 minutes',1,1),exercise('Hip mobility · 5 minutes',1,1),exercise('Shoulder mobility · 5 minutes',1,1)]},
+  };
+  const base = slot<0?templates.recovery:(variants[sequences[goal][slot]]||templates[sequences[goal][slot]]);
+  const descriptions = {muscle:'Your muscle-building plan prioritizes progressive strength and recovery.',fatloss:'Your fat-loss plan combines strength retention with sustainable steady movement.',endurance:'Your endurance plan emphasizes aerobic time, with shorter supporting strength sessions.',wellbeing:'Your wellbeing plan starts with manageable strength, easy walking and mobility.'};
+  let exercises=base.exercises.map(e=>({...e}));
+  let duration=base.duration;
+  if(profile.experience==='beginner'&&slot>=0){
+    exercises=exercises.map(e=>({...e,name:e.name==='Barbell bench press'?'Push-up':e.name,sets:e.sets>1?Math.min(e.sets,2):e.sets,reps:e.sets>1?Math.min(e.reps,10):e.reps}));
+    if(base.type==='Endurance'){duration=25;exercises=[exercise('Easy warm-up · 5 minutes',1,1),exercise('Steady cardio · 15 minutes',1,1),exercise('Cool-down · 5 minutes',1,1)];}
+    else duration=Math.max(20,duration-10);
+  } else if(profile.experience==='advanced'&&goal==='muscle'&&base.type==='Strength') {
+    exercises=exercises.map(e=>({...e,sets:e.sets+1}));duration+=5;
+  }
+  return {...base,duration,exercises,goalId:goal,goalLabel:({muscle:'Build muscle',fatloss:'Lose fat',endurance:'Improve endurance',wellbeing:'Feel healthier'})[goal],rationale:slot<0?'A recovery day helps you return to your next session ready to move.':descriptions[goal]+(profile.experience==='beginner'?' Volume is reduced for your starting experience.':'')};
 }
 export function createSession(plan) {
   return {
@@ -186,7 +208,7 @@ export function streak(records, today) {
 export const formatDuration = (seconds) =>
   `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 export function weightProgress(profile, weight) {
-  if (weight == null) return 0;
+  if (weight == null || profile.startWeight == null || profile.targetWeight == null) return 0;
   const span = Number(profile.targetWeight) - Number(profile.startWeight);
   if (span === 0) return 100;
   return Math.max(
@@ -216,7 +238,7 @@ export function coachInsights(record, profile, totals) {
     {
       title: "Fuel the work",
       text:
-        totals.protein < profile.protein
+        record.meals?.some(m=>m.protein==null) ? "Some meals are missing protein details. Add a food estimate or label values before comparing your protein intake with a target." : !Number(profile.protein) ? "Log your meals to understand your intake. Add a protein target when you have enough information." : totals.protein < profile.protein
           ? `${Math.round(profile.protein - totals.protein)} g of protein remains toward your daily target. Build your next meal around a protein source you enjoy.`
           : "Your protein target is covered. Keep meals balanced and follow your appetite.",
     },

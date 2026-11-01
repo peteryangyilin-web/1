@@ -1,15 +1,15 @@
 # GO — Every move matters
 
-A responsive, black-and-white fitness app built with React and Vite. White surfaces, clear data typography, and monochrome accents put your records first. All fonts and snack illustrations are bundled locally.
+A responsive fitness app built with React and Vite. White surfaces, clear data typography, botanical greens and sky-blue accents put your records first. All fonts and snack illustrations are bundled locally.
 
 ## What works
 
 - **Entrance:** the full supplied animation is retimed into `public/branding/go-loading-4s.gif` and plays once in four seconds, including the exit fade. The original `go-loading-smooth-stay.gif` remains available as the source asset. It runs on full page entry, not internal navigation. Skip intro or Escape enters sooner; reduced-motion users enter directly. Image errors and a bounded safety timeout also release the page.
 
-- **Overview:** choose a fitness goal (muscle, fat loss, endurance, or wellbeing), enter personal information and starting/target weight, set training frequency, and edit daily nutrition, movement, hydration, and sleep targets. The profile saves locally and updates the training schedule. Optional age and height are stored as profile information. The logo uses a gray O.
+- **Overview:** choose a goal and avatar, add basic information and a realistic routine, then review explained starting targets. Advanced numbers stay hidden until Customize targets is selected. The local goal guide suggests habits, a conservative four-week weight direction, and a broad adult energy/macro estimate when suitable information is available. Age/height remain optional; without an estimate users can save habit goals and log meals without calorie targets. Manual targets remain editable.
 - **Avatar coach:** all 22 built-in exercises select the saved female/male cat or Shiba Inu character. Local looping videos use sixteen painted poses per movement, with static posters, pause/play, movement phases and form cues. Offscreen videos pause; reduced-motion users start with a static poster. Failed media retains the selected character and offers retry. Unknown custom exercises are explicitly marked as lacking a matching demonstration.
 - **Training:** real calendar dates, past/future week navigation, goal- and frequency-based schedules, custom daily plans, day-specific exercises, editable weight/repetition values for every set, completed-set tracking, a pause/resume session timer that survives refresh, saved session history, and editing completed sessions. Future days support planning, not logging a finished workout.
-- **Nutrition:** create, edit, and delete meals with calories, protein, carbs, and fats; estimated quick-add servings; automatic daily totals; editable targets; and water tracking.
+- **Nutrition:** search common foods in English or Chinese, add gram portions, and calculate multi-food meal calories/macros. Generic food values are explicitly estimates. Meals can be edited, deleted and reloaded, with daily totals recalculated. Manual entry requires only a name and calories; unknown macros stay missing and partial totals are flagged. Future-date screens explain why logging is disabled and offer a return-to-today action. Water uses a consistent 250 mL glass.
 - **Progress:** recorded-day step/sleep charts, completed sessions, actual consecutive-day streaks, weight logs, directional weight-goal progress, and CSV summaries. Unlogged days remain empty and are excluded from averages.
 - **Snack break:** choose a cookie, crisps, chocolate, or a doughnut; unwrap it; take individual bites with visible bite marks and crumbs; optionally enable generated crunch/snap sounds; restart or select another snack. Keyboard activation works, and progress persists. Virtual snacks never create real meal entries. A separate action opens an editable real-serving form.
 - **Settings:** name, training goal, weekly frequency, daily nutrition/movement/sleep/water targets, and starting/target weight. Changes update future/unstarted plans while preserving recorded sessions.
@@ -43,6 +43,7 @@ With the development server running:
 ```sh
 npx playwright install chromium
 npm run test:browser
+npm run test:guidance
 ```
 
 The browser smoke test exercises profile and metrics persistence, nutrition create/edit/delete, hydration, cross-date isolation, custom plans, timer and set completion, history, CSV download, snack interactions, game persistence, virtual/real food separation, and all five views at mobile width. It uses `/usr/bin/chromium` when available; otherwise it uses Playwright's installed Chromium. Optional variables: `BASE_URL`, `CHROMIUM_PATH`, and `SCREENSHOT_DIR`. Screenshots default to `/tmp/go-browser-screenshots`.
@@ -51,9 +52,15 @@ The browser smoke test exercises profile and metrics persistence, nutrition crea
 
 Records, preferences, and simulation progress persist in **this browser's local storage**, not in a cloud account. Switching devices/browsers does not sync them. Export CSV summaries from Progress; clearing browser storage removes local records. Storage failures are displayed in the app.
 
-Steps, sleep, weight, and meals are manually entered. There is no wearable connection, account backend, or external AI service. The plan coach uses transparent rules based on logged values. Snack nutrition presets are labeled estimates and are editable before real logging. The simulation is a playful experience, not a claim to reduce hunger or replace food.
+Steps, sleep, weight, and meal portions are manually entered. Food estimates use a small bundled generic catalog, not a brand-specific food database. The goal guide is a transparent on-device calculation, not an external AI service. Its Mifflin–St Jeor energy range spans both formula variants rather than inferring physiology from the selected avatar, includes modest goal adjustments, and avoids calorie/weight-change suggestions for minors, missing inputs or measurements outside the estimator’s supported range. There is no wearable connection, account backend, or external AI service. The plan coach uses transparent rules based on logged values. Snack nutrition presets are labeled estimates and are editable before real logging. The simulation is a playful experience, not a claim to reduce hunger or replace food.
 
 Legacy Forma profile preferences are migrated automatically; internal legacy storage keys remain compatible.
+
+## Goal-specific training and target guidance
+
+All four goals have separate unstarted weekly sequences, session emphasis, durations and set/repetition patterns. Beginner volume is lower and barbell bench press is replaced with a push-up starting variation; experienced muscle-building plans can add a set. A goal-labelled week preview makes the differences visible even on recovery days. Existing saved sessions and custom plans retain their authored plan and are labelled accordingly.
+
+`src/profileGuidance.js` contains documented activity definitions and target logic shared by Overview and Settings. Suggested nutrition numbers are estimates to review with appetite, energy and trends after 2–4 weeks, not a clinical prescription or a guaranteed result. Protein/carbs/fats are energy-consistent rounded values. `src/foodCatalog.js` contains the serving data and portion calculator. `npm run test:guidance` checks the actual guided questionnaire, optional calorie targets, goal changes, multi-food portions, edit/delete/reload, unknown macros, future dates and mobile layout.
 
 ## Avatar training animations
 

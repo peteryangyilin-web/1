@@ -126,7 +126,7 @@ test("coach reacts to missing and low-sleep logs rather than claiming readiness"
 
 test("fat-loss profile builds a mixed schedule without replacing existing logged plans", () => {
   const profile = { ...DEFAULT_PROFILE, goal: "fatloss", days: 4 };
-  assert.equal(getPlan("2026-10-12", profile).title, "Full body");
+  assert.equal(getPlan("2026-10-12", profile).title, "Strength & steady habits");
   assert.equal(getPlan("2026-10-14", profile).type, "Endurance");
   const saved = createSession(getPlan("2026-10-12", DEFAULT_PROFILE));
   assert.equal(

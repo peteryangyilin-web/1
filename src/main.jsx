@@ -55,6 +55,9 @@ import {
 import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
+import MealForm from "./components/MealForm";
+import TargetSuggestions from "./components/TargetSuggestions";
+import { ACTIVITY_OPTIONS, getProfileGuidance } from "./profileGuidance";
 import OverviewProfile from "./components/OverviewProfile";
 import OverviewWelcome from "./components/OverviewWelcome";
 import AvatarEditor from "./components/AvatarEditor";
@@ -748,6 +751,7 @@ function App() {
               </div>
             </>
           )}
+          {tab === "Training" && <section className="training-week-guide" aria-label="Your goal-based training week"><div><strong>Your week · {getProfileGuidance(profile).label}</strong><p>Choose a day to see its session. Saved sessions keep their original plan.</p></div><div className="training-week-cards">{dates.map(day=>{const p=getPlan(day,profile,store.records[day]);return <button type="button" key={day} aria-pressed={day===selected} aria-label={`View ${p.title} on ${shortDate(day)}`} onClick={()=>setSelected(day)}><span>{parseDate(day).toLocaleDateString('en-US',{weekday:'short'})}</span><strong>{p.title}</strong><small>{p.duration} min · {p.type}</small></button>})}</div></section>}
           {tab === "Training" && (
             <div
               className={
@@ -836,9 +840,9 @@ function App() {
                     <span className="subtle">{plan.duration} min</span>
                   </div>
                   <p className="demo-intro">
-                    Your avatar, your coach. Watch the movement, then open the form
-                    tips.
+                    {plan.goalLabel&&`${plan.goalLabel} · `}{plan.rationale || "Your avatar, your coach. Watch the movement, then open the form tips."}
                   </p>
+                  {(session||record.customPlan)&&<p className="setup-help">{session?"This saved session keeps the plan it started with. New goal preferences apply to unstarted days.":"Your custom plan is active for this day; goal-based suggestions apply to other unstarted days."}</p>}
                   {plan.exercises.map((e, i) => (
                     <div className="cat-outline-row" key={e.name + i}>
                       <div className="cat-outline-header">
@@ -884,6 +888,8 @@ function App() {
                   disabled={isFuture}
                 />
               </div>
+              <div className="nutrition-date-note"><span>{isFuture ? `You’re viewing ${shortDate(selected)} in the future. Meal logging opens on that day.` : `Meals below belong to ${shortDate(selected)}. Calories update as you add, edit or remove food.`}</span>{selected!==today&&<button type="button" className="secondary-button" onClick={()=>setSelected(today)}>Go to today to log food</button>}</div>
+              {record.meals.some(m=>['protein','carbs','fats'].some(k=>m[k]==null))&&<p className="food-estimate-note">Some meals have no macro details. Macro totals include only the values you entered or estimated; calorie totals include every meal.</p>}
               <section className="panel meal-panel">
                 <div className="card-top">
                   <div>
@@ -924,7 +930,7 @@ function App() {
                           </span>
                           <strong>
                             {m.name}
-                            <small>{m.category || "Meal"}</small>
+                            <small>{m.category || "Meal"}{m.nutritionSource?.includes("estimate")?" · estimated":""}</small>
                           </strong>
                         </div>
                         <span>
@@ -932,15 +938,15 @@ function App() {
                           <small> kcal</small>
                         </span>
                         <span>
-                          {niceNumber(m.protein)}
+                          {m.protein==null?"—":niceNumber(m.protein)}
                           <small> g</small>
                         </span>
                         <span>
-                          {niceNumber(m.carbs)}
+                          {m.carbs==null?"—":niceNumber(m.carbs)}
                           <small> g</small>
                         </span>
                         <span>
-                          {niceNumber(m.fats)}
+                          {m.fats==null?"—":niceNumber(m.fats)}
                           <small> g</small>
                         </span>
                         <div className="row-actions">
@@ -1035,7 +1041,7 @@ function App() {
                   detail={
                     currentWeight == null
                       ? "Log a weigh-in to get started"
-                      : `Goal: ${profile.targetWeight} kg · ${goalProgress}% of the way`
+                      : profile.targetWeight==null ? "Set a weight target in your profile, if useful to you." : `Goal: ${profile.targetWeight} kg · ${goalProgress}% of the way`
                   }
                   onClick={() => setModal({ type: "metrics" })}
                 />
@@ -1157,6 +1163,7 @@ function App() {
             </button>
             {modal.type === "meal" ? (
               <MealForm
+                presets={PRESETS}
                 meal={modal.meal || modal.prefill}
                 editing={!!modal.meal}
                 onSubmit={(m) => {
@@ -1459,7 +1466,8 @@ function Metric({ icon: Icon, label, value, unit, detail, children, onClick }) {
   );
 }
 function NutritionCard({ totals, profile, onAdd, mealCount, isFuture }) {
-  const fill = Math.min(1, totals.calories / profile.calories);
+  const hasTarget = Number(profile.calories)>0;
+  const fill = hasTarget ? Math.min(1, totals.calories / profile.calories) : 0;
   return (
     <section className="nutrition-card panel">
       <div className="card-top">
@@ -1477,7 +1485,7 @@ function NutritionCard({ totals, profile, onAdd, mealCount, isFuture }) {
         <div className="calorie-ring">
           <svg
             viewBox="0 0 120 120"
-            aria-label={`${Math.round(fill * 100)} percent of calorie target`}
+            aria-label={hasTarget ? `${Math.round(fill * 100)} percent of calorie target` : "Calories logged; no target set"}
           >
             <circle cx="60" cy="60" r="51" />
             <circle
@@ -1491,7 +1499,7 @@ function NutritionCard({ totals, profile, onAdd, mealCount, isFuture }) {
           <div>
             <Flame size={16} />
             <strong>{niceNumber(totals.calories)}</strong>
-            <span>of {niceNumber(profile.calories)} kcal</span>
+            <span>{hasTarget ? `of ${niceNumber(profile.calories)} kcal` : "kcal logged"}</span>
           </div>
         </div>
         <div className="macro-list">
@@ -1508,13 +1516,13 @@ function NutritionCard({ totals, profile, onAdd, mealCount, isFuture }) {
                 </span>
                 <strong>
                   {niceNumber(totals[k])}
-                  <small> / {profile[k]} g</small>
+                  <small>{profile[k]>0 ? ` / ${profile[k]} g` : " g logged"}</small>
                 </strong>
               </div>
               <div className="macro-track">
                 <i
                   style={{
-                    width: Math.min(100, (totals[k] / profile[k]) * 100) + "%",
+                    width: (profile[k]>0 ? Math.min(100, (totals[k] / profile[k]) * 100) : 0) + "%",
                   }}
                 />
               </div>
@@ -1724,104 +1732,6 @@ function Field({
     </label>
   );
 }
-function MealForm({ meal, onSubmit, onPreset, editing = !!meal }) {
-  return (
-    <>
-      <span className="eyebrow">FUEL YOUR POTENTIAL</span>
-      <h2 id="modal-title">
-        {editing ? "Refine your plate." : "A little nourishment."}
-      </h2>
-      <p>Enter the nutrition values for your whole serving.</p>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const f = new FormData(e.currentTarget);
-          onSubmit({
-            name: f.get("name").trim(),
-            category: f.get("category"),
-            ...Object.fromEntries(
-              ["calories", "protein", "carbs", "fats"].map((k) => [
-                k,
-                Number(f.get(k)),
-              ]),
-            ),
-          });
-        }}
-      >
-        <Field
-          label="Meal name"
-          name="name"
-          type="text"
-          value={meal?.name}
-          placeholder="e.g. Chicken & quinoa bowl"
-        />
-        <label className="field">
-          Meal type
-          <select name="category" defaultValue={meal?.category || "Lunch"}>
-            {["Breakfast", "Lunch", "Dinner", "Snack"].map((x) => (
-              <option key={x}>{x}</option>
-            ))}
-          </select>
-        </label>
-        <div className="form-grid">
-          <Field
-            label="Calories · kcal"
-            name="calories"
-            min="0"
-            max="10000"
-            value={meal?.calories}
-          />
-          <Field
-            label="Protein · g"
-            name="protein"
-            min="0"
-            max="1000"
-            step="0.1"
-            value={meal?.protein}
-          />
-          <Field
-            label="Carbs · g"
-            name="carbs"
-            min="0"
-            max="1000"
-            step="0.1"
-            value={meal?.carbs}
-          />
-          <Field
-            label="Fats · g"
-            name="fats"
-            min="0"
-            max="1000"
-            step="0.1"
-            value={meal?.fats}
-          />
-        </div>
-        <button className="primary-button full-width">
-          {editing ? "Save meal" : "Log meal"} <Check size={16} />
-        </button>
-      </form>
-      {!editing && !meal && (
-        <div className="quick-add">
-          <span className="eyebrow">QUICK ADD · ESTIMATED SERVINGS</span>
-          {PRESETS.map((p) => (
-            <button
-              key={p.name}
-              onClick={() => onPreset({ ...p, category: "Meal" })}
-            >
-              <div>
-                <strong>{p.name}</strong>
-                <small>
-                  {p.calories} kcal · {p.protein} g protein
-                </small>
-              </div>
-              <Plus size={17} />
-            </button>
-          ))}
-        </div>
-      )}
-    </>
-  );
-}
 function MetricsForm({ record, selected, disabled, onSubmit }) {
   return (
     <>
@@ -1887,12 +1797,17 @@ function MetricsForm({ record, selected, disabled, onSubmit }) {
 function SettingsForm({ profile, onSubmit }) {
   const [avatar, setAvatar] = useState(profile.avatar || null);
   const [editingAvatar, setEditingAvatar] = useState(false);
+  const formRef = useRef(null);
+  const [settingsPreview,setSettingsPreview] = useState(profile);
+  const [targetsSource,setTargetsSource] = useState(profile.targetsSource||'manual');
   return (
     <>
       <span className="eyebrow">BUILT AROUND YOUR LIFE</span>
       <h2 id="modal-title">Your goals. Your way.</h2>
       <p>These preferences shape your plan and daily targets.</p>
       <form
+        ref={formRef}
+        onChange={e=>{setSettingsPreview({...profile,...Object.fromEntries(new FormData(e.currentTarget))});setTargetsSource('manual');}}
         onSubmit={(e) => {
           e.preventDefault();
           const f = new FormData(e.currentTarget);
@@ -1901,6 +1816,8 @@ function SettingsForm({ profile, onSubmit }) {
             avatar,
             name: f.get("name").trim(),
             goal: f.get("goal"),
+            activity: f.get("activity"), experience: f.get("experience"), targetsSource,
+            age:f.get('age')?Number(f.get('age')):null,height:f.get('height')?Number(f.get('height')):null,
             ...Object.fromEntries(
               [
                 "days",
@@ -1913,7 +1830,7 @@ function SettingsForm({ profile, onSubmit }) {
                 "water",
                 "startWeight",
                 "targetWeight",
-              ].map((k) => [k, Number(f.get(k))]),
+              ].map((k) => [k, f.get(k)===""?null:Number(f.get(k))]),
             ),
           });
         }}
@@ -1948,7 +1865,11 @@ function SettingsForm({ profile, onSubmit }) {
             </select>
           </label>
         </div>
-        <h3 className="form-section-title">Daily targets</h3>
+        <div className="form-grid"><Field label="Age · years" name="age" value={profile.age} min="16" max="100" required={false}/><Field label="Height · cm" name="height" value={profile.height} min="100" max="250" required={false}/>
+        <label className="field">Training experience<select name="experience" defaultValue={profile.experience||'intermediate'}><option value="beginner">Just getting started · under 3 months</option><option value="intermediate">Some experience · 3–12 months</option><option value="advanced">Training regularly · over 12 months</option></select></label>
+        <label className="field">Day-to-day activity<select name="activity" defaultValue={profile.activity||'moderate'}>{ACTIVITY_OPTIONS.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select><small className="field-help">{ACTIVITY_OPTIONS.find(o=>o.id===(settingsPreview.activity||'moderate'))?.definition}</small></label></div>
+        <TargetSuggestions profile={settingsPreview} applied={targetsSource==='suggested'} onApply={targets=>{for(const [key,value] of Object.entries(targets)){const input=formRef.current.elements.namedItem(key);if(input)input.value=value??'';}setSettingsPreview(p=>({...p,...targets}));setTargetsSource('suggested');}}/>
+        <h3 className="form-section-title">Daily targets · all editable</h3>
         <div className="form-grid">
           {[
             ["Calories · kcal", "calories", 500, 10000, 1],
@@ -1961,6 +1882,7 @@ function SettingsForm({ profile, onSubmit }) {
           ].map(([label, k, min, max, step]) => (
             <Field
               key={k}
+              required={!['calories','protein','carbs','fats'].includes(k)}
               label={label}
               name={k}
               value={profile[k]}
@@ -1983,6 +1905,7 @@ function SettingsForm({ profile, onSubmit }) {
           <Field
             label="Target weight · kg"
             name="targetWeight"
+            required={false}
             value={profile.targetWeight}
             min="20"
             max="500"
@@ -1990,7 +1913,7 @@ function SettingsForm({ profile, onSubmit }) {
           />
         </div>
         <p className="form-hint">
-          Targets are personal preferences, not prescribed recommendations.
+          One glass is 250 mL. Suggested values are starting estimates; adjust them to your needs.
           Existing logged sessions keep their original plan.
         </p>
         <button className="primary-button full-width">

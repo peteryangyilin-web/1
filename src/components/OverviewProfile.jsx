@@ -18,6 +18,8 @@ import AnimalAvatar from "./AnimalAvatar";
 import AnimalAvatarPicker, { characterName } from "./AnimalAvatarPicker";
 import GoalArtwork from "./GoalArtwork";
 import "./overviewExperience.css";
+import TargetSuggestions from "./TargetSuggestions";
+import { ACTIVITY_OPTIONS, getProfileGuidance } from "../profileGuidance";
 const GOALS = [
   {
     id: "muscle",
@@ -59,7 +61,8 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
   const [draft, setDraft] = useState(profile),
     [step, setStep] = useState(0),
     [furthestStep, setFurthestStep] = useState(0),
-    [editingAvatar, setEditingAvatar] = useState(false);
+    [editingAvatar, setEditingAvatar] = useState(false),
+    [manualTargets, setManualTargets] = useState(profile.targetsSource === "manual");
   const headingRef = useRef(null);
   const stepTitles = ["Choose your goal", "Tell us about you", "Choose your ideal body type", "Fill in your information"];
   const goToStep = (next) => { setFurthestStep(previous => Math.max(previous, next)); setStep(next); window.scrollTo({ top: 0, behavior: "instant" }); };
@@ -71,6 +74,8 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
     setDraft((p) => ({ ...p, [key]: value }));
 
   };
+  const guidance = getProfileGuidance(draft);
+  const effectiveTargets = manualTargets ? draft : guidance.targets;
   const goal = GOALS.find((g) => g.id === draft.goal) || GOALS[0];
   const input = (label, key, min, max, step = 1, optional = false) => (
     <label className="field" key={key}>
@@ -78,6 +83,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
       {optional && <small>Optional</small>}
       <input
         name={key}
+        aria-label={label}
         type="number"
         value={draft[key] ?? ""}
         required={!optional}
@@ -108,10 +114,10 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
           "startWeight",
           "targetWeight",
         ];
-        const next = { ...draft, name: draft.name.trim() };
+        const next = { ...draft, ...(!manualTargets ? guidance.targets : {}), targetsSource: manualTargets ? "manual" : "suggested", name: draft.name.trim() };
         for (const key of numeric)
           next[key] =
-            draft[key] === "" || draft[key] == null ? null : Number(draft[key]);
+            next[key] === "" || next[key] == null ? null : Number(next[key]);
         onSave(next);
         onTraining();
       }}
@@ -178,109 +184,31 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
       {step === 3 && <div className="profile-content-grid wizard-stage" key="details">
         <div className="profile-main-column">
           <section className="panel profile-info-panel">
-            <div className="profile-section-heading">
-              <span className="section-number">02</span>
-              <div>
-                <h2>A little about you.</h2>
-                <p>Your starting point is your own.</p>
-              </div>
-              <UserRound size={18} />
-            </div>
+            <div className="profile-section-heading"><span className="section-number">01</span><div><h2>A little about you.</h2><p>Just your starting point. We’ll help with the numbers.</p></div><UserRound size={18}/></div>
             <div className="form-grid">
-              <label className="field">
-                Your name
-                <input
-                  name="name"
-                  value={draft.name}
-                  required
-                  maxLength="120"
-                  pattern=".*\S.*"
-                  onChange={(e) => set("name", e.target.value)}
-                  placeholder="What should we call you?"
-                />
-              </label>
+              <label className="field">Your name<input name="name" value={draft.name} required maxLength="120" pattern={".*\\S.*"} onChange={e=>set('name',e.target.value)} placeholder="What should we call you?"/></label>
               {input("Age · years", "age", 16, 100, 1, true)}
               {input("Height · cm", "height", 100, 250, 1, true)}
-              {input("Starting weight · kg", "startWeight", 20, 500, 0.1)}
-              {input("Target weight · kg", "targetWeight", 20, 500, 0.1)}
-              <label className="field">
-                Training experience
-                <select
-                  name="experience"
-                  value={draft.experience || "intermediate"}
-                  onChange={(e) => set("experience", e.target.value)}
-                >
-                  <option value="beginner">Just getting started</option>
-                  <option value="intermediate">Some experience</option>
-                  <option value="advanced">Training regularly</option>
-                </select>
-              </label>
+              {input("Starting weight · kg", "startWeight", 20, 500, .1)}
             </div>
-            <p className="profile-field-note">
-              Age and height are optional profile information. Your goal and
-              weekly frequency shape your training schedule.
-            </p>
+            <p className="setup-help">Age and height are optional. Adding them lets the goal guide estimate a starting energy range; your avatar’s gender is not used for this calculation.</p>
           </section>
           <section className="panel profile-rhythm-panel">
-            <div className="profile-section-heading">
-              <span className="section-number">03</span>
-              <div>
-                <h2>Make it fit your life.</h2>
-                <p>Set a rhythm you can come back to.</p>
-              </div>
-              <CalendarDays size={18} />
-            </div>
+            <div className="profile-section-heading"><span className="section-number">02</span><div><h2>Make it fit your life.</h2><p>Pick a realistic rhythm. You can change it later.</p></div><CalendarDays size={18}/></div>
             <div className="form-grid">
-              <label className="field">
-                Sessions per week
-                <select
-                  name="days"
-                  value={draft.days}
-                  onChange={(e) => set("days", e.target.value)}
-                >
-                  {[3, 4, 5, 6].map((n) => (
-                    <option key={n} value={n}>
-                      {n} sessions
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="field">
-                Day-to-day activity
-                <select
-                  name="activity"
-                  value={draft.activity || "moderate"}
-                  onChange={(e) => set("activity", e.target.value)}
-                >
-                  <option value="light">Mostly sitting</option>
-                  <option value="moderate">Some daily movement</option>
-                  <option value="active">Frequently on my feet</option>
-                </select>
-              </label>
-              {input("Daily steps", "steps", 100, 100000)}
-              {input("Sleep target · hours", "sleep", 1, 16, 0.5)}
-              {input("Water target · glasses", "water", 1, 20)}
+              <label className="field">Training experience<select name="experience" value={draft.experience||'beginner'} onChange={e=>set('experience',e.target.value)}><option value="beginner">Just getting started · under 3 months</option><option value="intermediate">Some experience · about 3–12 months</option><option value="advanced">Training regularly · over 12 months</option></select><small className="field-help">Beginners get fewer sets and simpler starting variations. Experience is a rough guide, not a test.</small></label>
+              <label className="field">Sessions per week<select name="days" value={draft.days} onChange={e=>set('days',e.target.value)}>{[3,4,5,6].map(n=><option key={n} value={n}>{n} sessions{n===3?' · easiest place to start':n===6?' · experienced routine':''}</option>)}</select><small className="field-help">Start with 3 days if you are new. Leave room for recovery; more days are optional.</small></label>
+              <label className="field">Day-to-day activity<select name="activity" value={draft.activity||'moderate'} onChange={e=>set('activity',e.target.value)}>{ACTIVITY_OPTIONS.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select><small className="field-help">{(ACTIVITY_OPTIONS.find(o=>o.id===(draft.activity||'moderate'))||ACTIVITY_OPTIONS[1]).definition}</small></label>
             </div>
           </section>
+          <TargetSuggestions profile={draft} applied={!manualTargets && draft.targetsSource==='suggested'} onApply={targets=>{setDraft(p=>({...p,...targets,targetsSource:'suggested'}));setManualTargets(false);}}/>
           <section className="panel profile-targets-panel">
-            <div className="profile-section-heading">
-              <span className="section-number">04</span>
-              <div>
-                <h2>Fuel your own way.</h2>
-                <p>Personal targets for your nutrition journal.</p>
-              </div>
-              <SlidersHorizontal size={18} />
-            </div>
-            <div className="form-grid">
-              {input("Daily calories · kcal", "calories", 500, 10000)}
-              {input("Protein · g", "protein", 1, 500)}
-              {input("Carbs · g", "carbs", 1, 1000)}
-              {input("Fats · g", "fats", 1, 500)}
-            </div>
-            <p className="profile-field-note">
-              Set targets that are appropriate for you. These are preferences,
-              not calculated dietary recommendations.
-            </p>
+            <div className="profile-section-heading"><span className="section-number">03</span><div><h2>Fuel your own way.</h2><p>Start with guidance. No nutrition expertise needed.</p></div><SlidersHorizontal size={18}/></div>
+            {guidance.energy||manualTargets?<div className="target-preview-grid">{[['Daily energy','calories','kcal'],['Protein','protein','g'],['Carbs','carbs','g'],['Fats','fats','g']].map(([label,key,unit])=><div key={key}><span>{label}</span><strong>{effectiveTargets[key]??'—'} <small>{unit}</small></strong></div>)}</div>:<p className="setup-help">No calorie goal is required to get started. Log your meals and build regular eating habits; add an energy target when you have enough information.</p>}
+            <p className="setup-help">Protein: eggs, beans, tofu, fish or meat. Carbs: rice, oats, bread or fruit. Fats: nuts, olive oil or avocado. These are flexible daily totals, not rules for every meal.</p>
+            <button type="button" className="text-button" aria-expanded={manualTargets} onClick={()=>{if(!manualTargets)setDraft(p=>({...p,...guidance.targets}));setManualTargets(v=>!v);}}>{manualTargets?'Use guided targets instead':'Customize targets yourself'}</button>
+            {manualTargets&&<div className="manual-targets"><p className="setup-help">Enter targets you already use, or leave nutrition targets blank. One glass of water = 250 mL.</p><div className="form-grid">{input('Target weight · kg','targetWeight',20,500,.1,true)}{input('Daily steps','steps',100,100000)}{input('Sleep target · hours','sleep',1,16,.5)}{input('Water target · glasses','water',1,20)}{input('Daily calories · kcal','calories',500,10000,1,true)}{input('Protein · g','protein',1,500,1,true)}{input('Carbs · g','carbs',1,1000,1,true)}{input('Fats · g','fats',1,500,1,true)}</div></div>}
+            <p className="setup-help">{manualTargets?'Your custom targets will be saved.':'Saving uses the suggested starting targets shown above. Missing nutrition estimates stay unset.'} Targets can be adjusted from your profile settings anytime.</p>
           </section>
         </div>
         <aside className="profile-summary panel">
@@ -321,7 +249,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
             <div>
               <dt>YOUR TARGET</dt>
               <dd>
-                {draft.targetWeight || "—"} <span>kg</span>
+                {effectiveTargets.targetWeight || "—"} <span>kg</span>
               </dd>
             </div>
           </dl>

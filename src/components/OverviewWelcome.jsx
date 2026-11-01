@@ -4,12 +4,12 @@ import AnimalAvatar from "./AnimalAvatar";
 import "./overviewWelcome.css";
 
 function PreviewCards({ profile }) {
-  const calories = Number(profile.calories || 2400).toLocaleString();
+  const calories = profile.calories ? Number(profile.calories).toLocaleString() : null;
   return <>
         <article className="welcome-preview-card welcome-habit-card"><Heart size={23} /><h2>A little better,<br />every day.</h2><p>Your own starting point.<br />Your own kind of stronger.</p><div className="welcome-mini-dots">{Array.from({length:7},(_,i)=><i key={i} />)}</div></article>
         <article className="welcome-preview-card welcome-training-card"><div className="welcome-card-caption"><Dumbbell size={15} /><span>Training</span><small>EXAMPLE SESSION</small></div><h2>One rep closer.</h2><p>Push strength. A few good sets.<br />A moment to show up for yourself.</p><div className="welcome-training-tags"><span>Strength</span><span>At your pace</span></div><div className="welcome-card-bottom"><CalendarDays size={13} /><span>A plan built around your week</span></div></article>
         <article className="welcome-preview-card welcome-character-card"><span className="welcome-card-caption">A LITTLE PERSONALITY</span><AnimalAvatar species={profile.avatarCharacter || "shiba"} gender={profile.gender || "male"} build={profile.bodyType || "lean"} /><div><h2>Your kind of GO.</h2><p>Choose a character. Make it yours.</p></div></article>
-        <div className="welcome-preview-stack"><article className="welcome-preview-card welcome-target-card"><div><h2>Your daily rhythm</h2><p>{calories} kcal target<br />{profile.protein || 150}g protein target</p></div><Leaf size={26} /></article><article className="welcome-preview-card welcome-progress-card"><div><h2>Room to grow.</h2><p>Small steps.<br />A little more you.</p></div><ChartNoAxesCombined size={29} /></article></div>
+        <div className="welcome-preview-stack"><article className="welcome-preview-card welcome-target-card"><div><h2>Your daily rhythm</h2><p>{calories ? `${calories} kcal target` : "Log meals at your own pace"}<br />{profile.protein ? `${profile.protein}g protein target` : "Targets are optional"}</p></div><Leaf size={26} /></article><article className="welcome-preview-card welcome-progress-card"><div><h2>Room to grow.</h2><p>Small steps.<br />A little more you.</p></div><ChartNoAxesCombined size={29} /></article></div>
         <article className="welcome-preview-card welcome-recovery-card"><span className="welcome-card-caption">BETTER, TOGETHER</span><h2>Move.<br />Rest.<br />Repeat.</h2><p>Build a routine that fits your life.</p><Heart size={23} /></article>
   </>;
 }
