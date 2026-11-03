@@ -58,7 +58,6 @@ import ExerciseDemo from "./components/ExerciseDemo";
 import MealForm from "./components/MealForm";
 import TargetSuggestions from "./components/TargetSuggestions";
 import TrainingPreferences from "./components/TrainingPreferences";
-import TrainingGuidance from "./components/TrainingGuidance";
 import {getTrainingContext, TRAINING_FIELDS} from "./trainingPlanner";
 import { ACTIVITY_OPTIONS, getProfileGuidance } from "./profileGuidance";
 import OverviewProfile from "./components/OverviewProfile";
@@ -758,7 +757,6 @@ function App() {
               </div>
             </>
           )}
-          {tab === "Training" && <TrainingGuidance plan={plan} onEdit={()=>setModal({type:"settings"})}/>}
           {tab === "Training" && trainingRestricted && <div className="training-restricted" role="status">Your exercise needs require individual guidance. Automatic session starts are paused. Review your training information with a qualified professional; completed history remains available.</div>}
           {tab === "Training" && <section className="training-week-guide" aria-label="Your goal-based training week"><div><strong>Your week · {getProfileGuidance(profile).label}</strong><p>Choose a day to see its session. Saved sessions keep their original plan.</p></div><div className="training-week-cards">{dates.map(day=>{const p=getPlan(day,trainingProfile,store.records[day]);return <button type="button" key={day} aria-pressed={day===selected} aria-label={`View ${p.title} on ${shortDate(day)}`} onClick={()=>setSelected(day)}><span>{parseDate(day).toLocaleDateString('en-US',{weekday:'short'})}</span><strong>{p.title}</strong><small>{p.duration} min · {p.type}</small></button>})}</div></section>}
           {tab === "Training" && (
