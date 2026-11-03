@@ -1,0 +1,41 @@
+# GO training methodology
+
+## Scope and source access
+
+GO produces an explainable **general fitness starting plan**, not a medical prescription, an assessment of readiness, or an AI-coached individual program. This update's attempts to retrieve WHO, CDC, PubMed and ACSM pages were denied by the execution environment's network proxy (HTTP 403). The references below identify established publications; their live pages and any newer revisions were **not verified**. This is not an exhaustive literature review or a claim of endorsement.
+
+## Established guidance used
+
+| Reference | Relevant general recommendation | Implementation |
+| --- | --- | --- |
+| [WHO physical activity guidelines (2020)](https://www.who.int/news-room/fact-sheets/detail/physical-activity) and [HHS Physical Activity Guidelines for Americans, second edition (2018)](https://health.gov/sites/default/files/2019-09/Physical_Activity_Guidelines_2nd_edition.pdf) | Adults work toward 150–300 min moderate aerobic activity/week, plus major muscle-group strengthening on 2+ days. Some activity is better than none; inactive people start small. | Display the reference separately from actual planned moderate minutes and strength days. Low starting capacity may mean a deliberate shortfall, which is disclosed rather than counting all workout time as aerobic activity. |
+| WHO/HHS older adult guidance | Older adults also benefit from varied balance and functional strength; WHO specifies multicomponent balance/strength on 3+ days. | Age 65+ starts with lower working volume, support options and 5 min supported balance on Monday/Wednesday/Friday. This is not a fall-risk assessment or a validated balance intervention. |
+| WHO/HHS youth guidance | Ages 5–17: average 60 min/day of moderate-to-vigorous varied activity; vigorous and muscle/bone strengthening on 3+ days. | Ages 16–17 receive technique-led resistance training, supervision advice, no maximal-lift prescription and an explicit explanation that these gym sessions are only part of daily activity. The UI accepts age 16+. Imported profiles below 16 receive no adult training prescription. |
+| [ACSM, Progression models in resistance training for healthy adults (2009), PMID 19204579](https://pubmed.ncbi.nlm.nih.gov/19204579/) | Resistance-training frequency, load, repetitions and progression depend on goal and training status; novices use manageable loads, with progressive overload and adequate rests. | Starting working sets and rep ranges change by experience, age, available time and goal. No automatic 1RM test. Progress load only after repeatable performance; GO uses a conservative 2–5% example within the broader progression principle. |
+| [ACSM, Quantity and quality of exercise… (2011), PMID 21694556](https://pubmed.ncbi.nlm.nih.gov/21694556/) | Aerobic, resistance, flexibility and neuromotor training are complementary; personalize to function and circumstances. | Separate strength, aerobic, easy-movement and recovery days; conversational pace and self-reported capacity guide an initial aerobic dose. |
+| [Roberts, Nuckols & Krieger, Sex Differences in Resistance Training: A Systematic Review and Meta-Analysis (2020)](https://doi.org/10.1007/s40279-019-01247-x) | Both sexes can benefit from resistance training; group differences do not determine an individual's appropriate exercise load. | No arbitrary female load discount or male load increase. Same capabilities and goals may legitimately produce the same exercises. Individual effort and actual performance determine loading. |
+
+## GO's own rules — not guideline-mandated exact prescriptions
+
+The following choices are deterministic product heuristics, not proven optimal programs or directly prescribed by the sources:
+
+- Four goal-specific weekly sequences at 3–6 available sessions: muscle emphasizes whole-body sessions or upper/lower/push/pull distributions; fat loss combines strength and conversational cardio; endurance prioritizes aerobic work with supporting strength; wellbeing emphasizes repeatable whole-body work and easy movement. Exercise alone does not guarantee weight loss.
+- Session time is a cap, not a promise of exact duration. Strength time estimates include 5 min warm-up, 5 min cool-down, approximate working-set time, prescribed between-set rests and transitions. Fewer exercises/sets fit shorter budgets.
+- Introductory muscle-building plans use at most three lifting days, even if the user has 4–6 available sessions; extra sessions are easy movement rather than additional hard lifting.
+- Starting sets: generally 2 for beginners, ages 65+, ages 16–17, missing age or a wellbeing emphasis; 3 for intermediate users; up to 4 for advanced muscle-building users when time permits. Short sessions may reduce this further.
+- Rep ranges: generally 6–12 for experienced muscle-building sessions, 8–12 for introductory sessions, 8–15 otherwise; stop with repetitions in reserve. Logged initial repetitions are the lower end of the working range where practical. Typical rest is 90–120 seconds. These are starting choices, not maximal strength testing or a precise individualized intensity prescription.
+- Cardio: capacity bands under 15 / 15–30 / over 30 continuous comfortable minutes map to starting main blocks of about 10 / 20 / 35 minutes, capped by the session budget. Longer endurance sessions add at most 5 min only in the highest band. Easy recovery walking is not counted automatically as moderate activity. Moderate minutes are planned, not a claim that the user actually reached the required intensity.
+- Latest logged body weight (when available), or starting weight, and height can flag a preference for lower-impact walking and supported alternatives when adult BMI is 30+. BMI does **not** diagnose obesity, measure body fat, identify low fitness or justify a heavy/light lifting load. A muscular person may override the movement preference in an individualized plan; automated plans remain conservative. Body size alone does not reduce all strength volume.
+- Reported impact preference replaces reverse lunges with supported calf raises and chooses walking-based cardio; age 65+ also uses support. Pain or a restriction is not treated by this substitution.
+- Gym versus dumbbells changes unavailable exercises to available ones. Dumbbell plans require a stable seat for seated presses and do not require a gym bench, cables or barbells. Demonstrations are movement references; the push-up guidance explicitly distinguishes a supported/elevated regression from the floor demonstration.
+- Avatar species, physique illustration and gender do not measure physiology. Male/female selection is acknowledged in the explanation and matches the existing animation system; it does not determine ability. Pregnancy/postpartum or clinician-advised restrictions must be separately reported and pause automatic prescriptions pending individual guidance.
+- Missing optional inputs are disclosed: default gym, 45 min, under 15 min cardio capacity, restrictions not yet reviewed. Missing age uses a conservative starting dose, not an invented age.
+- No automatic progressive overload based merely on elapsed calendar time. Suggested progression requires demonstrated manageable effort; users update their experience/capacity/settings. This release does not infer training readiness, menstrual phase, hormones, injury status or progression from an avatar, sex or weight.
+
+## Persistence
+
+New unstarted days are recalculated from the latest profile and weight. Started sessions and custom plans retain their original prescriptions. Historical records remain reviewable; current individual-guidance restrictions prevent starting/resuming an incomplete workout. Every new plan stores its reasoning, program version, weekly dose and source identifiers with the session.
+
+## Verification
+
+Tests compare actual exercise choices, sets, duration, impact choices, equipment and weekly doses across all goals, ages, capacity bands and time budgets. They also verify sex is not used as a load stereotype, all recommended exercises have matching existing animations, minute-based logging uses minutes, and saved sessions are stable after profile changes.

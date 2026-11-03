@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {getProfileGuidance,ACTIVITY_OPTIONS,GLASS_ML} from '../src/profileGuidance.js';
 import {estimateMeal,searchFoods} from '../src/foodCatalog.js';
 import {DEFAULT_PROFILE,getPlan,weekDates,createSession} from '../src/model.js';
-const base={...DEFAULT_PROFILE,age:30,height:170,startWeight:75,activity:'light',days:3};
+const base={...DEFAULT_PROFILE,age:30,height:170,startWeight:75,activity:'light',days:3,cardioCapacity:20};
 test('adult goal suggestions have modest direction, a range and coherent macro energy',()=>{
  const muscle=getProfileGuidance({...base,goal:'muscle'}),fat=getProfileGuidance({...base,goal:'fatloss'}),endurance=getProfileGuidance({...base,goal:'endurance'});
  assert.ok(muscle.targets.calories>endurance.targets.calories);assert.ok(fat.targets.calories<endurance.targets.calories);
@@ -19,7 +19,7 @@ test('four goals really produce different unstarted weekly plans and experience 
  const dates=weekDates('2026-10-12');const plans=new Set();
  for(const goal of ['muscle','fatloss','endurance','wellbeing'])plans.add(JSON.stringify(dates.map(d=>getPlan(d,{...base,goal}))));assert.equal(plans.size,4);
  const a=getPlan('2026-10-12',{...base,goal:'muscle',experience:'intermediate'}),b=getPlan('2026-10-12',{...base,goal:'muscle',experience:'beginner'});
- assert.ok(b.exercises.reduce((s,e)=>s+e.sets,0)<a.exercises.reduce((s,e)=>s+e.sets,0));assert.equal(b.exercises[0].name,'Push-up');
+ assert.ok(b.exercises.reduce((s,e)=>s+e.sets,0)<a.exercises.reduce((s,e)=>s+e.sets,0));assert.ok(b.exercises.every(e=>e.sets<=2));
  const saved=createSession(a);assert.deepEqual(getPlan('2026-10-12',{...base,goal:'wellbeing'},{session:saved}),a);
 });
 test('food portions calculate whole-meal calories and macros; edits recalculate rather than accumulate',()=>{

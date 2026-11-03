@@ -57,6 +57,9 @@ import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 import MealForm from "./components/MealForm";
 import TargetSuggestions from "./components/TargetSuggestions";
+import TrainingPreferences from "./components/TrainingPreferences";
+import TrainingGuidance from "./components/TrainingGuidance";
+import {getTrainingContext, TRAINING_FIELDS} from "./trainingPlanner";
 import { ACTIVITY_OPTIONS, getProfileGuidance } from "./profileGuidance";
 import OverviewProfile from "./components/OverviewProfile";
 import OverviewWelcome from "./components/OverviewWelcome";
@@ -192,7 +195,10 @@ function App() {
     dates = weekDates(selected),
     record = { ...emptyDay(), ...store.records[selected] },
     totals = totalNutrition(record.meals),
-    plan = getPlan(selected, profile, record),
+    trainingWeight = Object.entries(store.records).filter(([d,r])=>d<=today&&r.weight!=null).sort(([a],[b])=>a.localeCompare(b)).at(-1)?.[1].weight,
+    trainingProfile = {...profile,currentWeight:trainingWeight??profile.startWeight},
+    trainingRestricted = getTrainingContext(trainingProfile).blocked,
+    plan = getPlan(selected, trainingProfile, record),
     session = record.session,
     complete = !!session?.completedAt,
     isFuture = selected > today;
@@ -278,6 +284,7 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const openSession = () => {
+    if (trainingRestricted && !complete) { setModal({type:"settings"}); return; }
     if (isFuture) {
       notify(
         "Future sessions can be planned. Training logs are available on the day.",
@@ -751,7 +758,9 @@ function App() {
               </div>
             </>
           )}
-          {tab === "Training" && <section className="training-week-guide" aria-label="Your goal-based training week"><div><strong>Your week · {getProfileGuidance(profile).label}</strong><p>Choose a day to see its session. Saved sessions keep their original plan.</p></div><div className="training-week-cards">{dates.map(day=>{const p=getPlan(day,profile,store.records[day]);return <button type="button" key={day} aria-pressed={day===selected} aria-label={`View ${p.title} on ${shortDate(day)}`} onClick={()=>setSelected(day)}><span>{parseDate(day).toLocaleDateString('en-US',{weekday:'short'})}</span><strong>{p.title}</strong><small>{p.duration} min · {p.type}</small></button>})}</div></section>}
+          {tab === "Training" && <TrainingGuidance plan={plan} onEdit={()=>setModal({type:"settings"})}/>}
+          {tab === "Training" && trainingRestricted && <div className="training-restricted" role="status">Your exercise needs require individual guidance. Automatic session starts are paused. Review your training information with a qualified professional; completed history remains available.</div>}
+          {tab === "Training" && <section className="training-week-guide" aria-label="Your goal-based training week"><div><strong>Your week · {getProfileGuidance(profile).label}</strong><p>Choose a day to see its session. Saved sessions keep their original plan.</p></div><div className="training-week-cards">{dates.map(day=>{const p=getPlan(day,trainingProfile,store.records[day]);return <button type="button" key={day} aria-pressed={day===selected} aria-label={`View ${p.title} on ${shortDate(day)}`} onClick={()=>setSelected(day)}><span>{parseDate(day).toLocaleDateString('en-US',{weekday:'short'})}</span><strong>{p.title}</strong><small>{p.duration} min · {p.type}</small></button>})}</div></section>}
           {tab === "Training" && (
             <div
               className={
@@ -770,7 +779,7 @@ function App() {
                   <button
                     className="tag"
                     onClick={() => setModal({ type: "plan" })}
-                    disabled={!!session}
+                    disabled={!!session||trainingRestricted}
                   >
                     <Pencil size={10} />
                     {plan.type.toUpperCase()}
@@ -817,8 +826,8 @@ function App() {
                       </strong>
                     </div>
                   </div>
-                  <button className="lime-button" onClick={openSession}>
-                    {complete
+                  <button className="lime-button" onClick={openSession} disabled={trainingRestricted&&!complete}>
+                    {trainingRestricted&&!complete ? "Individual guidance needed" : complete
                       ? "View session"
                       : session
                         ? "Resume session"
@@ -840,21 +849,25 @@ function App() {
                     <span className="subtle">{plan.duration} min</span>
                   </div>
                   <p className="demo-intro">
-                    {plan.goalLabel&&`${plan.goalLabel} · `}{plan.rationale || "Your avatar, your coach. Watch the movement, then open the form tips."}
+                    {plan.rationale || "Your avatar, your coach. Watch the movement, then open the form tips."}
                   </p>
                   {(session||record.customPlan)&&<p className="setup-help">{session?"This saved session keeps the plan it started with. New goal preferences apply to unstarted days.":"Your custom plan is active for this day; goal-based suggestions apply to other unstarted days."}</p>}
+                  {plan.warmup&&<p className="session-preparation"><strong>Warm-up:</strong> {plan.warmup}</p>}
+                  {plan.balance&&<p className="session-preparation"><strong>Supported balance · {plan.balance.minutes} min:</strong> {plan.balance.instruction}</p>}
                   {plan.exercises.map((e, i) => (
                     <div className="cat-outline-row" key={e.name + i}>
                       <div className="cat-outline-header">
                         <span>{String(i + 1).padStart(2, "0")}</span>
                         <strong>{e.name}</strong>
                         <small>
-                          {e.sets} × {e.reps}
+                          {e.prescription||`${e.sets} × ${e.reps}`}
                         </small>
                       </div>
+                      {(e.effort||e.note)&&<p className="exercise-dose"><strong>{e.repRange?`${e.sets} working sets · ${e.repRange} reps · ${e.restSeconds}s rest. `:""}</strong>{e.effort} {e.note}</p>}
                       <ExerciseDemo name={e.name} profile={profile} compact />
                     </div>
                   ))}
+                  {plan.cooldown&&<p className="session-preparation"><strong>Cool-down:</strong> {plan.cooldown}</p>}
                 </section>
               ) : (
                 <NutritionCard
@@ -1264,6 +1277,8 @@ function App() {
                     />
                   </div>
                 </div>
+                {session.plan.warmup&&<p className="session-preparation"><strong>Warm-up:</strong> {session.plan.warmup}</p>}
+                {session.plan.balance&&<p className="session-preparation"><strong>Supported balance · {session.plan.balance.minutes} min:</strong> {session.plan.balance.instruction}</p>}
                 <div className="exercise-list">
                   {session.plan.exercises.map((e, ei) => (
                     <section key={ei}>
@@ -1271,11 +1286,12 @@ function App() {
                         <span>{String(ei + 1).padStart(2, "0")}</span>
                         {e.name}
                       </h3>
+                      {e.prescription&&<p className="exercise-dose">{e.prescription}{e.kind!=="time"?` · ${e.restSeconds}s rest · ${e.effort}`:" · Complete the planned minutes at your chosen pace."}</p>}
                       <ExerciseDemo name={e.name} profile={profile} />
                       <div className="set-header">
                         <span>SET</span>
-                        <span>WEIGHT · KG</span>
-                        <span>REPS</span>
+                        <span>{e.kind==="time"?"LOAD · N/A":"WEIGHT · KG"}</span>
+                        <span>{e.kind==="time"?"MINUTES":"REPS"}</span>
                         <span>DONE</span>
                       </div>
                       {session.sets[ei].map((s, si) => (
@@ -1291,7 +1307,7 @@ function App() {
                             max="1000"
                             step="0.5"
                             value={s.weight}
-                            disabled={complete}
+                            disabled={complete||e.kind==="time"}
                             onChange={(ev) => {
                               const v = ev.target.valueAsNumber;
                               if (Number.isFinite(v) && v >= 0 && v <= 1000)
@@ -1299,7 +1315,7 @@ function App() {
                             }}
                           />
                           <input
-                            aria-label={`${e.name} set ${si + 1} reps`}
+                            aria-label={`${e.name} set ${si + 1} ${e.kind==="time"?"minutes":"reps"}`}
                             type="number"
                             min="1"
                             max="500"
@@ -1817,6 +1833,7 @@ function SettingsForm({ profile, onSubmit }) {
             name: f.get("name").trim(),
             goal: f.get("goal"),
             activity: f.get("activity"), experience: f.get("experience"), targetsSource,
+            ...Object.fromEntries(TRAINING_FIELDS.map(field=>[field.name,f.get(field.name)||field.fallback])),
             age:f.get('age')?Number(f.get('age')):null,height:f.get('height')?Number(f.get('height')):null,
             ...Object.fromEntries(
               [
@@ -1868,6 +1885,7 @@ function SettingsForm({ profile, onSubmit }) {
         <div className="form-grid"><Field label="Age · years" name="age" value={profile.age} min="16" max="100" required={false}/><Field label="Height · cm" name="height" value={profile.height} min="100" max="250" required={false}/>
         <label className="field">Training experience<select name="experience" defaultValue={profile.experience||'intermediate'}><option value="beginner">Just getting started · under 3 months</option><option value="intermediate">Some experience · 3–12 months</option><option value="advanced">Training regularly · over 12 months</option></select></label>
         <label className="field">Day-to-day activity<select name="activity" defaultValue={profile.activity||'moderate'}>{ACTIVITY_OPTIONS.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select><small className="field-help">{ACTIVITY_OPTIONS.find(o=>o.id===(settingsPreview.activity||'moderate'))?.definition}</small></label></div>
+        <TrainingPreferences profile={settingsPreview}/>
         <TargetSuggestions profile={settingsPreview} applied={targetsSource==='suggested'} onApply={targets=>{for(const [key,value] of Object.entries(targets)){const input=formRef.current.elements.namedItem(key);if(input)input.value=value??'';}setSettingsPreview(p=>({...p,...targets}));setTargetsSource('suggested');}}/>
         <h3 className="form-section-title">Daily targets · all editable</h3>
         <div className="form-grid">

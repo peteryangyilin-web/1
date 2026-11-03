@@ -1,3 +1,4 @@
+import { getPersonalizedPlan } from './trainingPlanner.js';
 export const DEFAULT_PROFILE = {
   name: "Alex Morgan",
   goal: "muscle",
@@ -52,128 +53,17 @@ export function totalNutrition(meals = []) {
     { calories: 0, protein: 0, carbs: 0, fats: 0 },
   );
 }
-const exercise = (name, sets = 3, reps = 10) => ({ name, sets, reps });
-const templates = {
-  push: {
-    title: "Push strength",
-    type: "Strength",
-    duration: 55,
-    focus: "Chest · Shoulders · Triceps",
-    exercises: [
-      exercise("Barbell bench press"),
-      exercise("Incline dumbbell press"),
-      exercise("Seated shoulder press"),
-      exercise("Lateral raises", 3, 12),
-      exercise("Triceps rope pushdown", 3, 12),
-    ],
-  },
-  lower: {
-    title: "Lower body",
-    type: "Strength",
-    duration: 50,
-    focus: "Quads · Glutes · Hamstrings",
-    exercises: [
-      exercise("Goblet squat"),
-      exercise("Romanian deadlift"),
-      exercise("Reverse lunge"),
-      exercise("Calf raise", 3, 15),
-    ],
-  },
-  pull: {
-    title: "Pull strength",
-    type: "Strength",
-    duration: 50,
-    focus: "Back · Biceps · Rear delts",
-    exercises: [
-      exercise("Lat pulldown"),
-      exercise("Seated cable row"),
-      exercise("Face pull", 3, 12),
-      exercise("Dumbbell curl", 3, 12),
-    ],
-  },
-  full: {
-    title: "Full body",
-    type: "Strength",
-    duration: 45,
-    focus: "A balanced session, head to toe",
-    exercises: [
-      exercise("Goblet squat"),
-      exercise("Push-up"),
-      exercise("Dumbbell row"),
-      exercise("Dead bug", 3, 12),
-    ],
-  },
-  cardio: {
-    title: "Zone 2 cardio",
-    type: "Endurance",
-    duration: 35,
-    focus: "Comfortable pace · Steady breathing",
-    exercises: [
-      exercise("Easy warm-up · 5 minutes", 1, 1),
-      exercise("Steady cardio · 25 minutes", 1, 1),
-      exercise("Cool-down · 5 minutes", 1, 1),
-    ],
-  },
-  recovery: {
-    title: "Active recovery",
-    type: "Recovery",
-    duration: 20,
-    focus: "Mobility · Stretch · Reset",
-    exercises: [
-      exercise("Easy walk · 10 minutes", 1, 1),
-      exercise("Hip mobility · 5 minutes", 1, 1),
-      exercise("Shoulder mobility · 5 minutes", 1, 1),
-    ],
-  },
-};
 export function getPlan(key, profile, record) {
   if (record?.session?.plan) return record.session.plan;
   if (record?.customPlan) return record.customPlan;
-  const index = (parseDate(key).getDay() + 6) % 7;
-  const schedules = {
-    3: [0, 2, 4],
-    4: [0, 2, 4, 5],
-    5: [0, 1, 2, 4, 5],
-    6: [0, 1, 2, 3, 4, 5],
-  };
-  const active = schedules[profile.days] || schedules[4];
-  const slot = active.indexOf(index);
-  const goal = ['muscle','fatloss','endurance','wellbeing'].includes(profile.goal)?profile.goal:'muscle';
-  const sequences = {
-    muscle:['push','lower','pull','full','cardio','lower'],
-    fatloss:['fatStrength','fatCardio','fatLower','fatCardio','fatStrength','fatCardio'],
-    endurance:['cardio','enduranceStrength','longCardio','enduranceStrength','longCardio','cardio'],
-    wellbeing:['gentleFull','gentleMove','gentleLower','gentleMove','gentleFull','gentleMove'],
-  };
-  const variants = {
-    fatStrength:{...templates.full,title:'Strength & steady habits',duration:40,focus:'Maintain strength · Sustainable effort',exercises:templates.full.exercises.map(e=>({...e,reps:12}))},
-    fatLower:{...templates.lower,title:'Lower strength & movement',duration:40,focus:'Leg strength · Consistency',exercises:templates.lower.exercises.map(e=>({...e,reps:12}))},
-    fatCardio:{...templates.cardio,title:'Steady movement',duration:30,exercises:[exercise('Easy warm-up · 5 minutes',1,1),exercise('Steady cardio · 20 minutes',1,1),exercise('Cool-down · 5 minutes',1,1)]},
-    enduranceStrength:{...templates.full,title:'Strength for endurance',duration:30,focus:'Support your cardio · Controlled effort',exercises:templates.full.exercises.map(e=>({...e,sets:2,reps:12}))},
-    longCardio:{...templates.cardio,title:'Build your aerobic base',duration:45,focus:'Longer easy effort · Conversational pace',exercises:[exercise('Easy warm-up · 5 minutes',1,1),exercise('Steady cardio · 35 minutes',1,1),exercise('Cool-down · 5 minutes',1,1)]},
-    gentleFull:{...templates.full,title:'Everyday strength',type:'Movement',duration:25,focus:'Feel stronger in daily life',exercises:[exercise('Goblet squat',2,8),exercise('Push-up',2,8),exercise('Dumbbell row',2,8)]},
-    gentleLower:{...templates.lower,title:'Move with confidence',type:'Movement',duration:25,focus:'Comfortable strength · Balance',exercises:[exercise('Goblet squat',2,8),exercise('Calf raise',2,10),exercise('Hip mobility · 5 minutes',1,1)]},
-    gentleMove:{...templates.recovery,title:'Walk, stretch, reset',type:'Movement',duration:25,focus:'Comfortable walking · Joint movement',exercises:[exercise('Easy walk · 15 minutes',1,1),exercise('Hip mobility · 5 minutes',1,1),exercise('Shoulder mobility · 5 minutes',1,1)]},
-  };
-  const base = slot<0?templates.recovery:(variants[sequences[goal][slot]]||templates[sequences[goal][slot]]);
-  const descriptions = {muscle:'Your muscle-building plan prioritizes progressive strength and recovery.',fatloss:'Your fat-loss plan combines strength retention with sustainable steady movement.',endurance:'Your endurance plan emphasizes aerobic time, with shorter supporting strength sessions.',wellbeing:'Your wellbeing plan starts with manageable strength, easy walking and mobility.'};
-  let exercises=base.exercises.map(e=>({...e}));
-  let duration=base.duration;
-  if(profile.experience==='beginner'&&slot>=0){
-    exercises=exercises.map(e=>({...e,name:e.name==='Barbell bench press'?'Push-up':e.name,sets:e.sets>1?Math.min(e.sets,2):e.sets,reps:e.sets>1?Math.min(e.reps,10):e.reps}));
-    if(base.type==='Endurance'){duration=25;exercises=[exercise('Easy warm-up · 5 minutes',1,1),exercise('Steady cardio · 15 minutes',1,1),exercise('Cool-down · 5 minutes',1,1)];}
-    else duration=Math.max(20,duration-10);
-  } else if(profile.experience==='advanced'&&goal==='muscle'&&base.type==='Strength') {
-    exercises=exercises.map(e=>({...e,sets:e.sets+1}));duration+=5;
-  }
-  return {...base,duration,exercises,goalId:goal,goalLabel:({muscle:'Build muscle',fatloss:'Lose fat',endurance:'Improve endurance',wellbeing:'Feel healthier'})[goal],rationale:slot<0?'A recovery day helps you return to your next session ready to move.':descriptions[goal]+(profile.experience==='beginner'?' Volume is reduced for your starting experience.':'')};
+  return getPersonalizedPlan(key, profile);
 }
 export function createSession(plan) {
   return {
     plan: JSON.parse(JSON.stringify(plan)),
     sets: plan.exercises.map((e) =>
       Array.from({ length: e.sets }, () => ({
-        reps: e.reps,
+        reps: e.kind==='time'?e.minutes:e.reps,
         weight: 0,
         done: false,
       })),

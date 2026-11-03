@@ -19,6 +19,8 @@ import AnimalAvatarPicker, { characterName } from "./AnimalAvatarPicker";
 import GoalArtwork from "./GoalArtwork";
 import "./overviewExperience.css";
 import TargetSuggestions from "./TargetSuggestions";
+import TrainingPreferences from "./TrainingPreferences";
+import { TRAINING_FIELDS } from "../trainingPlanner";
 import { ACTIVITY_OPTIONS, getProfileGuidance } from "../profileGuidance";
 const GOALS = [
   {
@@ -114,7 +116,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
           "startWeight",
           "targetWeight",
         ];
-        const next = { ...draft, ...(!manualTargets ? guidance.targets : {}), targetsSource: manualTargets ? "manual" : "suggested", name: draft.name.trim() };
+        const next = { ...Object.fromEntries(TRAINING_FIELDS.map(f=>[f.name,draft[f.name]??f.fallback])), ...draft, ...(!manualTargets ? guidance.targets : {}), targetsSource: manualTargets ? "manual" : "suggested", name: draft.name.trim() };
         for (const key of numeric)
           next[key] =
             next[key] === "" || next[key] == null ? null : Number(next[key]);
@@ -201,6 +203,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
               <label className="field">Day-to-day activity<select name="activity" value={draft.activity||'moderate'} onChange={e=>set('activity',e.target.value)}>{ACTIVITY_OPTIONS.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select><small className="field-help">{(ACTIVITY_OPTIONS.find(o=>o.id===(draft.activity||'moderate'))||ACTIVITY_OPTIONS[1]).definition}</small></label>
             </div>
           </section>
+          <section className="panel"><TrainingPreferences profile={draft} onChange={set}/></section>
           <TargetSuggestions profile={draft} applied={!manualTargets && draft.targetsSource==='suggested'} onApply={targets=>{setDraft(p=>({...p,...targets,targetsSource:'suggested'}));setManualTargets(false);}}/>
           <section className="panel profile-targets-panel">
             <div className="profile-section-heading"><span className="section-number">03</span><div><h2>Fuel your own way.</h2><p>Start with guidance. No nutrition expertise needed.</p></div><SlidersHorizontal size={18}/></div>

@@ -5,12 +5,14 @@ let browser;
 (async()=>{
  const {DEFAULT_PROFILE}=await import('../src/model.js');
  const {EXERCISE_DEMOS}=await import('../src/exerciseDemos.js');
+ // Animation coverage is independent of any single user's personalized weekly split.
+ const coveragePlan={title:'Animation coverage',type:'Strength',duration:45,focus:'Test fixture for all supported movements',exercises:Object.values(EXERCISE_DEMOS).map(d=>({name:d.title,sets:1,reps:8}))};
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
  const errors=[];
  for(const gender of ['female','male']) for(const [avatarCharacter,animal] of [['selkirk','cat'],['shiba','dog']]){
   const key=`${gender}-${animal}`;
   const context=await browser.newContext({reducedMotion:'reduce',viewport:{width:1440,height:1100}});
-  await context.addInitScript(profile=>localStorage.setItem('forma-v2',JSON.stringify({version:2,profile,records:{}})),{...DEFAULT_PROFILE,gender,avatarCharacter,days:6});
+  await context.addInitScript(profile=>localStorage.setItem('forma-v2',JSON.stringify({version:2,profile,records:{'2026-10-12':{customPlan:profile.coveragePlan}}})),{...DEFAULT_PROFILE,gender,avatarCharacter,days:6,age:30,sessionMinutes:60,coveragePlan});
   const p=await context.newPage();p.setDefaultTimeout(15000);p.on('pageerror',e=>errors.push(e.message));
   await p.goto(process.env.BASE_URL||'http://localhost:5173');
   await p.getByRole('button',{name:'Open navigation',exact:true}).click();
@@ -64,7 +66,7 @@ let browser;
  }
  // An unavailable video must not substitute a different animal or gender.
  const context=await browser.newContext({reducedMotion:'reduce'});
- const profile={...DEFAULT_PROFILE,gender:'female',avatarCharacter:'shiba',days:6};
+ const profile={...DEFAULT_PROFILE,gender:'female',avatarCharacter:'shiba',days:6,age:30,sessionMinutes:60};
  await context.addInitScript(profile=>localStorage.setItem('forma-v2',JSON.stringify({version:2,profile,records:{}})),profile);
  await context.route('**/training/female-dog/bench.mp4*',route=>route.abort());
  const p=await context.newPage();await p.goto(process.env.BASE_URL||'http://localhost:5173');

@@ -111,3 +111,13 @@ With a dev or preview server running, `npm run test:entrance` checks supplied-GI
 Female → Shiba Inu → Lean, Athletic and Strong use the supplied originals at `public/avatars/female-dog-lean.png`, `public/avatars/female-dog-athletic.png` and `public/avatars/female-dog-strong.png`. The full images appear in body cards, final summaries and saved-character welcome previews.
 
 Select your avatar uses fixed original artwork: the supplied Female Cat Lean photo for Selkirk Rex and Male Dog Lean for Shiba Inu, independent of the gender chosen in setup. Subsequent body-type cards and saved previews continue to follow the selected gender and build.
+
+### Personalized training methodology
+
+Training now uses a versioned rules-based planner, with four goal-specific weekly schedules and per-user starting prescriptions. Age, experience, self-reported cardio capacity, available time, equipment, daily activity, current weight/height context and impact preference influence the result. Sex is not used to invent lifting ability; pregnancy/postpartum or exercise restrictions require separate individual guidance. Avatar appearance does not measure body composition.
+
+Training shows actual planned strength days and moderate aerobic minutes separately from general public-health references, explains missing inputs and assumptions, and displays working sets, rep ranges, rests, warm-up/cool-down and performance-based progression. Timed activities log minutes rather than fictitious repetitions. Started sessions/custom plans remain stable, while unstarted recommendations update with profile changes.
+
+Read [the methodology and source-access limitations](docs/training-evidence.md) for the WHO/HHS/ACSM references and the distinction between evidence and GO-specific heuristics. This is general fitness guidance, not a clinical prescription, a live AI service, or an exhaustive literature review.
+
+Run `npm run test:personalization` against the preview server for end-to-end prescription updates, sources, latest weight, minute logging, restrictions and persistence. Unit tests include a 1,536-profile matrix across goals, ages, session counts, time budgets, equipment and cardio capacities.

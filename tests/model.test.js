@@ -131,7 +131,7 @@ test("fat-loss profile builds a mixed schedule without replacing existing logged
   const saved = createSession(getPlan("2026-10-12", DEFAULT_PROFILE));
   assert.equal(
     getPlan("2026-10-12", profile, { session: saved }).title,
-    "Push strength",
+    saved.plan.title,
   );
   assert.equal(
     weekDates("2026-10-12").filter(
