@@ -1479,6 +1479,17 @@ footer .green-dot {
   right: 13px;
   color: #a1a1a1;
 }
+.modal.profile-modal .close {
+  position: sticky;
+  float: right;
+  top: -22px;
+  right: auto;
+  margin-top: -22px;
+  margin-right: -22px;
+  z-index: 5;
+  background: #fff;
+  box-shadow: 0 2px 8px #0000000d;
+}
 .modal > h2 {
   font-family: var(--serif);
   font-weight: 500;
@@ -2464,6 +2475,11 @@ footer .green-dot {
     padding: 31px 23px;
     max-height: 90dvh;
     border-radius: 10px;
+  }
+  .modal.profile-modal .close {
+    top: -18px;
+    margin-top: -18px;
+    margin-right: -10px;
   }
   .modal > h2 {
     font-size: 26px;

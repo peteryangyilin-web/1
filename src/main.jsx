@@ -1159,7 +1159,7 @@ function App() {
         >
           <section
             className={
-              "modal " + (modal.type === "workout" ? "workout-modal" : "")
+              "modal " + (modal.type === "workout" ? "workout-modal" : modal.type === "settings" ? "profile-modal" : "")
             }
             role="dialog"
             aria-modal="true"
