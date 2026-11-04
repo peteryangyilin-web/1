@@ -19,7 +19,7 @@ GO produces an explainable **general fitness starting plan**, not a medical pres
 
 The following choices are deterministic product heuristics, not proven optimal programs or directly prescribed by the sources:
 
-- Four goal-specific weekly sequences at 3–6 available sessions: muscle emphasizes whole-body sessions or upper/lower/push/pull distributions; fat loss combines strength and conversational cardio; endurance prioritizes aerobic work with supporting strength; wellbeing emphasizes repeatable whole-body work and easy movement. Exercise alone does not guarantee weight loss.
+- Four goal-specific weekly sequences at 1–7 available sessions: muscle emphasizes whole-body sessions or upper/lower/push/pull distributions; fat loss combines strength and conversational cardio; endurance prioritizes aerobic work with supporting strength; wellbeing emphasizes repeatable whole-body work and easy movement. Exercise alone does not guarantee weight loss.
 - Session time is a cap, not a promise of exact duration. Strength time estimates include 5 min warm-up, 5 min cool-down, approximate working-set time, prescribed between-set rests and transitions. Fewer exercises/sets fit shorter budgets.
 - Introductory muscle-building plans use at most three lifting days, even if the user has 4–6 available sessions; extra sessions are easy movement rather than additional hard lifting.
 - Starting sets: generally 2 for beginners, ages 65+, ages 16–17, missing age or a wellbeing emphasis; 3 for intermediate users; up to 4 for advanced muscle-building users when time permits. Short sessions may reduce this further.
@@ -39,3 +39,5 @@ New unstarted days are recalculated from the latest profile and weight. Started 
 ## Verification
 
 Tests compare actual exercise choices, sets, duration, impact choices, equipment and weekly doses across all goals, ages, capacity bands and time budgets. They also verify sex is not used as a load stereotype, all recommended exercises have matching existing animations, minute-based logging uses minutes, and saved sessions are stable after profile changes.
+
+The onboarding details screen asks only age, height, weight and available days. Additional training preferences remain in Profile Settings. Missing capacity/equipment/readiness inputs are kept missing and use the explicitly recorded planner assumptions; removing the questions does not invent user-reported answers. Seven available days include lighter movement; introductory muscle-building still uses no more than three lifting days.

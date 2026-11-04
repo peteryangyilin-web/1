@@ -1887,7 +1887,7 @@ function SettingsForm({ profile, onSubmit, cloudAccount=false }) {
           <label className="field">
             Sessions per week
             <select name="days" defaultValue={profile.days}>
-              {[3, 4, 5, 6].map((d) => (
+              {[1, 2, 3, 4, 5, 6, 7].map((d) => (
                 <option key={d}>{d}</option>
               ))}
             </select>

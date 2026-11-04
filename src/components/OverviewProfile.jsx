@@ -6,9 +6,6 @@ import {
   Target,
   ArrowUpRight,
   Check,
-  UserRound,
-  SlidersHorizontal,
-  CalendarDays,
   ArrowLeft,
   Clock,
   ShieldCheck,
@@ -18,10 +15,7 @@ import AnimalAvatar from "./AnimalAvatar";
 import AnimalAvatarPicker, { characterName } from "./AnimalAvatarPicker";
 import GoalArtwork from "./GoalArtwork";
 import "./overviewExperience.css";
-import TargetSuggestions from "./TargetSuggestions";
-import TrainingPreferences from "./TrainingPreferences";
-import { TRAINING_FIELDS } from "../trainingPlanner";
-import { ACTIVITY_OPTIONS, getProfileGuidance } from "../profileGuidance";
+import { getProfileGuidance } from "../profileGuidance";
 const GOALS = [
   {
     id: "muscle",
@@ -63,8 +57,7 @@ export default function OverviewProfile({ profile, onSave, onTraining, cloudAcco
   const [draft, setDraft] = useState(profile),
     [step, setStep] = useState(0),
     [furthestStep, setFurthestStep] = useState(0),
-    [editingAvatar, setEditingAvatar] = useState(false),
-    [manualTargets, setManualTargets] = useState(profile.targetsSource === "manual");
+    [editingAvatar, setEditingAvatar] = useState(false);
   const headingRef = useRef(null);
   const stepTitles = ["Choose your goal", "Tell us about you", "Choose your ideal body type", "Fill in your information"];
   const goToStep = (next) => { setFurthestStep(previous => Math.max(previous, next)); setStep(next); window.scrollTo({ top: 0, behavior: "instant" }); };
@@ -76,19 +69,16 @@ export default function OverviewProfile({ profile, onSave, onTraining, cloudAcco
     setDraft((p) => ({ ...p, [key]: value }));
 
   };
-  const guidance = getProfileGuidance(draft);
-  const effectiveTargets = manualTargets ? draft : guidance.targets;
-  const goal = GOALS.find((g) => g.id === draft.goal) || GOALS[0];
-  const input = (label, key, min, max, step = 1, optional = false) => (
+  const input = (label, key, min, max, step = 1) => (
     <label className="field" key={key}>
-      {label}
-      {optional && <small>Optional</small>}
+      <span>{label}</span>
       <input
         name={key}
         aria-label={label}
         type="number"
         value={draft[key] ?? ""}
-        required={!optional}
+        required
+        inputMode={step === 1 ? "numeric" : "decimal"}
         min={min}
         max={max}
         step={step}
@@ -116,7 +106,9 @@ export default function OverviewProfile({ profile, onSave, onTraining, cloudAcco
           "startWeight",
           "targetWeight",
         ];
-        const next = { ...Object.fromEntries(TRAINING_FIELDS.map(f=>[f.name,draft[f.name]??f.fallback])), ...draft, ...(!manualTargets ? guidance.targets : {}), targetsSource: manualTargets ? "manual" : "suggested", name: draft.name.trim() };
+        const manualTargets = draft.targetsSource === "manual";
+        const guidance = getProfileGuidance(draft);
+        const next = { ...draft, ...(!manualTargets ? guidance.targets : {}), targetsSource: manualTargets ? "manual" : "suggested", name: String(draft.name || "").trim() };
         for (const key of numeric)
           next[key] =
             next[key] === "" || next[key] == null ? null : Number(next[key]);
@@ -134,7 +126,7 @@ export default function OverviewProfile({ profile, onSave, onTraining, cloudAcco
           <h2 ref={headingRef} tabIndex={-1}>{stepTitles[step]}</h2>
       {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" aria-label="Select your avatar" onClick={() => setEditingAvatar(true)}><AnimalAvatar showMuscles={false} gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} /> Select your avatar <ArrowUpRight size={15} /></button>}
         </div>
-        <p>{["Start with what matters to you. We’ll take it from here.", "Choose an option to continue.", "Pick the direction that feels like you. You can change it anytime.", "Your starting point. Your rhythm. Your own pace."][step]}</p>
+        <p>{["Start with what matters to you. We’ll take it from here.", "Choose an option to continue.", "Pick the direction that feels like you. You can change it anytime.", "Four quick details. Then you’re ready."][step]}</p>
       </div>
       {step === 0 && <section className="profile-goal-section wizard-stage" key="goal">
         <fieldset className="goal-choices">
@@ -186,88 +178,17 @@ export default function OverviewProfile({ profile, onSave, onTraining, cloudAcco
         </div>
         <p className="wizard-note">A personal preference, not a promised result. Your goal and weekly schedule guide your training.</p>
       </section>}
-      {step === 3 && <div className="profile-content-grid wizard-stage" key="details">
-        <div className="profile-main-column">
-          <section className="panel profile-info-panel">
-            <div className="profile-section-heading"><span className="section-number">01</span><div><h2>A little about you.</h2><p>Just your starting point. We’ll help with the numbers.</p></div><UserRound size={18}/></div>
-            <div className="form-grid">
-              <label className="field">Your name<input name="name" value={draft.name} required maxLength="120" pattern={".*\\S.*"} onChange={e=>set('name',e.target.value)} placeholder="What should we call you?"/></label>
-              {input("Age · years", "age", 16, 100, 1, true)}
-              {input("Height · cm", "height", 100, 250, 1, true)}
-              {input("Starting weight · kg", "startWeight", 20, 500, .1)}
-            </div>
-            <p className="setup-help">Age and height are optional. Adding them lets the goal guide estimate a starting energy range; your avatar’s gender is not used for this calculation.</p>
-          </section>
-          <section className="panel profile-rhythm-panel">
-            <div className="profile-section-heading"><span className="section-number">02</span><div><h2>Make it fit your life.</h2><p>Pick a realistic rhythm. You can change it later.</p></div><CalendarDays size={18}/></div>
-            <div className="form-grid">
-              <label className="field">Training experience<select name="experience" value={draft.experience||'beginner'} onChange={e=>set('experience',e.target.value)}><option value="beginner">Just getting started · under 3 months</option><option value="intermediate">Some experience · about 3–12 months</option><option value="advanced">Training regularly · over 12 months</option></select><small className="field-help">Beginners get fewer sets and simpler starting variations. Experience is a rough guide, not a test.</small></label>
-              <label className="field">Sessions per week<select name="days" value={draft.days} onChange={e=>set('days',e.target.value)}>{[3,4,5,6].map(n=><option key={n} value={n}>{n} sessions{n===3?' · easiest place to start':n===6?' · experienced routine':''}</option>)}</select><small className="field-help">Start with 3 days if you are new. Leave room for recovery; more days are optional.</small></label>
-              <label className="field">Day-to-day activity<select name="activity" value={draft.activity||'moderate'} onChange={e=>set('activity',e.target.value)}>{ACTIVITY_OPTIONS.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select><small className="field-help">{(ACTIVITY_OPTIONS.find(o=>o.id===(draft.activity||'moderate'))||ACTIVITY_OPTIONS[1]).definition}</small></label>
-            </div>
-          </section>
-          <section className="panel"><TrainingPreferences profile={draft} onChange={set}/></section>
-          <TargetSuggestions profile={draft} applied={!manualTargets && draft.targetsSource==='suggested'} onApply={targets=>{setDraft(p=>({...p,...targets,targetsSource:'suggested'}));setManualTargets(false);}}/>
-          <section className="panel profile-targets-panel">
-            <div className="profile-section-heading"><span className="section-number">03</span><div><h2>Fuel your own way.</h2><p>Start with guidance. No nutrition expertise needed.</p></div><SlidersHorizontal size={18}/></div>
-            {guidance.energy||manualTargets?<div className="target-preview-grid">{[['Daily energy','calories','kcal'],['Protein','protein','g'],['Carbs','carbs','g'],['Fats','fats','g']].map(([label,key,unit])=><div key={key}><span>{label}</span><strong>{effectiveTargets[key]??'—'} <small>{unit}</small></strong></div>)}</div>:<p className="setup-help">No calorie goal is required to get started. Log your meals and build regular eating habits; add an energy target when you have enough information.</p>}
-            <p className="setup-help">Protein: eggs, beans, tofu, fish or meat. Carbs: rice, oats, bread or fruit. Fats: nuts, olive oil or avocado. These are flexible daily totals, not rules for every meal.</p>
-            <button type="button" className="text-button" aria-expanded={manualTargets} onClick={()=>{if(!manualTargets)setDraft(p=>({...p,...guidance.targets}));setManualTargets(v=>!v);}}>{manualTargets?'Use guided targets instead':'Customize targets yourself'}</button>
-            {manualTargets&&<div className="manual-targets"><p className="setup-help">Enter targets you already use, or leave nutrition targets blank. One glass of water = 250 mL.</p><div className="form-grid">{input('Target weight · kg','targetWeight',20,500,.1,true)}{input('Daily steps','steps',100,100000)}{input('Sleep target · hours','sleep',1,16,.5)}{input('Water target · glasses','water',1,20)}{input('Daily calories · kcal','calories',500,10000,1,true)}{input('Protein · g','protein',1,500,1,true)}{input('Carbs · g','carbs',1,1000,1,true)}{input('Fats · g','fats',1,500,1,true)}</div></div>}
-            <p className="setup-help">{manualTargets?'Your custom targets will be saved.':'Saving uses the suggested starting targets shown above. Missing nutrition estimates stay unset.'} Targets can be adjusted from your profile settings anytime.</p>
-          </section>
+      {step === 3 && <section className="panel setup-basics wizard-stage" key="details" aria-label="Your basic information">
+        <div className="setup-basics-fields form-grid">
+          {input("Age · years", "age", 16, 100)}
+          {input("Height · cm", "height", 100, 250, .1)}
+          {input("Weight · kg", "startWeight", 20, 500, .1)}
+          {input("Days available per week", "days", 1, 7)}
         </div>
-        <aside className="profile-summary panel">
-          <span className="eyebrow">YOUR NEXT CHAPTER</span>
-          <div className="profile-summary-icon character-summary">
-            <AnimalAvatar gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} build={draft.bodyType || "athletic"} />
-          </div>
-          <h2>
-            Your goal.
-            <br />
-            Your own pace.
-          </h2>
-          <p>
-            A clear starting point.
-            <br />A little progress, every day.
-          </p>
-          <dl>
-            <div>
-              <dt>YOUR FOCUS</dt>
-              <dd>{goal.title}</dd>
-            </div>
-            <div>
-              <dt>YOUR DIRECTION</dt>
-              <dd>{BODY_TYPES.find(b => b.id === draft.bodyType)?.title || "—"} · {draft.gender === "female" ? "Female" : "Male"}</dd>
-            </div>
-            <div>
-              <dt>YOUR WEEK</dt>
-              <dd>
-                {draft.days} sessions <span>/ week</span>
-              </dd>
-            </div>
-            <div>
-              <dt>YOUR STARTING POINT</dt>
-              <dd>
-                {draft.startWeight || "—"} <span>kg</span>
-              </dd>
-            </div>
-            <div>
-              <dt>YOUR TARGET</dt>
-              <dd>
-                {effectiveTargets.targetWeight || "—"} <span>kg</span>
-              </dd>
-            </div>
-          </dl>
-          <div className="profile-summary-note">
-            <Check size={14} />
-            <span>
-              Update your profile anytime. Completed sessions keep their
-              original records.
-            </span>
-          </div>
-        </aside>
-      </div>}
+        <div className="setup-basics-preview character-summary" aria-label="Your selected avatar">
+          <AnimalAvatar gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} build={draft.bodyType || "athletic"} />
+        </div>
+      </section>}
       {step === 3 && <div className="profile-save-bar">
         <span>{cloudAccount?"Your profile syncs to your GO account.":"Your profile stays on this device."}</span>
         <div>

@@ -66,7 +66,7 @@ let browser;
  }
  // An unavailable video must not substitute a different animal or gender.
  const context=await browser.newContext({reducedMotion:'reduce'});
- const profile={...DEFAULT_PROFILE,gender:'female',avatarCharacter:'shiba',days:6,age:30,sessionMinutes:60};
+ const profile={...DEFAULT_PROFILE,gender:'female',avatarCharacter:'shiba',days:6,age:30,sessionMinutes:60,experience:'intermediate'};
  await context.addInitScript(profile=>localStorage.setItem('forma-v2',JSON.stringify({version:2,profile,records:{}})),profile);
  await context.route('**/training/female-dog/bench.mp4*',route=>route.abort());
  const p=await context.newPage();await p.goto(process.env.BASE_URL||'http://localhost:5173');

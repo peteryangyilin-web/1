@@ -13,7 +13,7 @@ test("every built-in recommended exercise resolves to a real bundled animation a
   for (const goal of ["muscle", "fatloss", "endurance", "wellbeing"])
     for (const days of [3, 4, 5, 6])
       for (const date of weekDates("2026-10-16"))
-        for (const exercise of getPlan(date, { ...DEFAULT_PROFILE, goal, days, age:30, sessionMinutes:60 })
+        for (const exercise of getPlan(date, { ...DEFAULT_PROFILE, goal, days, age:30, sessionMinutes:60, experience:"intermediate" })
           .exercises)
           names.add(exercise.name);
   assert.ok(names.size >= 22);

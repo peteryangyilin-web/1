@@ -71,3 +71,12 @@
 .wizard-heading-row .wizard-avatar-trigger {flex-shrink:0;}
 .wizard-heading-row .wizard-avatar-trigger > .animal-avatar,.wizard-heading-row .wizard-avatar-trigger > svg {flex-shrink:0;}
 @media(max-width:650px){.wizard-heading-row{gap:12px;}.wizard-heading-row .wizard-avatar-trigger{max-width:48%;gap:7px;padding:10px;line-height:1.5;text-align:left;}}
+
+.setup-basics {display:grid;grid-template-columns:minmax(0,1fr) 150px;align-items:center;gap:36px;max-width:880px;padding:32px;border-radius:16px;}
+.setup-basics-fields.form-grid {gap:24px;}
+.setup-basics-fields .field {margin:0;gap:12px;font-size:13px;color:#53695a;min-width:0;}
+.setup-basics-fields .field input {min-height:52px;padding:14px;font-size:17px;border-color:#dce7d8;border-radius:9px;background:#fbfdf9;}
+.setup-basics-preview {display:grid;place-items:center;align-self:stretch;background:linear-gradient(145deg,#f0f6e9,#f1f8fb);border-radius:12px;padding:12px;}
+.setup-basics-preview .animal-avatar {width:100%;height:220px;object-fit:contain;margin:0;}
+.overview-step-3 .profile-save-bar {max-width:880px;}
+@media(max-width:650px){.setup-basics{grid-template-columns:1fr;padding:22px 18px;gap:0;}.setup-basics-preview{display:none;}.setup-basics-fields.form-grid{grid-template-columns:1fr;gap:20px;}.setup-basics-fields .field{font-size:12px;gap:8px;}.setup-basics-fields .field input{font-size:16px;min-height:48px;}.overview-step-3 .profile-save-bar >span{display:none;}}

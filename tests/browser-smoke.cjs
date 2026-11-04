@@ -63,20 +63,22 @@ let activeBrowser;
   assert.equal(await p.getByRole("heading", {name:"Tell us about you",exact:true}).isVisible(), true);
   await p.getByRole("button", {name:/^Female/}).click();
   await p.getByRole("button", {name:/^Athletic/}).click();
-  await p.getByLabel("Your name", { exact: true }).fill("Jordan Lee");
   await p.getByLabel("Age · years").fill("28");
   await p.getByLabel("Height · cm").fill("175");
-  await p.getByLabel("Sessions per week").selectOption("3");
-  await p.getByRole("button",{name:"Customize targets yourself",exact:true}).click();
-  await p.getByLabel("Target weight · kg",{exact:true}).fill("72");
+  await p.getByLabel("Weight · kg",{exact:true}).fill("75");
+  await p.getByLabel("Days available per week").fill("3");
   await p.getByRole('button', {name:'Step 1: Your goal',exact:true}).click();
   assert.equal(await p.getByRole('heading', {name:'Choose your goal',exact:true}).isVisible(), true);
   await p.getByRole('button', {name:'Step 4: Your details',exact:true}).click();
-  assert.equal(await p.getByLabel('Your name', {exact:true}).inputValue(), 'Jordan Lee');
+  assert.equal(await p.getByLabel('Age · years', {exact:true}).inputValue(), '28');
   await p
     .getByRole("button", { name: "Save your profile and go to training", exact: true })
     .click();
   assert.equal(await p.locator('nav [aria-current="page"]').textContent(), "Training");
+  await navTo('Settings & goals');
+  await p.getByLabel('Your name',{exact:true}).fill('Jordan Lee');
+  await p.getByLabel('Target weight · kg',{exact:true}).fill('72');
+  await p.getByRole('button',{name:'Save preferences',exact:true}).click();
   await p.reload();
   await startOverview();
   assert.equal(await p.getByRole("radio", {name:/Lose fat/}).isChecked(), true);
@@ -85,10 +87,8 @@ let activeBrowser;
   await p.getByRole("button", {name:/^Female/}).click();
   assert.equal(await p.getByRole("button", {name:/^Athletic/}).getAttribute("aria-pressed"), "true");
   await p.getByRole("button", {name:/^Athletic/}).click();
-  assert.equal(
-    await p.getByLabel("Your name", { exact: true }).inputValue(),
-    "Jordan Lee",
-  );
+  assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem('forma-v2')).profile.name), 'Jordan Lee');
+  assert.equal(await p.locator('.setup-basics input').count(),4);
   assert.equal(await p.getByLabel("Age · years").inputValue(), "28");
   assert.equal(await p.getByLabel("Height · cm").inputValue(), "175");
   await p.getByRole("button", { name: "Save your profile and go to training", exact: true }).click();

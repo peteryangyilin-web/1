@@ -8,7 +8,7 @@ export const DEFAULT_PROFILE = {
   avatarCharacter: "shiba",
   age: null,
   height: null,
-  experience: "intermediate",
+  experience: "beginner",
   activity: "moderate",
   days: 4,
   calories: 2400,

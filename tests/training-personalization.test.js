@@ -41,7 +41,7 @@ test('sex and cosmetic avatar physique do not invent different strength ability'
  const restricted=plans({...base,trainingReadiness:'individual'});assert.ok(restricted.every(p=>p.blocked&&p.exercises.length===0));
 });
 test('every generated starting plan fits its time budget and has a real matching movement demo',()=>{
- for(const goal of ['muscle','fatloss','endurance','wellbeing'])for(const age of [17,30,70,null])for(const days of [3,4,5,6])for(const sessionMinutes of [20,30,45,60])for(const equipment of ['gym','dumbbells'])for(const cardioCapacity of [10,20,40]){
+ for(const goal of ['muscle','fatloss','endurance','wellbeing'])for(const age of [17,30,70,null])for(const days of [1,2,3,4,5,6,7])for(const sessionMinutes of [20,30,45,60])for(const equipment of ['gym','dumbbells'])for(const cardioCapacity of [10,20,40]){
   const p={...base,goal,age,days,sessionMinutes,equipment,cardioCapacity};const ds=plans(p);
   assert.equal(ds.filter(d=>d.type!=='Recovery').length,days);
   for(const d of ds){assert.ok(d.duration<=sessionMinutes,`${JSON.stringify(p)}: ${d.title} ${d.duration} exceeds ${sessionMinutes}`);assert.ok(Number.isFinite(d.duration));for(const e of d.exercises){assert.ok(getExerciseDemo(e.name),`No matching demo ${e.name}`);assert.ok(Number.isInteger(e.sets)&&e.sets>0);assert.ok(e.reps>0);}}
