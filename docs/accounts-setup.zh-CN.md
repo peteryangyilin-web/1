@@ -14,7 +14,7 @@
 1. 打开 Supabase，登录后选择 New project。
 2. 项目名称填 `GO`，选择适合的区域。数据库密码自己保存，**不要发在聊天里**。
 3. 等待项目创建完成。
-4. 打开 SQL Editor，创建一个查询，粘贴仓库的 `supabase/migrations/202611040001_go_accounts.sql`，点击 Run。
+4. 可以打开网站的 `/setup.html`，点击“复制初始化代码”，再打开其中的 SQL Editor 链接、粘贴并点击 Run。也可以直接打开 SQL Editor，创建一个查询，粘贴仓库的 `supabase/migrations/202611040001_go_accounts.sql`，点击 Run。
 
 这份 SQL 创建独立资料表、数据库级权限、带版本检查的保存接口和管理员读取接口。项目建议专用于 GO。后台会列出该项目的注册账户，不能把不相关产品的用户混在同一个项目中。
 
