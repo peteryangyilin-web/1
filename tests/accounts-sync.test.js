@@ -25,3 +25,14 @@ test('offline data survives retry, a stale revision never overwrites and dispose
 test('an ambiguous failed write cannot be declared saved just because a user reverted the value',async()=>{
  const statuses=[];let calls=0;const sync=new WorkspaceSync({initialData:{x:0},revision:0,delay:10000,onStatus:s=>statuses.push(s.state),save:async()=>{calls++;throw new Error('response lost')}});sync.enqueue({x:1});await sync.flush();sync.enqueue({x:0});assert.equal(sync.dirty,true);assert.notEqual(statuses.at(-1),'saved');await sync.retry();assert.equal(calls,2);sync.dispose();
 });
+
+test('a public project file can connect the site without mixing it with deployment overrides',()=>{
+ const project={url:'https://project-a.supabase.co',publishableKey:'sb_publishable_project_a'};
+ assert.deepEqual(publicSupabaseConfig({},project),{configured:true,url:project.url,key:project.publishableKey});
+ const overrides={VITE_SUPABASE_URL:'https://project-b.supabase.co',VITE_SUPABASE_PUBLISHABLE_KEY:'sb_publishable_project_b'};
+ assert.deepEqual(publicSupabaseConfig(overrides,project),{configured:true,url:overrides.VITE_SUPABASE_URL,key:overrides.VITE_SUPABASE_PUBLISHABLE_KEY});
+ assert.equal(publicSupabaseConfig({VITE_SUPABASE_URL:'https://project-b.supabase.co'},project).configured,false);
+ assert.equal(publicSupabaseConfig({},{}).configured,false);
+ assert.equal(publicSupabaseConfig(overrides,{...project,publishableKey:'sb_secret_never_ship'}).configured,false,'Even an overridden private key must reject the build');
+ assert.equal(publicSupabaseConfig({...overrides,VITE_SUPABASE_ANON_KEY:'sb_secret_unused'}).configured,false);
+});

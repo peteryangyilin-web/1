@@ -20,7 +20,7 @@
 
 ## 2. 连接网站
 
-在 Project Settings → API / API Keys 中找到：
+在 Project Settings → Data API / API Keys 中找到：
 
 - 项目 URL，类似 `https://xxxx.supabase.co`。
 - Publishable key（公开密钥，通常以 `sb_publishable_` 开头）。旧项目可使用 anon key。
@@ -33,6 +33,8 @@ VITE_SUPABASE_PUBLISHABLE_KEY=你的公开publishable key
 ```
 
 **不要使用 service_role key、`sb_secret_` key、数据库密码或项目管理令牌。** `VITE_` 配置会进入浏览器，只有公开 URL 和公开 key 可以放进去。
+
+如果由开发者协助连接，也可以把这两个**公开配置**写入 `src/accounts/project.public.json` 的 `url` 和 `publishableKey`，再正常推送部署。该文件会进入浏览器，不允许写入任何私钥、数据库密码或管理员邮箱。完整的 Vercel 环境变量会优先于这个文件；不完整的变量会报错，不会混用两个项目的 URL / key。构建会拒绝任何来源的 service_role 或 sb_secret_ key。
 
 为 Production 环境保存变量后，重新部署网站；仅设置变量不会改变已经构建好的版本。本地开发可以复制 `.env.example` 为 `.env.local`，填写上述公开配置后重新启动 Vite。
 

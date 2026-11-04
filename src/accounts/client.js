@@ -1,6 +1,7 @@
 import {createClient} from '@supabase/supabase-js';
 import {publicSupabaseConfig,emptyWorkspace,normalizeWorkspace} from './workspace.js';
-export const accountConfig=publicSupabaseConfig(import.meta.env);
+import publicProject from './project.public.json';
+export const accountConfig=publicSupabaseConfig(import.meta.env,publicProject);
 export const supabase=accountConfig.configured?createClient(accountConfig.url,accountConfig.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
 export async function loadWorkspace(user){
  let {data,error}=await supabase.from('go_workspaces').select('data,revision,updated_at').eq('user_id',user.id).maybeSingle();

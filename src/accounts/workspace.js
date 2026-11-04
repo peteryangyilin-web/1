@@ -24,13 +24,20 @@ export function normalizeContact(method,value='') {
 export function verifiedContacts(user) {
  return {email:user?.email_confirmed_at?user.email:null,phone:user?.phone_confirmed_at?user.phone:null};
 }
-export function publicSupabaseConfig(env={}) {
- const url=String(env.VITE_SUPABASE_URL||'').trim(),key=String(env.VITE_SUPABASE_PUBLISHABLE_KEY||env.VITE_SUPABASE_ANON_KEY||'').trim();
+function isPrivateProjectKey(value) {
+ const key=String(value||'').trim();
+ if(key.startsWith('sb_secret_'))return true;
+ try{return JSON.parse(atob(key.split('.')[1].replaceAll('-','+').replaceAll('_','/'))).role==='service_role';}catch{return false;}
+}
+export function publicSupabaseConfig(env={},project={}) {
+ const keys=[env.VITE_SUPABASE_PUBLISHABLE_KEY,env.VITE_SUPABASE_ANON_KEY,project.publishableKey];
+ if(keys.some(isPrivateProjectKey))return {configured:false,error:'A private server key cannot be used in this application.'};
+ // A deployment override must be complete: never mix keys and URLs from two projects.
+ const usesEnv=!!(env.VITE_SUPABASE_URL||env.VITE_SUPABASE_PUBLISHABLE_KEY||env.VITE_SUPABASE_ANON_KEY);
+ const url=String(usesEnv?env.VITE_SUPABASE_URL||'':project.url||'').trim();
+ const key=String(usesEnv?env.VITE_SUPABASE_PUBLISHABLE_KEY||env.VITE_SUPABASE_ANON_KEY||'':project.publishableKey||'').trim();
  if(!url&&!key)return {configured:false};
  if(!url||!key)return {configured:false,error:'Account service setup is incomplete.'};
  try{const parsed=new URL(url);if(parsed.protocol!=='https:'&&!(parsed.protocol==='http:'&&['localhost','127.0.0.1'].includes(parsed.hostname)))throw new Error();}catch{return {configured:false,error:'Account service URL is invalid.'};}
- let privileged=key.startsWith('sb_secret_');
- try{privileged ||= JSON.parse(atob(key.split('.')[1].replaceAll('-','+').replaceAll('_','/'))).role==='service_role';}catch{}
- if(privileged)return {configured:false,error:'A private server key cannot be used in this application.'};
  return {configured:true,url,key};
 }
