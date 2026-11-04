@@ -1,0 +1,41 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+const A='00000000-0000-4000-8000-000000000001',B='00000000-0000-4000-8000-000000000002',ADMIN='00000000-0000-4000-8000-000000000003';
+const workspace=name=>({version:2,profile:{name,goal:'muscle',age:30},records:{}});
+test('PostgreSQL enforces account ownership, write revisions and real admin membership',async()=>{
+ const db=new PGlite();
+ try{
+  await db.exec(`create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,raw_user_meta_data jsonb default '{}'::jsonb,created_at timestamptz default now(),last_sign_in_at timestamptz,encrypted_password text);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
+  await db.exec(await readFile(new URL('../supabase/migrations/202611040001_go_accounts.sql',import.meta.url),'utf8'));
+  for(const [id,email,phone,meta] of [[A,'alice@example.test',null,{full_name:'Alice'}],[B,null,'+14155552672',{full_name:'Bob',role:'admin',is_admin:true}],[ADMIN,'owner@example.test',null,{full_name:'Owner'}]])await db.query('insert into auth.users(id,email,phone,email_confirmed_at,phone_confirmed_at,raw_user_meta_data,last_sign_in_at,encrypted_password) values($1,$2,$3,case when $2::text is not null then now() end,case when $3::text is not null then now() end,$4,now(),$5)',[id,email,phone,JSON.stringify(meta),'not-for-the-directory']);
+  const asUser=async id=>{await db.exec('set role authenticated');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id||''])};
+  const denied=async(query,args,code='42501')=>assert.rejects(db.query(query,args),error=>error.code===code);
+  await asUser(A);await db.query('insert into public.go_workspaces(user_id,data) values($1,$2)',[A,workspace('Alice')]);
+  await denied('insert into public.go_workspaces(user_id,data) values($1,$2)',[B,workspace('Stolen')]);
+  await asUser(B);await db.query('insert into public.go_workspaces(user_id,data) values($1,$2)',[B,workspace('Bob')]);
+  assert.equal((await db.query('select count(*)::int as count from public.go_workspaces')).rows[0].count,1);
+  assert.equal((await db.query('select * from public.go_workspaces where user_id=$1',[A])).rows.length,0);
+  assert.equal((await db.query('select public.go_is_admin() as admin')).rows[0].admin,false,'A forged metadata role is not administrator membership');
+  await denied('select public.go_admin_list_users()');await denied('select public.go_admin_user_detail($1)',[A]);
+  await denied('insert into go_private.admin_users(user_id) values($1)',[B]);
+  await denied('update auth.users set email=$1 where id=$2',['fake@example.test',B]);
+  await denied('update public.go_workspaces set data=$1 where user_id=$2',[workspace('Changed'),B]);
+  await denied('select public.go_save_workspace($1,0,$2)',[workspace('Cross-account'),A]);
+  const saved=(await db.query('select public.go_save_workspace($1,0,$2) as result',[workspace('Bob updated'),B])).rows[0].result;assert.equal(saved.revision,1);
+  await denied('select public.go_save_workspace($1,0,$2)',[workspace('Stale overwrite'),B],'40001');
+  await denied('select public.go_save_workspace($1,1,$2)',[{version:2},B],'22023');await denied('select public.go_save_workspace($1,1,$2)',[{...workspace('Invalid version'),version:'2'},B],'22023');
+  await asUser(A);await denied('select public.go_save_workspace($1,1,$2)',[workspace('Session switched'),B]);
+  assert.equal((await db.query('select data from public.go_workspaces')).rows[0].data.profile.name,'Alice');
+  await db.exec('reset role');await db.query('insert into go_private.admin_users(user_id) values($1)',[ADMIN]);
+  await asUser(ADMIN);assert.equal((await db.query('select public.go_is_admin() as admin')).rows[0].admin,true);
+  const directory=(await db.query("select public.go_admin_list_users('',0,25) as result")).rows[0].result;assert.equal(directory.total,3);assert.equal(directory.stats.verified,3);assert.equal(directory.users.length,3);assert.ok(!JSON.stringify(directory).includes('not-for-the-directory'));
+  const search=(await db.query("select public.go_admin_list_users('alice',0,25) as result")).rows[0].result;assert.equal(search.total,1);assert.equal(search.users[0].email,'alice@example.test');assert.ok(search.users[0].email_verified);
+  const detail=(await db.query('select public.go_admin_user_detail($1) as result',[B])).rows[0].result;assert.equal(detail.profile.name,'Bob updated');assert.equal(detail.phone,'+14155552672');assert.ok(detail.phone_verified);assert.equal(detail.encrypted_password,undefined);
+  await db.exec('reset role');assert.equal((await db.query('select count(*)::int as count from go_private.admin_access_log')).rows[0].count,3);
+  await db.query('delete from go_private.admin_users where user_id=$1',[ADMIN]);await asUser(ADMIN);await denied('select public.go_admin_list_users()');
+  await asUser(null);await denied('select public.go_save_workspace($1,0,$2)',[workspace('No session'),A]);assert.equal((await db.query('select count(*)::int as count from public.go_workspaces')).rows[0].count,0);
+  await db.exec('set role anon');await denied('select * from public.go_workspaces');await denied('select public.go_admin_list_users()');await denied('select public.go_is_admin()');
+ }finally{await db.close()}
+});

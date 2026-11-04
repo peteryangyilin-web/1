@@ -28,7 +28,7 @@ npm run build
 npm run preview -- --port 4173
 ```
 
-For Vercel, import this repository with the **Vite** preset; build command `npm run build`, output directory `dist`. No environment variables are required.
+For Vercel, import this repository with the **Vite** preset; build command `npm run build`, output directory `dist`. Browser-only preview needs no environment variables. Real accounts require the public Supabase URL/key, the database migration, and configured email/SMS delivery; see the account setup guide below.
 
 ## Verify
 
@@ -50,9 +50,9 @@ The browser smoke test exercises profile and metrics persistence, nutrition crea
 
 ## Data and integrations
 
-Records, preferences, and simulation progress persist in **this browser's local storage**, not in a cloud account. Switching devices/browsers does not sync them. Export CSV summaries from Progress; clearing browser storage removes local records. Storage failures are displayed in the app.
+Without account-service configuration, GO explicitly runs as a browser-only preview and stores records locally. With Supabase configured, verified accounts save their own workspace to the database and can load it on another device. Account data is not copied into shared guest storage. Old local progress requires an explicit import choice. Export CSV summaries from Progress; sync errors and concurrent-device conflicts are displayed.
 
-Steps, sleep, weight, and meal portions are manually entered. Food estimates use a small bundled generic catalog, not a brand-specific food database. The goal guide is a transparent on-device calculation, not an external AI service. Its Mifflin–St Jeor energy range spans both formula variants rather than inferring physiology from the selected avatar, includes modest goal adjustments, and avoids calorie/weight-change suggestions for minors, missing inputs or measurements outside the estimator’s supported range. There is no wearable connection, account backend, or external AI service. The plan coach uses transparent rules based on logged values. Snack nutrition presets are labeled estimates and are editable before real logging. The simulation is a playful experience, not a claim to reduce hunger or replace food.
+Steps, sleep, weight, and meal portions are manually entered. Food estimates use a small bundled generic catalog, not a brand-specific food database. The goal guide is a transparent on-device calculation, not an external AI service. Its Mifflin–St Jeor energy range spans both formula variants rather than inferring physiology from the selected avatar, includes modest goal adjustments, and avoids calorie/weight-change suggestions for minors, missing inputs or measurements outside the estimator’s supported range. There is no wearable connection or external AI service. The optional account backend is Supabase. The plan coach uses transparent rules based on logged values. Snack nutrition presets are labeled estimates and are editable before real logging. The simulation is a playful experience, not a claim to reduce hunger or replace food.
 
 Legacy Forma profile preferences are migrated automatically; internal legacy storage keys remain compatible.
 
@@ -90,7 +90,7 @@ The navigation stays hidden until the pointer reaches the left edge. Opening it 
 
 The white theme uses botanical green for primary actions and selected goals, with sky blue for the profile summary, hydration, and chart data. The GO logo retains its gray O. Shared color styling lives in `src/colorTheme.css`.
 
-Overview guides users through four screens: goal → gender → desired body type → personal details. Choice cards advance automatically; Back keeps the draft choices and inputs. Saving persists the complete profile on this device and opens Training. Gender and desired body type are profile preferences; the existing goal and weekly frequency determine the training schedule.
+Overview guides users through four screens: goal → gender → desired body type → personal details. Choice cards advance automatically; Back keeps the draft choices and inputs. Saving persists the complete profile to the account (or this browser in preview mode) and opens Training. Gender and desired body type are profile preferences; the existing goal and weekly frequency determine the training schedule.
 
 On the Gender step, **Select your avatar** offers a full-body, upright Shiba Inu or Selkirk Rex character. Each animal has an integrated fur-covered body, paws and tail, with Lean, Athletic and Strong variants on the following screen. The characters have no clothing or spiral fur motifs. Lean uses a narrow silhouette; Athletic adds abdominal and limb contours; Strong has much broader shoulders and thicker arms and legs. The Select your avatar previews use the fixed supplied cat and dog images. Body-type cards keep Lean unchanged and show pectoral outlines on Athletic and Strong. Selkirk uses a white coat with warm brown patches. The selected gender follows every character preview: Male keeps the original silhouette, while Female uses a narrower waist and wider, rounded hips across all builds. The choice can be changed there and is saved with the profile. Personal profile photos are separate and never appear on the character’s head. With the dev server running, `npm run test:avatar` checks character selection, variants, persistence, mobile layout, and the separate personal-photo editor.
 
@@ -121,3 +121,15 @@ Training displays the weekly sessions, working sets, rep ranges, rests and warm-
 Read [the methodology and source-access limitations](docs/training-evidence.md) for the WHO/HHS/ACSM references and the distinction between evidence and GO-specific heuristics. This is general fitness guidance, not a clinical prescription, a live AI service, or an exhaustive literature review.
 
 Run `npm run test:personalization` against the preview server for end-to-end prescription updates, simplified Training layout, latest weight, minute logging, restrictions and persistence. Unit tests include a 1,536-profile matrix across goals, ages, session counts, time budgets, equipment and cardio capacities.
+
+## Verified accounts and owner administration
+
+See [the step-by-step Chinese setup guide](docs/accounts-setup.zh-CN.md). New users no longer inherit a sample person’s name. Passwordless email/SMS OTP flows use Supabase Auth; contacts are verified by the service, not a browser flag. Existing accounts can verify and link a second contact in Account. SMS requires an SMS provider; public email delivery requires an appropriate SMTP setup.
+
+Apply `supabase/migrations/202611040001_go_accounts.sql` to a dedicated Supabase project, set the public variables from `.env.example` in Vercel, and redeploy. No private/admin keys are used in the browser. Create and verify the owner’s email account, then run the separately controlled `supabase/assign-admin.sql` in the SQL Editor. The owner’s actual email is intentionally not embedded in the public repository.
+
+`/admin` shows registered-account contacts, verification status, profile details and saved-activity summaries with search/pagination. Anonymous visitors are not identified. Database functions enforce membership in a private administrator table and log directory/profile views. Ordinary accounts cannot read another workspace or promote themselves. Workspace writes check both account identity and the expected revision to prevent cross-account queue writes and stale-device overwrites. This is read-only administration; it does not add account deletion, role editing or password access to the UI.
+
+`npm test` includes a PostgreSQL/PGlite migration/RLS/privilege test and cloud-save queue tests. `npm run test:accounts` exercises auth/cloud/admin browser flows through a controlled HTTP transport, **not live email/SMS delivery**. For this suite build a separate preview with `VITE_SUPABASE_URL=http://127.0.0.1:54321` and `VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_go_browser_test`, serving it on port 5176; use `ACCOUNTS_BASE_URL` to override. Never deploy these test settings.
+
+When the service is not configured, sign-up is unavailable and the admin route shows a setup state. A code-only deployment does not create real accounts or deliver verification messages. Before public registrations, validate delivery and two-account isolation against the actual configured project and review the data notice at `/privacy.html`.

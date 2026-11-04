@@ -78,6 +78,7 @@ let browser;
   await picker.getByRole('button',{name:'Cancel',exact:true}).click();
   await page.getByRole('button',{name:'Lean',exact:true}).click();
   await checkFemaleCatImage(page.locator('.character-summary'));
+  await page.getByLabel('Your name',{exact:true}).fill('Avatar member');
   await page.getByRole('button',{name:'Save your profile and go to training',exact:true}).click();
   await page.reload();
   await page.locator('#go-intro').waitFor({state:'detached'});

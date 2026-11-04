@@ -64,6 +64,8 @@ import OverviewProfile from "./components/OverviewProfile";
 import OverviewWelcome from "./components/OverviewWelcome";
 import AvatarEditor from "./components/AvatarEditor";
 import Entrance from "./components/Entrance";
+import AccountRoot from "./accounts/AccountRoot";
+import AccountPanel from "./accounts/AccountPanel";
 import "./components/navigation.css";
 import "./colorTheme.css";
 const TABS = [
@@ -134,8 +136,8 @@ function loadStore() {
     return { version: 2, profile: DEFAULT_PROFILE, records: {} };
   }
 }
-function App() {
-  const [store, setStore] = useState(loadStore),
+function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSignOut,isAdmin=false,requireAccount=false,accountUnavailable=false}) {
+  const [store, setStore] = useState(()=>initialStore??loadStore()),
     [selected, setSelected] = useState(() => dateKey(new Date())),
     [tab, setTab] = useState("Overview"),
     [modal, setModal] = useState(null),
@@ -210,13 +212,15 @@ function App() {
   const currentWeight = allWeights.at(-1)?.[1].weight,
     goalProgress = weightProgress(profile, currentWeight);
   useEffect(() => {
+    if (onStoreChange) {onStoreChange(store);return;}
+    if (requireAccount) return;
     try {
       localStorage.setItem("forma-v2", JSON.stringify(store));
       setSaveError(false);
     } catch {
       setSaveError(true);
     }
-  }, [store]);
+  }, [store,onStoreChange,requireAccount]);
   useEffect(() => {
     const id = setInterval(() => setClock(Date.now()), 1000);
     return () => clearInterval(id);
@@ -276,7 +280,9 @@ function App() {
       };
     });
   const notify = (text) => setToast(text);
+  const openProfile = () => {if(requireAccount){onSignIn?.();return;}setModal({type:"settings"});};
   const navigate = (label) => {
+    if(requireAccount&&label!=="Overview"){closeDrawer();onSignIn?.();return;}
     closeDrawer(drawerRef.current?.contains(document.activeElement));
     setTab(label);
     if (label === "Overview") setOverviewStarted(false);
@@ -405,12 +411,12 @@ function App() {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     notify("Your progress has been exported.");
   };
-  const initials = profile.name
+  const initials = (profile.name||"")
     .split(" ")
     .filter(Boolean)
     .map((s) => s[0])
     .slice(0, 2)
-    .join("");
+    .join("") || "GO";
   const insights = coachInsights(record, profile, totals);
   const daysOptions = Array.from({ length: 7 }, (_, i) => {
     const d = parseDate(today);
@@ -472,7 +478,7 @@ function App() {
             className="nav-item"
             onClick={() => {
               closeDrawer(true);
-              setModal({ type: "settings" });
+              openProfile();
             }}
           >
             <Settings size={18} />
@@ -482,12 +488,12 @@ function App() {
             className="profile-button"
             onClick={() => {
               closeDrawer(true);
-              setModal({ type: "settings" });
+              openProfile();
             }}
           >
             <div className="avatar">{profile.avatar ? <img src={profile.avatar} alt="" /> : initials}</div>
             <div>
-              <strong>{profile.name}</strong>
+              <strong>{profile.name?.trim()||"Your space"}</strong>
               <small>Be a little better.</small>
             </div>
             <ArrowUpRight size={16} />
@@ -538,9 +544,9 @@ function App() {
             </div>
           </div>
           <div className="header-actions">
-            <span className={"saved-state " + (saveError ? "error" : "")}>
+            <span className={"saved-state " + (saveError||["error","conflict"].includes(syncStatus) ? "error" : "")}>
               <i />
-              {saveError ? "Storage unavailable" : "Saved on this device"}
+              {account ? syncStatus==="saved"?"Saved to your account":syncStatus==="saving"?"Saving to your account…":"Sync paused" : requireAccount?"Your own GO account":saveError ? "Storage unavailable" : "Saved on this device"}
             </span>
             <button
               className="icon-button"
@@ -550,10 +556,11 @@ function App() {
               <Bell size={18} />
               {weekComplete > 0 && <i className="notification-dot" />}
             </button>
+            {account?<><button className="account-access" onClick={()=>setModal({type:"account"})}>Account</button>{isAdmin&&<a className="account-access" href="/admin">Admin</a>}</>:<button className="account-access" onClick={()=>onSignIn?.('signin')} aria-label="Sign in to GO">Sign in</button>}
             <button
               className="avatar"
               aria-label="Profile settings"
-              onClick={() => setModal({ type: "settings" })}
+              onClick={openProfile}
             >
               {profile.avatar ? <img src={profile.avatar} alt="" /> : initials}
             </button>
@@ -567,12 +574,13 @@ function App() {
                   : "Your plan is ready. Log a session or your daily metrics to start seeing progress."}
               </p>
               <small>
-                Data is stored in this browser. Export a copy from Progress.
+                {account?"Your saved progress belongs to this account. Export a copy from Progress.":"Data is stored in this browser. Export a copy from Progress."}
               </small>
             </div>
           )}
         </header>
         <main className={tab === "Overview" && !overviewStarted ? "overview-welcome-main" : undefined}>
+          {accountUnavailable&&<div className="account-preview-note" role="status">Accounts are not available yet. This preview saves progress only in this browser.</div>}
           {saveError && (
             <div className="storage-warning">
               Changes cannot be saved in this browser. Export your data before
@@ -651,6 +659,7 @@ function App() {
           )}
           {tab === "Overview" && !overviewStarted && (
             <OverviewWelcome profile={profile} onStart={() => {
+              if(requireAccount){onSignIn?.('signup');return;}
               setOverviewStarted(true);
               window.scrollTo({ top: 0, behavior: "instant" });
             }} />
@@ -659,6 +668,7 @@ function App() {
             <OverviewProfile
               key={overviewVisit}
               profile={profile}
+              cloudAccount={!!account}
               onSave={(next) => {
                 setStore((s) => ({ ...s, profile: next }));
                 notify(
@@ -1159,7 +1169,7 @@ function App() {
         >
           <section
             className={
-              "modal " + (modal.type === "workout" ? "workout-modal" : modal.type === "settings" ? "profile-modal" : "")
+              "modal " + (modal.type === "workout" ? "workout-modal" : ["settings","account"].includes(modal.type) ? "profile-modal" : "")
             }
             role="dialog"
             aria-modal="true"
@@ -1201,9 +1211,12 @@ function App() {
                   notify("Daily metrics saved.");
                 }}
               />
+            ) : modal.type === "account" && account ? (
+              <AccountPanel user={account} onSignOut={onSignOut}/>
             ) : modal.type === "settings" ? (
               <SettingsForm
                 profile={profile}
+                cloudAccount={!!account}
                 onSubmit={(v) => {
                   setStore((s) => ({ ...s, profile: v }));
                   setModal(null);
@@ -1382,7 +1395,7 @@ function App() {
                   )}
                 </div>
                 <p className="form-hint">
-                  Your sets and timer are saved automatically on this device.
+                  {account?"Your sets and timer sync to your GO account. Check the save status before leaving.":"Your sets and timer are saved automatically on this device."}
                 </p>
               </>
             ) : modal.type === "coach" || modal.type === "insights" ? (
@@ -1808,7 +1821,7 @@ function MetricsForm({ record, selected, disabled, onSubmit }) {
     </>
   );
 }
-function SettingsForm({ profile, onSubmit }) {
+function SettingsForm({ profile, onSubmit, cloudAccount=false }) {
   const [avatar, setAvatar] = useState(profile.avatar || null);
   const [editingAvatar, setEditingAvatar] = useState(false);
   const formRef = useRef(null);
@@ -1858,7 +1871,7 @@ function SettingsForm({ profile, onSubmit }) {
             <p>You, your pet, or something you love.</p>
             {avatar && <button type="button" className="settings-avatar-remove" onClick={() => setAvatar(null)}>Remove profile photo</button>}</div>
           </div>
-          <small>Save preferences to keep your changes on this device.</small>
+          <small>{cloudAccount?"Save preferences to sync your changes to this account.":"Save preferences to keep your changes on this device."}</small>
         </div>
         <Field label="Your name" name="name" type="text" value={profile.name} />
         <div className="form-grid">
@@ -2036,6 +2049,6 @@ function PlanForm({ plan, onSubmit, disabled }) {
 createRoot(document.getElementById("root")).render(
   <>
     <Entrance />
-    <App />
+    <AccountRoot renderApp={props=><App {...props}/>}/>
   </>,
 );

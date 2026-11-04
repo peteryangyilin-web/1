@@ -1,0 +1,9 @@
+// Serial writes plus optimistic revision checks prevent stale-device overwrites.
+export class WorkspaceSync {
+ constructor({initialData,revision,save,onStatus,delay=600}){this.revision=revision;this.saved=JSON.stringify(initialData);this.save=save;this.onStatus=onStatus;this.delay=delay;this.pending=null;this.inFlight=null;this.disposed=false;this.conflict=false;this.failed=false;this.timer=null;}
+ get dirty(){return !!this.pending||!!this.inFlight;}
+ enqueue(data){if(this.disposed)return;const signature=JSON.stringify(data);if(signature===this.saved&&!this.inFlight&&!this.failed){this.pending=null;clearTimeout(this.timer);this.onStatus({state:'saved'});return;}if(this.pending?.signature===signature||this.inFlight?.signature===signature&&!this.pending)return;this.pending={data:JSON.parse(signature),signature};clearTimeout(this.timer);if(this.conflict)return;this.onStatus({state:'saving'});this.timer=setTimeout(()=>this.flush(),this.delay);}
+ async flush(){clearTimeout(this.timer);if(this.disposed||this.inFlight||!this.pending||this.conflict)return;const item=this.pending;this.pending=null;this.inFlight=item;this.onStatus({state:'saving'});try{const result=await this.save(item.data,this.revision);if(this.disposed)return;this.revision=result.revision;this.saved=item.signature;this.failed=false;this.inFlight=null;if(this.pending&&this.pending.signature!==this.saved)return this.flush();this.pending=null;this.onStatus({state:'saved',updatedAt:result.updated_at});}catch(error){if(this.disposed)return;this.inFlight=null;this.failed=true;if(!this.pending)this.pending=item;this.conflict=error.code==='40001';this.onStatus({state:this.conflict?'conflict':'error',error});}}
+ retry(){if(!this.conflict&&!this.disposed)return this.flush();}
+ dispose(){this.disposed=true;clearTimeout(this.timer);this.pending=null;}
+}

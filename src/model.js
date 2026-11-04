@@ -1,6 +1,6 @@
 import { getPersonalizedPlan } from './trainingPlanner.js';
 export const DEFAULT_PROFILE = {
-  name: "Alex Morgan",
+  name: "",
   goal: "muscle",
   gender: null,
   bodyType: null,

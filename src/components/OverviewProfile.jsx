@@ -59,7 +59,7 @@ function GenderSymbol({ gender }) {
     {gender === "male" ? <path d="M45 33L65 13M51 13H65V27" /> : <path d="M40 47V70M28 60H52" />}
   </svg>;
 }
-export default function OverviewProfile({ profile, onSave, onTraining }) {
+export default function OverviewProfile({ profile, onSave, onTraining, cloudAccount=false }) {
   const [draft, setDraft] = useState(profile),
     [step, setStep] = useState(0),
     [furthestStep, setFurthestStep] = useState(0),
@@ -266,7 +266,7 @@ export default function OverviewProfile({ profile, onSave, onTraining }) {
         </aside>
       </div>}
       {step === 3 && <div className="profile-save-bar">
-        <span>Your profile stays on this device.</span>
+        <span>{cloudAccount?"Your profile syncs to your GO account.":"Your profile stays on this device."}</span>
         <div>
           <button type="submit" className="primary-button">
             Save your profile and go to training <ArrowUpRight size={15} />
