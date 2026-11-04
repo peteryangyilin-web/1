@@ -4,6 +4,7 @@ import {emptyWorkspace,readLegacyWorkspace,hasLegacyProgress} from './workspace'
 import {WorkspaceSync} from './sync';
 import AuthPage from './AuthPage';
 import AdminPage from './AdminPage';
+import PasswordRecovery from './PasswordRecovery';
 import './accounts.css';
 function Loading({text='Opening your GO account…'}){return <div className="account-state" role="status"><a className="account-logo" href="/">G<span>O</span></a><p>{text}</p></div>}
 function CloudWorkspace({user,renderApp,onSignOut,isAdmin}){
@@ -23,13 +24,15 @@ function CloudWorkspace({user,renderApp,onSignOut,isAdmin}){
  return <>{error&&<div className="account-sync-alert" role="alert">{readableError(error,'The latest saved version could not be loaded. Your current page has been kept.')}</div>}{(sync.state==='error'||sync.state==='conflict'||signoutMessage)&&<div className="account-sync-alert" role="alert"><span>{signoutMessage||readableError(sync.error,'Your changes are still on this page and have not synced. Retry before leaving.')}</span><button onClick={()=>controller.current?.retry()} disabled={sync.state==='conflict'}>Retry saving</button><button onClick={exportPending}>Download current data</button>{signoutMessage&&<button onClick={()=>{controller.current?.dispose();onSignOut()}}>Sign out without saving</button>}{sync.state==='conflict'&&<button onClick={()=>{if(window.confirm('Load the latest saved account version? Download your current changes first if you want to keep them.'))fetchRow()}}>Load latest saved version</button>}</div>}{renderApp({key:`${user.id}:${version}`,initialStore:row.data,onStoreChange:changed,account:user,syncStatus:sync.state,onSignOut:signOut,isAdmin})}</>;
 }
 export default function AccountRoot({renderApp}){
- const [session,setSession]=useState(undefined),[authRequested,setAuthRequested]=useState(location.pathname==='/admin'),[authIntent,setAuthIntent]=useState('signup'),[isAdmin,setIsAdmin]=useState(false),[signoutError,setSignoutError]=useState('');
+ const [session,setSession]=useState(undefined),[authRequested,setAuthRequested]=useState(location.pathname==='/admin'),[authIntent,setAuthIntent]=useState('signup'),[isAdmin,setIsAdmin]=useState(false),[signoutError,setSignoutError]=useState(''),[recovering,setRecovering]=useState(false);
  const adminRoute=location.pathname.replace(/\/$/,'')==='/admin';
- useEffect(()=>{if(!supabase)return;let active=true;const {data}=supabase.auth.onAuthStateChange((event,value)=>{if(active){setSession(value);if(event==='SIGNED_OUT'){setAuthRequested(true);setAuthIntent('signin');setIsAdmin(false)}}});supabase.auth.getSession().then(({data,error})=>{if(active)setSession(error?null:data.session)});return()=>{active=false;data.subscription.unsubscribe()}},[]);
+ const resetRoute=location.pathname.replace(/\/$/,'')==='/auth/reset-password';
+ useEffect(()=>{if(!supabase)return;let active=true;const {data}=supabase.auth.onAuthStateChange((event,value)=>{if(active){setSession(value);if(event==='PASSWORD_RECOVERY')setRecovering(true);if(event==='SIGNED_OUT'){setAuthRequested(true);setAuthIntent('signin');setIsAdmin(false);setRecovering(false)}}});supabase.auth.getSession().then(({data,error})=>{if(active)setSession(error?null:data.session)});return()=>{active=false;data.subscription.unsubscribe()}},[]);
  useEffect(()=>{setIsAdmin(false);if(!session?.user||!supabase)return;let active=true;supabase.rpc('go_is_admin').then(({data,error})=>{if(active&&!error)setIsAdmin(data===true)});return()=>{active=false}},[session?.user?.id]);
  const signOut=async()=>{setSignoutError('');const {error}=await supabase.auth.signOut({scope:'local'});if(error){setSignoutError('We could not sign out. Please try again.');return;}setSession(null);setIsAdmin(false);setAuthIntent('signin');setAuthRequested(true)};
+ if(accountConfig.configured&&session===undefined)return <Loading text="Checking your account…"/>;
+ if(resetRoute||recovering)return <PasswordRecovery key={session?.user?.id||'no-session'} user={session?.user} onContinue={()=>{setRecovering(false);location.replace('/')}}/>;
  if(!accountConfig.configured){if(adminRoute)return <div className="account-state"><h1>GO administration</h1><p>The account service has not been connected yet. No user directory is available.</p><a href="/">Back to GO</a></div>;if(authRequested)return <><button className="account-return" onClick={()=>setAuthRequested(false)}>← Back to GO</button><AuthPage initialIntent={authIntent}/></>;return renderApp({accountUnavailable:true,onSignIn:mode=>{setAuthIntent(mode==='signup'?'signup':'signin');setAuthRequested(true)}});}
- if(session===undefined)return <Loading text="Checking your account…"/>;
  if(!session?.user){if(authRequested||adminRoute)return <>{!adminRoute&&<button className="account-return" onClick={()=>setAuthRequested(false)}>← Back to GO</button>}<AuthPage initialIntent={authIntent}/></>;return renderApp({key:'public',initialStore:emptyWorkspace(),requireAccount:true,onSignIn:mode=>{setAuthIntent(mode==='signup'?'signup':'signin');setAuthRequested(true)}});}
  if(adminRoute)return <AdminPage key={session.user.id} user={session.user} onSignOut={signOut}/>;
  return <>{signoutError&&<div className="account-sync-alert" role="alert">{signoutError}</div>}<CloudWorkspace key={session.user.id} user={session.user} renderApp={renderApp} onSignOut={signOut} isAdmin={isAdmin}/></>;

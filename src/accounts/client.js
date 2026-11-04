@@ -20,6 +20,11 @@ export async function persistWorkspace(data,revision,userId){
  return result.data;
 }
 export function readableError(error,fallback='Something went wrong. Please try again.'){
+ if(error?.code==='invalid_credentials')return 'Your email or phone and password do not match. You can also use a verification code.';
+ if(['email_not_confirmed','phone_not_confirmed'].includes(error?.code))return 'Verify your email or phone before signing in. Open your verification message or use verification sign-in.';
+ if(['reauthentication_needed','reauthentication_not_valid'].includes(error?.code))return 'Please sign in again with a verification link or code before changing your password.';
+ if(error?.code==='weak_password')return 'Choose a stronger password that meets the account service requirements.';
+ if(error?.code==='same_password')return 'Please choose a different password.';
  if(error?.code==='40001')return 'Your account was updated on another device. Export your current changes or load the latest saved version before continuing.';
  if(error?.status===429||/rate limit|too many|after \d+ seconds/i.test(error?.message||''))return 'Please wait a little before requesting another code.';
  if(/otp.*expired|token.*expired|invalid.*otp|invalid.*token/i.test(error?.message||''))return 'That code is invalid or expired. Check it or request a new one.';

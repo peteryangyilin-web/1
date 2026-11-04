@@ -1,6 +1,6 @@
 # 把 GO 账户系统真正启用
 
-代码已支持真实邮箱／短信验证码、独立云端资料和只读管理员后台。**仅上传网站代码不会自动创建数据库、发送验证码或授予管理员权限。** 未配置服务时，网站明确显示浏览器本地预览模式，不会假装已开通注册。
+代码已支持邮箱／手机号加密码登录、邮箱／短信验证、独立云端资料和只读管理员后台。**仅上传网站代码不会自动创建数据库、发送验证码或授予管理员权限。** 未配置服务时，网站明确显示浏览器本地预览模式，不会假装已开通注册。
 
 ## 你需要准备什么
 
@@ -43,12 +43,12 @@ VITE_SUPABASE_PUBLISHABLE_KEY=你的公开publishable key
 在 Supabase → Authentication：
 
 1. 启用 Email provider。保持邮箱验证开启。
-2. URL Configuration → Site URL 填 `https://1-xi-five-69.vercel.app`，允许该站点的 `/` 和 `/auth/callback` 返回地址。开发时按需加入明确的 localhost 地址，不要对生产地址使用任意域名通配符。
-3. 邮箱登录使用 passwordless OTP。Magic Link 邮件模板里加入 `{{ .Token }}`，例如 `Your GO verification code is: {{ .Token }}`。注册/登录页面会让用户输入验证码；邮件确认链接同样可以返回本站由 Supabase SDK 处理。
+2. URL Configuration → Site URL 填 `https://1-xi-five-69.vercel.app`，允许该站点的 `/`、`/auth/callback` 和 `/auth/reset-password` 返回地址。开发时按需加入明确的 localhost 地址，不要对生产地址使用任意域名通配符。
+3. 注册使用邮箱和密码，并通过确认邮件验证邮箱；之后默认用密码登录。保留默认确认链接邮件模板即可。登录页也支持验证码／邮件链接作为替代方式；如果要显示数字验证码，可在 Magic Link 邮件模板中加入 `{{ .Token }}`。Reset Password 模板应保留 `{{ .ConfirmationURL }}`，供用户打开设置新密码的页面。
 4. 面向真实用户时，在 Authentication 的 SMTP 设置接入你自己的邮件服务，并完成该服务要求的发信域名验证。Supabase 内置测试发信服务有严格限制，可能只允许团队邮箱，不能当作无限量公众邮件服务。
 5. 保持 Supabase 自带的验证码有效期、发送频率和防滥用限制。公开发布前根据项目规模配置适当的防滥用措施。
 
-注册需要姓名、联系邮箱和资料告知确认。验证码通过后才会得到登录会话。数据库不把用户自己填写的 `admin` 或 `role` 字段当成管理员身份。
+注册需要姓名、联系邮箱／手机号、至少 8 位密码、重复确认密码和资料告知确认。保持邮箱和手机号验证开启，通过验证后才允许登录。已有邮件链接账户不用重新注册：登录后打开 **Account → Set or change password** 设置密码。邮箱用户可用 **Forgot password?** 获取重置链接；手机用户可通过短信验证码登录后设置密码。密码由 Supabase Auth 处理，不写入个人健身资料或管理员目录。数据库不把用户自己填写的 `admin` 或 `role` 字段当成管理员身份。
 
 ## 4. 手机验证码
 
