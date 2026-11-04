@@ -5,6 +5,7 @@ let browser;
   browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   const startOverview = () => page.getByRole('button', {name:'Get started',exact:true}).click();
+  const openSettings=async()=>{await page.getByRole('button',{name:'Open navigation',exact:true}).click();await page.getByRole('button',{name:'Settings & goals',exact:true}).click()};
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(process.env.BASE_URL || 'http://localhost:5173');
@@ -235,7 +236,7 @@ let browser;
   assert.equal(await page.locator('.body-choices .animal-avatar[data-species="selkirk"][data-gender="female"]').count(),3);
 
   // Profile photos remain separate from full-body training characters.
-  await page.getByRole('button',{name:'Profile settings',exact:true}).click();
+  await openSettings();
   const settings = page.getByRole('dialog').filter({has:page.getByRole('heading',{name:'Your goals. Your way.',exact:true})});
   const positions = await settings.locator('.settings-avatar-section, input[name="name"]').evaluateAll(es => es.map(e=>e.getBoundingClientRect().top));
   assert(positions[0] < positions[1], 'upload belongs above Your name');
@@ -254,7 +255,7 @@ let browser;
   assert.notEqual(await editor.locator('canvas').evaluate(c=>c.toDataURL()),first);
   await editor.getByRole('button',{name:'Use this avatar',exact:true}).click();
   await settings.getByRole('button',{name:'Save preferences',exact:true}).click();
-  assert.equal(await page.locator('button[aria-label="Profile settings"] img').count(),1);
+  assert.equal(await page.locator('.profile-button .avatar img').count(),1);
   assert.equal(await page.locator('.body-choices svg image').count(),0);
   assert.equal(await page.locator('.body-choices .animal-avatar[data-species="selkirk"]').count(),3);
   await page.getByRole('button',{name:'Open navigation',exact:true}).click();
@@ -265,8 +266,8 @@ let browser;
   assert.equal(await settings.count(),1);
   await settings.getByRole('button',{name:'Remove profile photo',exact:true}).click();
   await settings.getByRole('button',{name:'Save preferences',exact:true}).click();
-  assert.equal(await page.locator('button[aria-label="Profile settings"] img').count(),0);
-  await page.getByRole('button',{name:'Profile settings',exact:true}).click();
+  assert.equal(await page.locator('.profile-button .avatar img').count(),0);
+  await openSettings();
   await settings.getByRole('button',{name:'Upload profile photo',exact:true}).click();
   await editor.getByLabel('Upload avatar photo').setInputFiles('public/cat-coach/portrait.png');
   await editor.locator('canvas').waitFor();
@@ -276,7 +277,7 @@ let browser;
   await page.locator('#go-intro').waitFor({state:'detached'});
   for (const width of [390, 1440]) {
     await page.setViewportSize({width, height:900});
-    const geometry = await page.locator('button[aria-label="Profile settings"]').evaluate(button => {
+    const geometry = await page.locator('.profile-button .avatar').evaluate(button => {
       const image = button.querySelector('img');
       const box = button.getBoundingClientRect(), photo = image.getBoundingClientRect();
       return {width:box.width, height:box.height, imageWidth:photo.width, imageHeight:photo.height, padding:getComputedStyle(button).padding, overflow:getComputedStyle(button).overflow};
@@ -287,5 +288,5 @@ let browser;
     assert.equal(geometry.overflow, 'hidden', 'photo is clipped by the circular frame');
   }
   assert.deepEqual(errors, []);
-  console.log('PASS supplied Female Shiba Lean/Athletic/Strong images load in cards/summary/welcome and persist; supplied Female Selkirk Lean/Athletic/Strong images load in cards/summary/welcome and persist; supplied Male Selkirk Lean/Athletic/Strong images load in cards/summary and persist with fixed selection images; supplied Male Shiba Lean/Athletic/Strong images load in cards and summary, persist after save/reload and stay scoped away from other variants; full-body Shiba/Selkirk selection, requested picker images, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round header/sidebar photos');
+  console.log('PASS supplied Female Shiba Lean/Athletic/Strong images load in cards/summary/welcome and persist; supplied Female Selkirk Lean/Athletic/Strong images load in cards/summary/welcome and persist; supplied Male Selkirk Lean/Athletic/Strong images load in cards/summary and persist with fixed selection images; supplied Male Shiba Lean/Athletic/Strong images load in cards and summary, persist after save/reload and stay scoped away from other variants; full-body Shiba/Selkirk selection, requested picker images, Athletic/Strong chest contours with unchanged Lean, distinct male/female silhouettes and restored Male shapes, build variants, gender persistence, cancel/Escape, mobile layout; separate profile upload/crop/removal and round preview sidebar photos');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => { await browser?.close(); });

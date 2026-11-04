@@ -557,13 +557,13 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
               {weekComplete > 0 && <i className="notification-dot" />}
             </button>
             {account?<><button className="account-access" onClick={()=>setModal({type:"account"})}>Account</button>{isAdmin&&<a className="account-access" href="/admin">Admin</a>}</>:<button className="account-access" onClick={()=>onSignIn?.('signin')} aria-label="Sign in to GO">Sign in</button>}
-            <button
+            {account && <button
               className="avatar"
               aria-label="Profile settings"
               onClick={openProfile}
             >
               {profile.avatar ? <img src={profile.avatar} alt="" /> : initials}
-            </button>
+            </button>}
           </div>
           {notice && (
             <div className="notification-panel">

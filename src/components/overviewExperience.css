@@ -65,3 +65,9 @@
   .overview-experience .goal-choice,.goal-artwork,.goal-card-continue svg { transition:none; }
   .overview-experience .goal-choice:hover,.goal-choice:hover .goal-artwork,.goal-choice:hover .goal-card-continue svg { transform:none; }
 }
+
+.wizard-heading-row {display:flex;align-items:center;justify-content:flex-start;gap:18px;}
+.wizard-heading-row h2 {flex:0 1 auto;min-width:0;}
+.wizard-heading-row .wizard-avatar-trigger {flex-shrink:0;}
+.wizard-heading-row .wizard-avatar-trigger > .animal-avatar,.wizard-heading-row .wizard-avatar-trigger > svg {flex-shrink:0;}
+@media(max-width:650px){.wizard-heading-row{gap:12px;}.wizard-heading-row .wizard-avatar-trigger{max-width:48%;gap:7px;padding:10px;line-height:1.5;text-align:left;}}

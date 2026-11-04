@@ -130,7 +130,10 @@ export default function OverviewProfile({ profile, onSave, onTraining, cloudAcco
       </nav>
       <div className="wizard-heading">
         <span className="eyebrow">YOUR NEXT CHAPTER · STEP 0{step + 1} OF 04</span>
-        <h2 ref={headingRef} tabIndex={-1}>{stepTitles[step]}</h2>
+        <div className="wizard-heading-row">
+          <h2 ref={headingRef} tabIndex={-1}>{stepTitles[step]}</h2>
+      {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" aria-label="Select your avatar" onClick={() => setEditingAvatar(true)}><AnimalAvatar showMuscles={false} gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} /> Select your avatar <ArrowUpRight size={15} /></button>}
+        </div>
         <p>{["Start with what matters to you. We’ll take it from here.", "Choose an option to continue.", "Pick the direction that feels like you. You can change it anytime.", "Your starting point. Your rhythm. Your own pace."][step]}</p>
       </div>
       {step === 0 && <section className="profile-goal-section wizard-stage" key="goal">
@@ -275,7 +278,6 @@ export default function OverviewProfile({ profile, onSave, onTraining, cloudAcco
       </div>}
       <div className="wizard-footer-actions">
       {step > 0 && <button type="button" className="wizard-back secondary-button" onClick={() => goToStep(step - 1)}><ArrowLeft size={15} /> Back</button>}
-      {step === 1 && <button type="button" className="secondary-button wizard-avatar-trigger" aria-label="Select your avatar" onClick={() => setEditingAvatar(true)}><AnimalAvatar showMuscles={false} gender={draft.gender || "male"} species={draft.avatarCharacter || "shiba"} /> Select your avatar <ArrowUpRight size={15} /></button>}
       </div>
       {editingAvatar && <AnimalAvatarPicker gender={draft.gender || "male"} value={draft.avatarCharacter || "shiba"} onClose={() => setEditingAvatar(false)} onSelect={avatarCharacter => { set("avatarCharacter", avatarCharacter); setEditingAvatar(false); }} />}
     </form>
