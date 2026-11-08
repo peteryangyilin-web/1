@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import {
   ArrowUpRight,
   ArrowRight,
+  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Plus,
@@ -56,10 +57,8 @@ import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 import MealForm from "./components/MealForm";
-import TargetSuggestions from "./components/TargetSuggestions";
-import TrainingPreferences from "./components/TrainingPreferences";
-import {getTrainingContext, TRAINING_FIELDS} from "./trainingPlanner";
-import { ACTIVITY_OPTIONS, getProfileGuidance } from "./profileGuidance";
+import {getTrainingContext} from "./trainingPlanner";
+import { getProfileGuidance } from "./profileGuidance";
 import OverviewProfile from "./components/OverviewProfile";
 import OverviewWelcome from "./components/OverviewWelcome";
 import AvatarEditor from "./components/AvatarEditor";
@@ -556,7 +555,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
               <Bell size={18} />
               {weekComplete > 0 && <i className="notification-dot" />}
             </button>
-            {account?<><button className="account-access" onClick={()=>setModal({type:"account"})}>Account</button>{isAdmin&&<a className="account-access" href="/admin">Admin</a>}</>:<button className="account-access" onClick={()=>onSignIn?.('signin')} aria-label="Sign in to GO">Sign in</button>}
+            {account?<>{isAdmin&&<a className="account-access" href="/admin">Admin</a>}</>:<button className="account-access" onClick={()=>onSignIn?.('signin')} aria-label="Sign in to GO">Sign in</button>}
             {account && <button
               className="avatar"
               aria-label="Profile settings"
@@ -1212,17 +1211,22 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                 }}
               />
             ) : modal.type === "account" && account ? (
-              <AccountPanel user={account} onSignOut={onSignOut}/>
+              <>
+                <button className="account-back" onClick={openProfile}><ArrowLeft size={15}/> Back to profile</button>
+                <AccountPanel user={account} onSignOut={onSignOut}/>
+              </>
             ) : modal.type === "settings" ? (
+              <>
               <SettingsForm
                 profile={profile}
-                cloudAccount={!!account}
                 onSubmit={(v) => {
                   setStore((s) => ({ ...s, profile: v }));
                   setModal(null);
-                  notify("Preferences saved. Your schedule has been updated.");
+                  notify("Profile saved.");
                 }}
               />
+              {account && <button className="profile-account-link" onClick={()=>setModal({type:"account"})}><span>Account</span><ChevronRight size={18}/></button>}
+              </>
             ) : modal.type === "plan" ? (
               <PlanForm
                 plan={plan}
@@ -1821,133 +1825,28 @@ function MetricsForm({ record, selected, disabled, onSubmit }) {
     </>
   );
 }
-function SettingsForm({ profile, onSubmit, cloudAccount=false }) {
+function SettingsForm({ profile, onSubmit }) {
   const [avatar, setAvatar] = useState(profile.avatar || null);
   const [editingAvatar, setEditingAvatar] = useState(false);
-  const formRef = useRef(null);
-  const [settingsPreview,setSettingsPreview] = useState(profile);
-  const [targetsSource,setTargetsSource] = useState(profile.targetsSource||'manual');
   return (
     <>
-      <span className="eyebrow">BUILT AROUND YOUR LIFE</span>
-      <h2 id="modal-title">Your goals. Your way.</h2>
-      <p>These preferences shape your plan and daily targets.</p>
-      <form
-        ref={formRef}
-        onChange={e=>{setSettingsPreview({...profile,...Object.fromEntries(new FormData(e.currentTarget))});setTargetsSource('manual');}}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const f = new FormData(e.currentTarget);
-          onSubmit({
-            ...profile,
-            avatar,
-            name: f.get("name").trim(),
-            goal: f.get("goal"),
-            activity: f.get("activity"), experience: f.get("experience"), targetsSource,
-            ...Object.fromEntries(TRAINING_FIELDS.map(field=>[field.name,f.get(field.name)||field.fallback])),
-            age:f.get('age')?Number(f.get('age')):null,height:f.get('height')?Number(f.get('height')):null,
-            ...Object.fromEntries(
-              [
-                "days",
-                "calories",
-                "protein",
-                "carbs",
-                "fats",
-                "steps",
-                "sleep",
-                "water",
-                "startWeight",
-                "targetWeight",
-              ].map((k) => [k, f.get(k)===""?null:Number(f.get(k))]),
-            ),
-          });
-        }}
-      >
+      <h2 id="modal-title">Your profile</h2>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        const f = new FormData(e.currentTarget);
+        onSubmit({ ...profile, avatar, name: f.get("name").trim() });
+      }}>
         <div className="settings-avatar-section">
-          <span className="field">Profile photo</span>
           <div className="settings-avatar-row">
             <div className="settings-avatar-preview">{avatar ? <img src={avatar} alt="Your profile photo" /> : <Activity size={28} strokeWidth={1.3} />}</div>
-            <div><button type="button" className="secondary-button" onClick={() => setEditingAvatar(true)}>{avatar ? "Change profile photo" : "Upload profile photo"}</button>
-            <p>You, your pet, or something you love.</p>
-            {avatar && <button type="button" className="settings-avatar-remove" onClick={() => setAvatar(null)}>Remove profile photo</button>}</div>
+            <div>
+              <button type="button" className="secondary-button" onClick={() => setEditingAvatar(true)}>{avatar ? "Change profile photo" : "Upload your profile photo"}</button>
+              {avatar && <button type="button" className="settings-avatar-remove" onClick={() => setAvatar(null)}>Remove profile photo</button>}
+            </div>
           </div>
-          <small>{cloudAccount?"Save preferences to sync your changes to this account.":"Save preferences to keep your changes on this device."}</small>
         </div>
         <Field label="Your name" name="name" type="text" value={profile.name} />
-        <div className="form-grid">
-          <label className="field">
-            Training goal
-            <select name="goal" defaultValue={profile.goal}>
-              <option value="muscle">Build lean muscle</option>
-              <option value="fatloss">Lose fat</option>
-              <option value="endurance">Improve endurance</option>
-              <option value="wellbeing">Feel healthier</option>
-            </select>
-          </label>
-          <label className="field">
-            Sessions per week
-            <select name="days" defaultValue={profile.days}>
-              {[1, 2, 3, 4, 5, 6, 7].map((d) => (
-                <option key={d}>{d}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="form-grid"><Field label="Age · years" name="age" value={profile.age} min="16" max="100" required={false}/><Field label="Height · cm" name="height" value={profile.height} min="100" max="250" required={false}/>
-        <label className="field">Training experience<select name="experience" defaultValue={profile.experience||'intermediate'}><option value="beginner">Just getting started · under 3 months</option><option value="intermediate">Some experience · 3–12 months</option><option value="advanced">Training regularly · over 12 months</option></select></label>
-        <label className="field">Day-to-day activity<select name="activity" defaultValue={profile.activity||'moderate'}>{ACTIVITY_OPTIONS.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select><small className="field-help">{ACTIVITY_OPTIONS.find(o=>o.id===(settingsPreview.activity||'moderate'))?.definition}</small></label></div>
-        <TrainingPreferences profile={settingsPreview}/>
-        <TargetSuggestions profile={settingsPreview} applied={targetsSource==='suggested'} onApply={targets=>{for(const [key,value] of Object.entries(targets)){const input=formRef.current.elements.namedItem(key);if(input)input.value=value??'';}setSettingsPreview(p=>({...p,...targets}));setTargetsSource('suggested');}}/>
-        <h3 className="form-section-title">Daily targets · all editable</h3>
-        <div className="form-grid">
-          {[
-            ["Calories · kcal", "calories", 500, 10000, 1],
-            ["Protein · g", "protein", 1, 500, 1],
-            ["Carbs · g", "carbs", 1, 1000, 1],
-            ["Fats · g", "fats", 1, 500, 1],
-            ["Steps", "steps", 100, 100000, 1],
-            ["Sleep · hours", "sleep", 1, 16, 0.5],
-            ["Water · glasses", "water", 1, 20, 1],
-          ].map(([label, k, min, max, step]) => (
-            <Field
-              key={k}
-              required={!['calories','protein','carbs','fats'].includes(k)}
-              label={label}
-              name={k}
-              value={profile[k]}
-              min={min}
-              max={max}
-              step={step}
-            />
-          ))}
-        </div>
-        <h3 className="form-section-title">Your weight journey</h3>
-        <div className="form-grid">
-          <Field
-            label="Starting weight · kg"
-            name="startWeight"
-            value={profile.startWeight}
-            min="20"
-            max="500"
-            step="0.1"
-          />
-          <Field
-            label="Target weight · kg"
-            name="targetWeight"
-            required={false}
-            value={profile.targetWeight}
-            min="20"
-            max="500"
-            step="0.1"
-          />
-        </div>
-        <p className="form-hint">
-          One glass is 250 mL. Suggested values are starting estimates; adjust them to your needs.
-          Existing logged sessions keep their original plan.
-        </p>
-        <button className="primary-button full-width">
-          Save preferences <Check size={16} />
-        </button>
+        <button className="primary-button full-width">Save profile <Check size={16} /></button>
       </form>
       {editingAvatar && <AvatarEditor value={avatar} onClose={() => setEditingAvatar(false)} onSave={photo => { setAvatar(photo); setEditingAvatar(false); }} />}
     </>
