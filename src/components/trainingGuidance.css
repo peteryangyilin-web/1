@@ -1,12 +1,12 @@
 .training-preferences {padding:16px 0 4px;min-width:0;}
-.training-preferences h3 {font-size:18px;color:#34583f;margin:0 0 8px;}
-.training-preferences summary {cursor:pointer;font-size:14px;font-weight:600;color:#32593e;padding:13px 0;line-height:1.6;}
+.training-preferences h3 {font-size:18px;color:var(--lemon-ink);margin:0 0 8px;}
+.training-preferences summary {cursor:pointer;font-size:14px;font-weight:600;color:var(--lemon-ink);padding:13px 0;line-height:1.6;}
 .training-preferences details .form-grid {margin-top:12px;}
 .training-preferences .field > .field-help,.profile-main-column .training-preferences .field > .field-help {position:static;font-size:12px;line-height:1.65;color:#718074;}
-.exercise-dose {font-size:12px;line-height:1.7;color:#617968;}
-.exercise-dose {font-size:12px;line-height:1.7;color:#617968;}
+.exercise-dose {font-size:12px;line-height:1.7;color:var(--lemon-strong);}
+.exercise-dose {font-size:12px;line-height:1.7;color:var(--lemon-strong);}
 .exercise-dose {padding:12px 0;}
-.exercise-dose strong {color:#365d40;}
-.session-preparation {font-size:13px;line-height:1.75;color:#637368;padding:12px 0;}
+.exercise-dose strong {color:var(--lemon-strong);}
+.session-preparation {font-size:13px;line-height:1.75;color:var(--lemon-strong);padding:12px 0;}
 .training-restricted {padding:18px;background:#fff6e7;border:1px solid #e9d8b9;border-radius:12px;margin-bottom:18px;color:#71552d;font-size:14px;line-height:1.7;}
 @media(max-width:650px){.training-preferences .form-grid{grid-template-columns:1fr;}.training-preferences .field select{font-size:16px;}}

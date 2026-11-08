@@ -24,7 +24,7 @@ export default function AvatarEditor({ value, onSave, onClose }) {
     if (!image || !canvas.current) return;
     const ctx = canvas.current.getContext("2d");
     const side = Math.min(image.naturalWidth, image.naturalHeight) / zoom;
-    ctx.fillStyle = "#f0f8f3";
+    ctx.fillStyle = "#f8faee";
     ctx.fillRect(0, 0, 256, 256);
     ctx.drawImage(image, (image.naturalWidth - side) * x / 100, (image.naturalHeight - side) * y / 100, side, side, 0, 0, 256, 256);
   }, [image, zoom, x, y]);
