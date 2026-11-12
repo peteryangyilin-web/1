@@ -1,4 +1,4 @@
-import { getPersonalizedPlan } from './trainingPlanner.js';
+import { getPersonalizedPlan, getTrainingContext } from './trainingPlanner.js';
 export const DEFAULT_PROFILE = {
   name: "",
   goal: "muscle",
@@ -53,10 +53,10 @@ export function totalNutrition(meals = []) {
     { calories: 0, protein: 0, carbs: 0, fats: 0 },
   );
 }
-export function getPlan(key, profile, record) {
+export function getPlan(key, profile, record, records = {}) {
   if (record?.session?.plan) return record.session.plan;
-  if (record?.customPlan) return record.customPlan;
-  return getPersonalizedPlan(key, profile);
+  if (record?.customPlan && !getTrainingContext(profile, records, key).blocked) return record.customPlan;
+  return getPersonalizedPlan(key, profile, records);
 }
 export function createSession(plan) {
   return {
@@ -64,7 +64,7 @@ export function createSession(plan) {
     sets: plan.exercises.map((e) =>
       Array.from({ length: e.sets }, () => ({
         reps: e.kind==='time'?e.minutes:e.reps,
-        weight: 0,
+        weight: e.kind==='time'?0:e.weight??null,
         done: false,
       })),
     ),

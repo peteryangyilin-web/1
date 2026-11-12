@@ -57,7 +57,9 @@ import "./style.css";
 import SnackSimulation from "./components/SnackSimulation";
 import ExerciseDemo from "./components/ExerciseDemo";
 import MealForm from "./components/MealForm";
-import {getTrainingContext} from "./trainingPlanner";
+import {getTrainingContext, TRAINING_SOURCES} from "./trainingPlanner";
+import TrainingSetup from "./components/TrainingSetup";
+import TrainingFeedback from "./components/TrainingFeedback";
 import { getProfileGuidance } from "./profileGuidance";
 import OverviewProfile from "./components/OverviewProfile";
 import OverviewWelcome from "./components/OverviewWelcome";
@@ -197,8 +199,9 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
     totals = totalNutrition(record.meals),
     trainingWeight = Object.entries(store.records).filter(([d,r])=>d<=today&&r.weight!=null).sort(([a],[b])=>a.localeCompare(b)).at(-1)?.[1].weight,
     trainingProfile = {...profile,currentWeight:trainingWeight??profile.startWeight},
-    trainingRestricted = getTrainingContext(trainingProfile).blocked,
-    plan = getPlan(selected, trainingProfile, record),
+    trainingContext = getTrainingContext(trainingProfile, store.records, selected),
+    plan = getPlan(selected, trainingProfile, record, store.records),
+    trainingRestricted = trainingContext.blocked || plan.blocked,
     session = record.session,
     complete = !!session?.completedAt,
     isFuture = selected > today;
@@ -288,7 +291,8 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const openSession = () => {
-    if (trainingRestricted && !complete) { setModal({type:"settings"}); return; }
+    if (trainingRestricted && !complete) { setModal({type:"trainingSetup"}); return; }
+    if (!plan.exercises.length) { notify("This is a rest day. No scheduled session to start."); return; }
     if (isFuture) {
       notify(
         "Future sessions can be planned. Training logs are available on the day.",
@@ -299,7 +303,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
     setModal({ type: "workout" });
   };
   const toggleTimer = () =>
-    updateDay((r) => {
+    !trainingRestricted && updateDay((r) => {
       const s = r.session;
       return {
         session: {
@@ -310,7 +314,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
       };
     });
   const setWorkoutSet = (ei, si, field, value) =>
-    updateDay((r) => ({
+    !trainingRestricted && updateDay((r) => ({
       session: {
         ...r.session,
         sets: r.session.sets.map((sets, i) =>
@@ -321,21 +325,22 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
       },
     }));
   const finishWorkout = () => {
+    if(trainingRestricted){notify("Training is paused. Review your current exercise needs.");return;}
     if (!completedSets(session)) {
       notify("Check off at least one completed set to save this session.");
       return;
     }
-    updateDay({
-      session: {
-        ...session,
-        elapsed: elapsedSeconds(session),
-        runningSince: null,
-        completedAt: new Date().toISOString(),
-      },
-    });
-    setModal(null);
-    notify("Session saved. One more step forward.");
+    setModal({type:"trainingFeedback"});
   };
+  const saveTrainingFeedback = (feedback) => {
+    updateDay({session:{...session,elapsed:elapsedSeconds(session),runningSince:null,completedAt:new Date().toISOString(),feedback}});
+    setModal(null);
+    notify(feedback ? "Session and feedback saved." : "Session saved. No automatic progression without feedback.");
+  };
+
+  useEffect(()=>{
+    if(trainingRestricted&&session?.runningSince)updateDay({session:{...session,elapsed:elapsedSeconds(session),runningSince:null}});
+  },[trainingRestricted,session?.runningSince,selected]);
   const addMeal = (meal) => {
     updateDay((r) => ({
       meals: [
@@ -766,8 +771,10 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
               </div>
             </>
           )}
-          {tab === "Training" && trainingRestricted && <div className="training-restricted" role="status">Your exercise needs require individual guidance. Automatic session starts are paused. Review your training information with a qualified professional; completed history remains available.</div>}
-          {tab === "Training" && <section className="training-week-guide" aria-label="Your goal-based training week"><div><strong>Your week · {getProfileGuidance(profile).label}</strong><p>Choose a day to see its session. Saved sessions keep their original plan.</p></div><div className="training-week-cards">{dates.map(day=>{const p=getPlan(day,trainingProfile,store.records[day]);return <button type="button" key={day} aria-pressed={day===selected} aria-label={`View ${p.title} on ${shortDate(day)}`} onClick={()=>setSelected(day)}><span>{parseDate(day).toLocaleDateString('en-US',{weekday:'short'})}</span><strong>{p.title}</strong><small>{p.duration} min · {p.type}</small></button>})}</div></section>}
+          {tab === "Training" && <div className="training-setup-actions"><span>Training setup · your time, equipment and current ability</span><button className="secondary-button" onClick={()=>setModal({type:"trainingSetup"})}>{trainingRestricted?"Complete training setup":"Edit training setup"}</button></div>}
+          {tab === "Training" && trainingRestricted && <section className="training-plan-status" role="status"><h3>{({needs_input:"Complete your training setup",review_required:"Individual assessment needed",urgent_review:"Pause training",specialist_path:"Specialist pathway"})[trainingContext.status]||plan.title}</h3><p>{trainingContext.status==='needs_input'?'A few answers about your recent training, available time and health will help us build your starting week.':trainingContext.reasons.join(' ')||plan.rationale}</p>{trainingContext.missing.length>0&&<details><summary>What’s needed</summary><p>{trainingContext.missing.join(' · ')}</p></details>}<p>Existing sessions remain in your history. New adult plans use the supplied rule-based algorithm, not an assessment or medical clearance.</p><details><summary>Activity and specialist resources</summary>{TRAINING_SOURCES.filter(s=>["S01","S04",trainingContext.older?"S09":trainingContext.youth?"S10":"S11"].includes(s.id)).map(s=><p key={s.id}><a href={s.url} target="_blank" rel="noreferrer">{s.label} ↗</a></p>)}</details></section>}
+          {tab === "Training" && plan.weekly && !trainingRestricted && <section className="training-plan-totals" aria-label="Weekly dose and reference"><strong>This week · {plan.weekly.strengthDays} strength days · {plan.weekly.moderateEquivalentMinutes} aerobic minutes · {plan.weekly.totalMinutes} total minutes</strong><p>{plan.weekly.gap}</p>{plan.weekly.adherence!==null&&plan.weekly.adherence<.7&&<p>Recorded completion last week was below 70%. Check whether time, equipment, enjoyment or fatigue was the barrier before changing the physical load. Update your setup or record this in session feedback.</p>}<details><summary>Reference and plan details</summary><p>{plan.weekly.reference} Easy recovery and strength time are not counted as moderate aerobic activity. Secondary muscles are not double-counted as full sets.</p><p>{plan.progression}</p><p>Template {plan.templateVersion} · GO product rules, pending professional template review.</p>{TRAINING_SOURCES.map(source=><p key={source.id}><a href={source.url} target="_blank" rel="noreferrer">{source.id} · {source.label} ↗</a></p>)}</details></section>}
+          {tab === "Training" && <section className="training-week-guide" aria-label="Your goal-based training week"><div><strong>Your week · {plan.goalLabel}</strong><p>Choose a day to see its session. Saved sessions keep their original plan.</p></div><div className="training-week-cards">{dates.map(day=>{const p=getPlan(day,trainingProfile,store.records[day],store.records);return <button type="button" key={day} aria-pressed={day===selected} aria-label={`View ${p.title} on ${shortDate(day)}`} onClick={()=>setSelected(day)}><span>{parseDate(day).toLocaleDateString('en-US',{weekday:'short'})}</span><strong>{p.title}</strong><small>{p.duration} min · {p.type}</small></button>})}</div></section>}
           {tab === "Training" && (
             <div
               className={
@@ -833,8 +840,8 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                       </strong>
                     </div>
                   </div>
-                  <button className="lime-button" onClick={openSession} disabled={trainingRestricted&&!complete}>
-                    {trainingRestricted&&!complete ? "Individual guidance needed" : complete
+                  <button className="lime-button" onClick={openSession} disabled={(trainingRestricted&&!complete)||(!plan.exercises.length&&!complete)}>
+                    {trainingRestricted&&!complete ? "Complete setup / review" : !plan.exercises.length ? "Rest day" : complete
                       ? "View session"
                       : session
                         ? "Resume session"
@@ -870,7 +877,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                           {e.prescription||`${e.sets} × ${e.reps}`}
                         </small>
                       </div>
-                      {(e.effort||e.note)&&<p className="exercise-dose"><strong>{e.repRange?`${e.sets} working sets · ${e.repRange} reps · ${e.restSeconds}s rest. `:""}</strong>{e.effort} {e.note}</p>}
+                      {(e.effort||e.note)&&<p className="exercise-dose"><strong>{e.repRange?`${e.sets} working sets · ${e.repRange} reps · ${e.restSeconds}s rest. `:""}</strong>{e.effort} {e.note} {e.loadAdvice}</p>}
                       <ExerciseDemo name={e.name} profile={profile} compact />
                     </div>
                   ))}
@@ -1168,7 +1175,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
         >
           <section
             className={
-              "modal " + (modal.type === "workout" ? "workout-modal" : ["settings","account"].includes(modal.type) ? "profile-modal" : "")
+              "modal " + (modal.type === "workout" ? "workout-modal" : ["settings","account","trainingSetup","trainingFeedback"].includes(modal.type) ? "profile-modal" : "")
             }
             role="dialog"
             aria-modal="true"
@@ -1210,6 +1217,10 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                   notify("Daily metrics saved.");
                 }}
               />
+            ) : modal.type === "trainingSetup" ? (
+              <TrainingSetup profile={profile} onSave={setup=>{setStore(s=>({...s,profile:{...s.profile,age:Number(setup.age),goal:setup.goal,days:setup.windows.length,trainingSetup:setup}}));setModal(null);notify("Training setup saved. Unstarted sessions now use your new information.");}}/>
+            ) : modal.type === "trainingFeedback" && session ? (
+              <TrainingFeedback onSave={saveTrainingFeedback}/>
             ) : modal.type === "account" && account ? (
               <>
                 <button className="account-back" onClick={openProfile}><ArrowLeft size={15}/> Back to profile</button>
@@ -1265,7 +1276,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                     </span>
                   </div>
                   {!complete && (
-                    <button className="secondary-button" onClick={toggleTimer}>
+                    <button className="secondary-button" onClick={toggleTimer} disabled={trainingRestricted}>
                       {session.runningSince ? (
                         <Pause size={15} />
                       ) : (
@@ -1302,6 +1313,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                         {e.name}
                       </h3>
                       {e.prescription&&<p className="exercise-dose">{e.prescription}{e.kind!=="time"?` · ${e.restSeconds}s rest · ${e.effort}`:" · Complete the planned minutes at your chosen pace."}</p>}
+                      {e.loadAdvice&&<p className="exercise-dose">{e.loadAdvice}</p>}
                       <ExerciseDemo name={e.name} profile={profile} />
                       <div className="set-header">
                         <span>SET</span>
@@ -1321,9 +1333,10 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                             min="0"
                             max="1000"
                             step="0.5"
-                            value={s.weight}
-                            disabled={complete||e.kind==="time"}
+                            value={s.weight??""}
+                            disabled={complete||trainingRestricted||e.kind==="time"}
                             onChange={(ev) => {
+                              if(ev.target.value===''){setWorkoutSet(ei,si,"weight",null);return;}
                               const v = ev.target.valueAsNumber;
                               if (Number.isFinite(v) && v >= 0 && v <= 1000)
                                 setWorkoutSet(ei, si, "weight", v);
@@ -1335,7 +1348,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                             min="1"
                             max="500"
                             value={s.reps}
-                            disabled={complete}
+                            disabled={complete||trainingRestricted}
                             onChange={(ev) => {
                               const v = ev.target.valueAsNumber;
                               if (Number.isInteger(v) && v > 0 && v <= 500)
@@ -1346,7 +1359,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                             className={"set-check " + (s.done ? "done" : "")}
                             aria-label={`${e.name} set ${si + 1} complete`}
                             aria-pressed={s.done}
-                            disabled={complete}
+                            disabled={complete||trainingRestricted}
                             onClick={() =>
                               setWorkoutSet(ei, si, "done", !s.done)
                             }
@@ -1363,6 +1376,7 @@ function App({initialStore,onStoreChange,account=null,syncStatus,onSignIn,onSign
                     <>
                       <button
                         className="secondary-button"
+                        disabled={trainingRestricted}
                         onClick={() => {
                           updateDay({
                             session: { ...session, completedAt: null },

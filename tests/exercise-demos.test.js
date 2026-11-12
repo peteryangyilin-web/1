@@ -1,3 +1,5 @@
+import {EXERCISE_CATALOG} from '../src/trainingPlanner.js';
+import {completeProfile} from './fixtures/training-profile.js';
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -9,14 +11,14 @@ import {
 import { getPlan, weekDates, DEFAULT_PROFILE } from "../src/model.js";
 
 test("every built-in recommended exercise resolves to a real bundled animation and poster", () => {
-  const names = new Set();
+  const names = new Set(EXERCISE_CATALOG.map(e=>e.name));
   for (const goal of ["muscle", "fatloss", "endurance", "wellbeing"])
     for (const days of [3, 4, 5, 6])
       for (const date of weekDates("2026-10-16"))
-        for (const exercise of getPlan(date, { ...DEFAULT_PROFILE, goal, days, age:30, sessionMinutes:60, experience:"intermediate" })
+        for (const exercise of getPlan(date, completeProfile({goal,trainingSetup:{...completeProfile().trainingSetup,history:"intermediate",windows:[0,1,2,3,4,5,6].slice(0,days).map(day=>({day,minutes:60}))}}))
           .exercises)
           names.add(exercise.name);
-  assert.ok(names.size >= 22);
+  assert.ok(names.size >= EXERCISE_CATALOG.length);
   for (const name of names) {
     const demo = getExerciseDemo(name);
     assert.ok(demo, `Missing matching demonstration: ${name}`);

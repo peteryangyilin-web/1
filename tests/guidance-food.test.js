@@ -1,3 +1,4 @@
+import {completeProfile} from './fixtures/training-profile.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {getProfileGuidance,ACTIVITY_OPTIONS,GLASS_ML} from '../src/profileGuidance.js';
@@ -17,8 +18,8 @@ test('missing data, under-18s and unsuitable measurements never get invented cal
 });
 test('four goals really produce different unstarted weekly plans and experience changes volume',()=>{
  const dates=weekDates('2026-10-12');const plans=new Set();
- for(const goal of ['muscle','fatloss','endurance','wellbeing'])plans.add(JSON.stringify(dates.map(d=>getPlan(d,{...base,goal}))));assert.equal(plans.size,4);
- const a=getPlan('2026-10-12',{...base,goal:'muscle',experience:'intermediate'}),b=getPlan('2026-10-12',{...base,goal:'muscle',experience:'beginner'});
+ for(const goal of ['muscle','fatloss','endurance','wellbeing'])plans.add(JSON.stringify(dates.map(d=>getPlan(d,completeProfile({goal})))));assert.equal(plans.size,4);
+ const a=getPlan('2026-10-12',completeProfile({goal:'muscle',trainingSetup:{...completeProfile().trainingSetup,history:'intermediate'}})),b=getPlan('2026-10-12',completeProfile({goal:'muscle'}));
  assert.ok(b.exercises.reduce((s,e)=>s+e.sets,0)<a.exercises.reduce((s,e)=>s+e.sets,0));assert.ok(b.exercises.every(e=>e.sets<=2));
  const saved=createSession(a);assert.deepEqual(getPlan('2026-10-12',{...base,goal:'wellbeing'},{session:saved}),a);
 });

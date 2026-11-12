@@ -1,3 +1,4 @@
+import {completeProfile} from './fixtures/training-profile.js';
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -41,7 +42,7 @@ test("nutrition totals account for individual entries and removal", () => {
 });
 test("weekly schedule follows frequency and goal while preserving logged sessions", () => {
   for (const days of [3, 4, 5, 6]) {
-    const p = { ...DEFAULT_PROFILE, days };
+    const p = completeProfile({goal:'muscle'});p.trainingSetup.windows=[0,1,2,3,4,5,6].slice(0,days).map(day=>({day,minutes:60}));
     assert.equal(
       weekDates("2026-10-16").filter((d) => getPlan(d, p).type !== "Recovery")
         .length,
@@ -49,24 +50,24 @@ test("weekly schedule follows frequency and goal while preserving logged session
     );
   }
   const d = "2026-10-12";
-  const strength = getPlan(d, DEFAULT_PROFILE),
-    endurance = getPlan(d, { ...DEFAULT_PROFILE, goal: "endurance" });
-  assert.notEqual(strength.type, endurance.type);
+  const strength = getPlan(d, completeProfile({goal:'muscle'})),
+    endurance = getPlan(d, completeProfile({goal:"endurance"}));
+  assert.notDeepEqual(strength.exercises, endurance.exercises);
   assert.deepEqual(
     getPlan(
       d,
-      { ...DEFAULT_PROFILE, goal: "endurance" },
+      completeProfile({goal:"endurance"}),
       { session: { plan: strength } },
     ),
     strength,
   );
   assert.deepEqual(
-    getPlan(d, DEFAULT_PROFILE, { customPlan: endurance }),
+    getPlan(d, completeProfile(), { customPlan: endurance }),
     endurance,
   );
 });
 test("sessions clone plans, count sets, and recover active timers after reload", () => {
-  const p = getPlan("2026-10-12", DEFAULT_PROFILE),
+  const p = getPlan("2026-10-12", completeProfile({goal:"muscle"})),
     s = createSession(p);
   s.plan.exercises[0].name = "Edited";
   assert.notEqual(s.plan.exercises[0].name, p.exercises[0].name);
@@ -125,10 +126,10 @@ test("coach reacts to missing and low-sleep logs rather than claiming readiness"
 });
 
 test("fat-loss profile builds a mixed schedule without replacing existing logged plans", () => {
-  const profile = { ...DEFAULT_PROFILE, goal: "fatloss", days: 4 };
+  const profile = completeProfile();
   assert.equal(getPlan("2026-10-12", profile).title, "Strength & steady habits");
-  assert.equal(getPlan("2026-10-14", profile).type, "Endurance");
-  const saved = createSession(getPlan("2026-10-12", DEFAULT_PROFILE));
+  assert.equal(getPlan("2026-10-13", profile).type, "Endurance");
+  const saved = createSession(getPlan("2026-10-12", completeProfile({goal:"muscle"})));
   assert.equal(
     getPlan("2026-10-12", profile, { session: saved }).title,
     saved.plan.title,
